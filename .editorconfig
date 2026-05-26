@@ -1,0 +1,22 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.{dart,kt,kts,swift,h,m,mm}]
+indent_size = 2
+max_line_length = 100
+
+[*.{yaml,yml,json,arb,xml,md,html}]
+indent_size = 2
+
+[*.gradle]
+indent_size = 4
+
+[*.bat]
+end_of_line = crlf

@@ -1,0 +1,92 @@
+name: aura
+description: "AURA - diário da enxaqueca"
+publish_to: 'none'
+
+# Semver: <user-facing>+<build-number>
+# Bumped on each App Store / Play Store upload by the release script.
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: '>=3.44.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ----- State management ---------------------------------------------------
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # ----- Routing ------------------------------------------------------------
+  go_router: ^14.6.2
+
+  # ----- Models / immutability ---------------------------------------------
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # ----- Local persistence (offline-first source of truth) -----------------
+  drift: ^2.20.3
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # ----- Backend (auth + Postgres + storage) -------------------------------
+  supabase_flutter: ^2.8.0
+
+  # ----- Connectivity awareness --------------------------------------------
+  connectivity_plus: ^6.1.0
+
+  # ----- Subscriptions ------------------------------------------------------
+  purchases_flutter: ^8.2.0
+
+  # ----- PDF + on-screen charts --------------------------------------------
+  pdf: ^3.11.1
+  printing: ^5.13.4
+  fl_chart: ^0.69.2
+
+  # ----- Crash reporting (EU region) ---------------------------------------
+  # sentry_flutter: ^8.10.1
+  # DEFERRED to Day 18 (week 3). The 8.10.1 release declares Kotlin
+  # language version 1.6 in its Android build, which Kotlin 2.3 (bundled
+  # with AGP 9.x in Flutter 3.44) rejects. Will re-add when a Kotlin-2.0+
+  # release is available or switch to another EU-hosted crash reporter.
+
+  # ----- i18n ---------------------------------------------------------------
+  intl: ^0.20.2
+
+  # ----- Platform glue ------------------------------------------------------
+  share_plus: ^10.1.2
+  package_info_plus: ^8.1.1
+  device_info_plus: ^11.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # ----- Lint rules ---------------------------------------------------------
+  very_good_analysis: ^7.0.0
+  custom_lint: ^0.7.0
+  riverpod_lint: ^2.6.3
+
+  # ----- Code generation ----------------------------------------------------
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.6.3
+  drift_dev: ^2.20.3
+
+  # ----- Tests --------------------------------------------------------------
+  mocktail: ^1.0.4
+
+  # ----- Splash + launcher icon generators ---------------------------------
+  flutter_native_splash: ^2.4.2
+  flutter_launcher_icons: ^0.14.1
+
+flutter:
+  uses-material-design: true
+  generate: true   # enables synthetic AppLocalizations from .arb files
