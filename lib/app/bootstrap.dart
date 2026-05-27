@@ -5,6 +5,7 @@ import 'package:aura/data/sync/outbox_worker_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Compile-time configuration read from `--dart-define-from-file=env.*.json`.
@@ -21,6 +22,11 @@ const _kEnv = String.fromEnvironment('AURA_ENV', defaultValue: 'dev');
 /// lets tests pump [AuraApp] directly without dragging Supabase along.
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load locale-specific symbols (month names etc.) so DateFormat works
+  // for 'pt_PT' on the home screen. Skip the English default — it's
+  // built in.
+  await initializeDateFormatting('pt_PT');
 
   // Status bar transparent, navigation bar matches our deep-aubergine bg.
   SystemChrome.setSystemUIOverlayStyle(

@@ -8,6 +8,7 @@
 
 import 'dart:io' show File;
 
+import 'package:aura/domain/home/home_stats.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
@@ -212,6 +213,66 @@ class AuraDatabase extends _$AuraDatabase {
               ..orderBy([(ct) => OrderingTerm.asc(ct.trigger)]))
             .get();
     return rows.map((r) => r.trigger).toList();
+  }
+
+  // --------------------------------------------------------------------
+  // Home dashboard stats — reactive Stream that re-emits whenever the
+  // crises or crisis_medications tables change (so registering a crisis
+  // updates the home page summary without explicit refresh logic).
+  //
+  // We measure in "distinct calendar days, local time" rather than raw
+  // counts — that matches the home UI which says "N dias" per bucket.
+  // --------------------------------------------------------------------
+  Stream<HomeStats> watchHomeStatsLast30Days({required String userId, DateTime? now}) {
+    final today = (now ?? DateTime.now()).toLocal();
+    final startOfToday = DateTime(today.year, today.month, today.day);
+    // 30-day window includes today, so subtract 29 days.
+    final cutoff = startOfToday.subtract(const Duration(days: 29));
+
+    // Drift's customSelect binds variables positionally; use `?` each time
+    // and re-pass the values (numbered `?1` placeholders aren't reliably
+    // supported across sqlite3 + Drift versions).
+    return customSelect(
+      '''
+SELECT
+  COUNT(DISTINCT date(occurred_at, 'unixepoch'))
+    AS days_with_crisis,
+  COUNT(DISTINCT CASE WHEN intensity BETWEEN 1 AND 3
+                      THEN date(occurred_at, 'unixepoch') END)
+    AS days_leve,
+  COUNT(DISTINCT CASE WHEN intensity BETWEEN 4 AND 6
+                      THEN date(occurred_at, 'unixepoch') END)
+    AS days_moderada,
+  COUNT(DISTINCT CASE WHEN intensity BETWEEN 7 AND 10
+                      THEN date(occurred_at, 'unixepoch') END)
+    AS days_forte,
+  (SELECT COUNT(DISTINCT date(c.occurred_at, 'unixepoch'))
+     FROM crises c
+     JOIN crisis_medications cm ON cm.crisis_id = c.id
+    WHERE c.user_id = ? AND c.occurred_at >= ?)
+    AS days_with_medication,
+  COUNT(*) AS total_crises
+FROM crises
+WHERE user_id = ? AND occurred_at >= ?
+''',
+      variables: [
+        Variable.withString(userId),
+        Variable.withDateTime(cutoff),
+        Variable.withString(userId),
+        Variable.withDateTime(cutoff),
+      ],
+      readsFrom: {crises, crisisMedications},
+    ).watchSingle().map((row) {
+      final daysWithCrisis = row.read<int>('days_with_crisis');
+      return HomeStats(
+        daysNoPain: (30 - daysWithCrisis).clamp(0, 30),
+        daysLeve: row.read<int>('days_leve'),
+        daysModerada: row.read<int>('days_moderada'),
+        daysForte: row.read<int>('days_forte'),
+        daysWithMedication: row.read<int>('days_with_medication'),
+        totalCrises: row.read<int>('total_crises'),
+      );
+    });
   }
 
   // --------------------------------------------------------------------

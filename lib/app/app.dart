@@ -1,5 +1,5 @@
 import 'package:aura/core/theme/aura_theme.dart';
-import 'package:aura/features/dev/theme_preview_screen.dart';
+import 'package:aura/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class AuraApp extends StatelessWidget {
@@ -13,7 +13,7 @@ class AuraApp extends StatelessWidget {
       theme: AuraTheme.dark,
       darkTheme: AuraTheme.dark,
       themeMode: ThemeMode.dark,
-      home: const ThemePreviewScreen(),
+      home: const HomeScreen(),
     );
   }
 }
