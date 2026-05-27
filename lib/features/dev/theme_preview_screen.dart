@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 
 /// Visual preview of the AURA design tokens.
 ///
-/// This is the temporary first screen, used to validate the palette and
-/// typography choices end-to-end on a real device. It will be replaced by
-/// the home dashboard on Day 6.
+/// No longer the app's home (HomeScreen replaced it on Day 6) but kept as
+/// a design-system diagnostic — useful when iterating on AuraColors /
+/// AuraTextStyles / button themes to verify the tokens visually before
+/// the UI consumes them. Not referenced from the app graph; can be
+/// instantiated manually in a debug entry point or a widget catalog.
 class ThemePreviewScreen extends StatelessWidget {
   const ThemePreviewScreen({super.key});
 
