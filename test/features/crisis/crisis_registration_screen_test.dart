@@ -44,7 +44,8 @@ void main() {
 
   testWidgets('save is disabled until intensity is chosen', (tester) async {
     await tester.pumpWidget(harness());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     final save = find.widgetWithText(ElevatedButton, 'Guardar crise');
     expect(save, findsOneWidget);
@@ -54,10 +55,11 @@ void main() {
 
   testWidgets('tapping an intensity dot enables save', (tester) async {
     await tester.pumpWidget(harness());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     await tester.tap(find.text('7'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     final btn = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Guardar crise'));
     expect(btn.onPressed, isNotNull);
@@ -65,39 +67,41 @@ void main() {
 
   testWidgets('symptom chips toggle on tap', (tester) async {
     await tester.pumpWidget(harness());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     // Tap "Náusea" — chip should now show check icon.
     await tester.tap(find.text('Náusea'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(find.byIcon(Icons.check), findsOneWidget);
 
     // Tap "Fotofobia" — now two chips selected (two check icons).
     await tester.tap(find.text('Fotofobia'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(find.byIcon(Icons.check), findsNWidgets(2));
 
     // Tap "Náusea" again to deselect — back to one check.
     await tester.tap(find.text('Náusea'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(find.byIcon(Icons.check), findsOneWidget);
   });
 
   testWidgets('trigger chip selects (and re-tapping clears)', (tester) async {
     await tester.pumpWidget(harness());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     // Initially nothing selected — tap "Stress".
     await tester.tap(find.text('Stress'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Tap "Stress" again — should clear (toggle behavior). No exception.
     await tester.tap(find.text('Stress'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Tap "Sono" — should now be selected (no exception).
     await tester.tap(find.text('Sono'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // The CTA stays disabled because we never set intensity.
     final btn = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Guardar crise'));
