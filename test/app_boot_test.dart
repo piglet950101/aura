@@ -12,11 +12,12 @@
 import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('AURA app boots and renders theme preview', (tester) async {
-    await tester.pumpWidget(const AuraApp());
+    await tester.pumpWidget(const ProviderScope(child: AuraApp()));
     await tester.pumpAndSettle();
 
     // Brand mark is on screen.
@@ -34,7 +35,7 @@ void main() {
   });
 
   testWidgets('CTA buttons respect 56dp minimum tap target via theme', (tester) async {
-    await tester.pumpWidget(const AuraApp());
+    await tester.pumpWidget(const ProviderScope(child: AuraApp()));
     await tester.pumpAndSettle();
 
     final theme = Theme.of(tester.element(find.byType(ElevatedButton).first));

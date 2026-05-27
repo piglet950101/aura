@@ -18,8 +18,8 @@ analyzer:
     - "**/*.gr.dart"
     - "lib/core/l10n/generated/**"
     - "build/**"
-  plugins:
-    - custom_lint
+  # plugins:
+  #   - custom_lint   # disabled until custom_lint supports analyzer 7.x
 
 linter:
   rules:

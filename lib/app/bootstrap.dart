@@ -2,6 +2,7 @@ import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Compile-time configuration read from `--dart-define-from-file=env.*.json`.
@@ -50,5 +51,5 @@ Future<void> bootstrap() async {
     }
   }
 
-  runApp(const AuraApp());
+  runApp(const ProviderScope(child: AuraApp()));
 }

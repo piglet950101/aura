@@ -18,7 +18,12 @@ dependencies:
 
   # ----- State management ---------------------------------------------------
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
+  # riverpod_annotation TEMPORARILY DISABLED:
+  # The Riverpod codegen ecosystem (riverpod_generator) pulls custom_lint_core
+  # → analyzer_plugin 0.12.0 → incompatible with analyzer 7.6.0. We write
+  # providers manually (5 lines) until the toolchain updates. The runtime
+  # library (flutter_riverpod) still works fully.
+  # riverpod_annotation: ^2.6.1
 
   # ----- Routing ------------------------------------------------------------
   go_router: ^14.6.2
@@ -32,6 +37,9 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.24
   path_provider: ^2.1.4
   path: ^1.9.0
+  # UUIDs are generated client-side so a row inserted offline keeps a stable
+  # identity across sync (same PK on device and Supabase).
+  uuid: ^4.5.0
 
   # ----- Backend (auth + Postgres + storage) -------------------------------
   supabase_flutter: ^2.8.0
@@ -70,14 +78,20 @@ dev_dependencies:
 
   # ----- Lint rules ---------------------------------------------------------
   very_good_analysis: ^7.0.0
-  custom_lint: ^0.7.0
-  riverpod_lint: ^2.6.3
+  # custom_lint + riverpod_lint TEMPORARILY DISABLED:
+  # custom_lint 0.7.3 pulls analyzer_plugin 0.12.0 which is incompatible
+  # with analyzer 7.6.0 (Element vs Element2 API). The Riverpod *generator*
+  # still works fine — only the lint plugin breaks. Re-add when riverpod's
+  # lint tooling updates to support analyzer 7.x.
+  # custom_lint: ^0.7.0
+  # riverpod_lint: ^2.6.3
 
   # ----- Code generation ----------------------------------------------------
   build_runner: ^2.4.13
   freezed: ^2.5.7
   json_serializable: ^6.8.0
-  riverpod_generator: ^2.6.3
+  # riverpod_generator DISABLED — see note above on analyzer_plugin 0.12.0.
+  # riverpod_generator: ^2.6.3
   drift_dev: ^2.20.3
 
   # ----- Tests --------------------------------------------------------------
