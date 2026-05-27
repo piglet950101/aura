@@ -221,12 +221,13 @@ class AuraDatabase extends _$AuraDatabase {
 
   Future<int> markOutboxFailed({
     required int id,
+    required int currentAttempts,
     required String error,
     required Duration backoff,
   }) {
     return (update(outboxEntries)..where((e) => e.id.equals(id))).write(
       OutboxEntriesCompanion(
-        // Worker can bump attempts in a separate call if it tracks retries.
+        attempts: Value(currentAttempts + 1),
         lastError: Value(error),
         nextRetryAt: Value(DateTime.now().add(backoff)),
       ),

@@ -123,6 +123,7 @@ void main() {
 
     await db.markOutboxFailed(
       id: id,
+      currentAttempts: 0,
       error: 'simulated network 500',
       backoff: const Duration(hours: 1),
     );

@@ -1,6 +1,7 @@
 import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/data/local/database_provider.dart';
+import 'package:aura/data/sync/outbox_worker_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,6 +69,13 @@ Future<void> bootstrap() async {
       // upgrade to an email account later (Day 4 work) without losing data.
       await auth.signInAnonymously();
     }
+
+    // Start the outbox sync worker. Eager read forces construction +
+    // start() and schedules the periodic drain + connectivity listener.
+    // Reading the provider here means the worker survives for the life
+    // of the container (i.e. the app process).
+    container.read(outboxWorkerProvider);
+    debugPrint('[AURA] OutboxWorker started');
   }
 
   runApp(UncontrolledProviderScope(container: container, child: const AuraApp()));

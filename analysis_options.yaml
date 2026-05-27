@@ -33,3 +33,7 @@ linter:
     lines_longer_than_80_chars: false
     # We group pubspec by purpose, not alphabetically — easier to scan.
     sort_pub_dependencies: false
+    # `this._privateField` initializing formals become library-private
+    # named parameters, which tests in test/ can't pass. Keep explicit
+    # `: _field = param` assignments for classes with injectable deps.
+    prefer_initializing_formals: false
