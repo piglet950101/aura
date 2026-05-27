@@ -1,5 +1,6 @@
 import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
+import 'package:aura/data/local/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +35,24 @@ Future<void> bootstrap() async {
   // need to support in v1.
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]);
 
+  // Build the Riverpod container manually so we can eagerly warm the
+  // database during the splash (no first-screen jank) and reuse the same
+  // container for runApp.
+  final container = ProviderContainer();
+
+  // Force-open the local Drift DB — runs migrations on a fresh install,
+  // opens the SQLite file on subsequent launches. Throwing here is a hard
+  // fail (the app cannot function without local persistence) so we
+  // surface the error in logcat and rethrow.
+  try {
+    final db = container.read(auraDatabaseProvider);
+    await db.pendingOutbox(limit: 1); // any noop query forces lazy open
+    debugPrint('[AURA] Drift DB ready');
+  } on Object catch (e, st) {
+    debugPrint('[AURA] Drift open FAILED: $e\n$st');
+    rethrow;
+  }
+
   // Supabase init is conditional — we want the app to still launch (showing
   // the theme preview) even when no env file is wired up yet.
   if (_kSupabaseUrl.isNotEmpty && _kSupabaseAnonKey.isNotEmpty) {
@@ -51,5 +70,5 @@ Future<void> bootstrap() async {
     }
   }
 
-  runApp(const ProviderScope(child: AuraApp()));
+  runApp(UncontrolledProviderScope(container: container, child: const AuraApp()));
 }
