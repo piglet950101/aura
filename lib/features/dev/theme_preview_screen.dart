@@ -2,6 +2,7 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Visual preview of the AURA design tokens.
@@ -94,7 +95,17 @@ class ThemePreviewScreen extends StatelessWidget {
               const Text('Numeric 18 / 700: 6,2', style: AuraTextStyles.numeric),
               const SizedBox(height: AuraSpacing.xxl),
               const _SectionLabel('Buttons · min 56dp tap target'),
-              ElevatedButton(onPressed: () {}, child: const Text('Registar crise')),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const CrisisRegistrationScreen(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+                child: const Text('Registar crise'),
+              ),
               const SizedBox(height: AuraSpacing.sm),
               OutlinedButton(onPressed: () {}, child: const Text('Cancelar')),
               const SizedBox(height: AuraSpacing.sm),

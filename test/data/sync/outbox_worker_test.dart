@@ -208,6 +208,21 @@ class _FakeCrisisRemote implements CrisisRemoteDataSource {
     required DateTime since,
     required String userId,
   }) async => <CrisesCompanion>[];
+
+  final Map<String, List<String>> symptomsSet = {};
+  final Map<String, List<String>> triggersSet = {};
+
+  @override
+  Future<void> setSymptoms(String crisisId, Iterable<String> codes) async {
+    _maybeFail();
+    symptomsSet[crisisId] = codes.toList();
+  }
+
+  @override
+  Future<void> setTriggers(String crisisId, Iterable<String> codes) async {
+    _maybeFail();
+    triggersSet[crisisId] = codes.toList();
+  }
 }
 
 class _FakeMedicationRemote implements MedicationRemoteDataSource {

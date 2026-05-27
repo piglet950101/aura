@@ -89,6 +89,9 @@ class CrisisSymptoms extends Table {
 }
 
 /// many-to-many: a crisis can have multiple identified triggers.
+/// `CrisisTriggerRow` is the explicit row-class name so we don't collide
+/// with the domain enum `CrisisTrigger` defined in lib/domain/crisis/.
+@DataClassName('CrisisTriggerRow')
 class CrisisTriggers extends Table {
   TextColumn get crisisId => text().references(Crises, #id, onDelete: KeyAction.cascade)();
   TextColumn get trigger => text()();
@@ -189,6 +192,27 @@ class AuraDatabase extends _$AuraDatabase {
   }
 
   Future<int> deleteCrisis(String id) => (delete(crises)..where((c) => c.id.equals(id))).go();
+
+  /// Stable English symptom codes attached to a crisis, ordered for
+  /// deterministic sync payloads.
+  Future<List<String>> symptomsFor(String crisisId) async {
+    final rows =
+        await (select(crisisSymptoms)
+              ..where((cs) => cs.crisisId.equals(crisisId))
+              ..orderBy([(cs) => OrderingTerm.asc(cs.symptom)]))
+            .get();
+    return rows.map((r) => r.symptom).toList();
+  }
+
+  /// Stable English trigger codes attached to a crisis.
+  Future<List<String>> triggersFor(String crisisId) async {
+    final rows =
+        await (select(crisisTriggers)
+              ..where((ct) => ct.crisisId.equals(crisisId))
+              ..orderBy([(ct) => OrderingTerm.asc(ct.trigger)]))
+            .get();
+    return rows.map((r) => r.trigger).toList();
+  }
 
   // --------------------------------------------------------------------
   // Outbox helpers — used by repository layer (Day 3) and the worker.

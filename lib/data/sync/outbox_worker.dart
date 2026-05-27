@@ -142,8 +142,18 @@ class OutboxWorker {
           // success so the outbox doesn't keep retrying a ghost upsert.
           return;
         }
+        // Order matters: parent first (so FKs in crisis_symptoms /
+        // crisis_triggers resolve), then the m:n children. The child
+        // updates use delete-then-insert so the server reflects the
+        // *current* local state without needing a diff.
         await _crisisRemote.upsert(row);
+        final symptoms = await _db.symptomsFor(entry.entityId);
+        final triggers = await _db.triggersFor(entry.entityId);
+        await _crisisRemote.setSymptoms(entry.entityId, symptoms);
+        await _crisisRemote.setTriggers(entry.entityId, triggers);
       case OutboxOperation.delete:
+        // The Supabase schema has ON DELETE CASCADE on the join tables, so
+        // a single delete here removes the symptoms/triggers too.
         await _crisisRemote.delete(entry.entityId);
     }
   }

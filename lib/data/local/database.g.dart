@@ -1609,7 +1609,7 @@ class CrisisSymptomsCompanion extends UpdateCompanion<CrisisSymptom> {
 }
 
 class $CrisisTriggersTable extends CrisisTriggers
-    with TableInfo<$CrisisTriggersTable, CrisisTrigger> {
+    with TableInfo<$CrisisTriggersTable, CrisisTriggerRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1644,7 +1644,7 @@ class $CrisisTriggersTable extends CrisisTriggers
   static const String $name = 'crisis_triggers';
   @override
   VerificationContext validateIntegrity(
-    Insertable<CrisisTrigger> instance, {
+    Insertable<CrisisTriggerRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1668,9 +1668,9 @@ class $CrisisTriggersTable extends CrisisTriggers
   @override
   Set<GeneratedColumn> get $primaryKey => {crisisId, trigger};
   @override
-  CrisisTrigger map(Map<String, dynamic> data, {String? tablePrefix}) {
+  CrisisTriggerRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CrisisTrigger(
+    return CrisisTriggerRow(
       crisisId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}crisis_id'],
@@ -1688,10 +1688,10 @@ class $CrisisTriggersTable extends CrisisTriggers
   }
 }
 
-class CrisisTrigger extends DataClass implements Insertable<CrisisTrigger> {
+class CrisisTriggerRow extends DataClass implements Insertable<CrisisTriggerRow> {
   final String crisisId;
   final String trigger;
-  const CrisisTrigger({required this.crisisId, required this.trigger});
+  const CrisisTriggerRow({required this.crisisId, required this.trigger});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1704,9 +1704,9 @@ class CrisisTrigger extends DataClass implements Insertable<CrisisTrigger> {
     return CrisisTriggersCompanion(crisisId: Value(crisisId), trigger: Value(trigger));
   }
 
-  factory CrisisTrigger.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory CrisisTriggerRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CrisisTrigger(
+    return CrisisTriggerRow(
       crisisId: serializer.fromJson<String>(json['crisisId']),
       trigger: serializer.fromJson<String>(json['trigger']),
     );
@@ -1720,10 +1720,10 @@ class CrisisTrigger extends DataClass implements Insertable<CrisisTrigger> {
     };
   }
 
-  CrisisTrigger copyWith({String? crisisId, String? trigger}) =>
-      CrisisTrigger(crisisId: crisisId ?? this.crisisId, trigger: trigger ?? this.trigger);
-  CrisisTrigger copyWithCompanion(CrisisTriggersCompanion data) {
-    return CrisisTrigger(
+  CrisisTriggerRow copyWith({String? crisisId, String? trigger}) =>
+      CrisisTriggerRow(crisisId: crisisId ?? this.crisisId, trigger: trigger ?? this.trigger);
+  CrisisTriggerRow copyWithCompanion(CrisisTriggersCompanion data) {
+    return CrisisTriggerRow(
       crisisId: data.crisisId.present ? data.crisisId.value : this.crisisId,
       trigger: data.trigger.present ? data.trigger.value : this.trigger,
     );
@@ -1731,7 +1731,7 @@ class CrisisTrigger extends DataClass implements Insertable<CrisisTrigger> {
 
   @override
   String toString() {
-    return (StringBuffer('CrisisTrigger(')
+    return (StringBuffer('CrisisTriggerRow(')
           ..write('crisisId: $crisisId, ')
           ..write('trigger: $trigger')
           ..write(')'))
@@ -1743,10 +1743,12 @@ class CrisisTrigger extends DataClass implements Insertable<CrisisTrigger> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CrisisTrigger && other.crisisId == this.crisisId && other.trigger == this.trigger);
+      (other is CrisisTriggerRow &&
+          other.crisisId == this.crisisId &&
+          other.trigger == this.trigger);
 }
 
-class CrisisTriggersCompanion extends UpdateCompanion<CrisisTrigger> {
+class CrisisTriggersCompanion extends UpdateCompanion<CrisisTriggerRow> {
   final Value<String> crisisId;
   final Value<String> trigger;
   final Value<int> rowid;
@@ -1761,7 +1763,7 @@ class CrisisTriggersCompanion extends UpdateCompanion<CrisisTrigger> {
     this.rowid = const Value.absent(),
   }) : crisisId = Value(crisisId),
        trigger = Value(trigger);
-  static Insertable<CrisisTrigger> custom({
+  static Insertable<CrisisTriggerRow> custom({
     Expression<String>? crisisId,
     Expression<String>? trigger,
     Expression<int>? rowid,
@@ -3367,7 +3369,7 @@ final class $$CrisesTableReferences extends BaseReferences<_$AuraDatabase, $Cris
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
-  static MultiTypedResultKey<$CrisisTriggersTable, List<CrisisTrigger>> _crisisTriggersRefsTable(
+  static MultiTypedResultKey<$CrisisTriggersTable, List<CrisisTriggerRow>> _crisisTriggersRefsTable(
     _$AuraDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.crisisTriggers,
@@ -3734,7 +3736,7 @@ class $$CrisesTableTableManager
                           typedResults: items,
                         ),
                       if (crisisTriggersRefs)
-                        await $_getPrefetchedData<Crisis, $CrisesTable, CrisisTrigger>(
+                        await $_getPrefetchedData<Crisis, $CrisesTable, CrisisTriggerRow>(
                           currentTable: table,
                           referencedTable: $$CrisesTableReferences._crisisTriggersRefsTable(db),
                           managerFromTypedResult: (p0) =>
@@ -4020,7 +4022,7 @@ typedef $$CrisisTriggersTableUpdateCompanionBuilder =
     });
 
 final class $$CrisisTriggersTableReferences
-    extends BaseReferences<_$AuraDatabase, $CrisisTriggersTable, CrisisTrigger> {
+    extends BaseReferences<_$AuraDatabase, $CrisisTriggersTable, CrisisTriggerRow> {
   $$CrisisTriggersTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $CrisesTable _crisisIdTable(_$AuraDatabase db) =>
@@ -4135,14 +4137,14 @@ class $$CrisisTriggersTableTableManager
         RootTableManager<
           _$AuraDatabase,
           $CrisisTriggersTable,
-          CrisisTrigger,
+          CrisisTriggerRow,
           $$CrisisTriggersTableFilterComposer,
           $$CrisisTriggersTableOrderingComposer,
           $$CrisisTriggersTableAnnotationComposer,
           $$CrisisTriggersTableCreateCompanionBuilder,
           $$CrisisTriggersTableUpdateCompanionBuilder,
-          (CrisisTrigger, $$CrisisTriggersTableReferences),
-          CrisisTrigger,
+          (CrisisTriggerRow, $$CrisisTriggersTableReferences),
+          CrisisTriggerRow,
           PrefetchHooks Function({bool crisisId})
         > {
   $$CrisisTriggersTableTableManager(_$AuraDatabase db, $CrisisTriggersTable table)
@@ -4223,14 +4225,14 @@ typedef $$CrisisTriggersTableProcessedTableManager =
     ProcessedTableManager<
       _$AuraDatabase,
       $CrisisTriggersTable,
-      CrisisTrigger,
+      CrisisTriggerRow,
       $$CrisisTriggersTableFilterComposer,
       $$CrisisTriggersTableOrderingComposer,
       $$CrisisTriggersTableAnnotationComposer,
       $$CrisisTriggersTableCreateCompanionBuilder,
       $$CrisisTriggersTableUpdateCompanionBuilder,
-      (CrisisTrigger, $$CrisisTriggersTableReferences),
-      CrisisTrigger,
+      (CrisisTriggerRow, $$CrisisTriggersTableReferences),
+      CrisisTriggerRow,
       PrefetchHooks Function({bool crisisId})
     >;
 typedef $$CrisisMedicationsTableCreateCompanionBuilder =

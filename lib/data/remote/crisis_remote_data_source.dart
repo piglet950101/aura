@@ -19,6 +19,16 @@ abstract class CrisisRemoteDataSource {
   /// being gone is the desired end state.
   Future<void> delete(String id);
 
+  /// Replace the symptom set for a crisis. Implemented as delete-then-insert
+  /// so the client doesn't need to compute a diff; sending the desired final
+  /// state is enough. RLS rejects any attempt to touch another user's crisis.
+  Future<void> setSymptoms(String crisisId, Iterable<String> codes);
+
+  /// Replace the trigger set for a crisis. Same delete-then-insert pattern
+  /// as [setSymptoms]; the table currently stores at most one row per
+  /// crisis in practice but the schema allows many.
+  Future<void> setTriggers(String crisisId, Iterable<String> codes);
+
   /// Fetch every crisis updated server-side strictly after [since], for the
   /// given [userId]. RLS will only return the user's own rows even if a bug
   /// asks for someone else's.
@@ -43,6 +53,35 @@ class SupabaseCrisisRemoteDataSource implements CrisisRemoteDataSource {
   @override
   Future<void> delete(String id) async {
     await _client.from(_table).delete().eq('id', id);
+  }
+
+  @override
+  Future<void> setSymptoms(String crisisId, Iterable<String> codes) => _replaceJoinRows(
+    table: 'crisis_symptoms',
+    crisisId: crisisId,
+    rows: [
+      for (final c in codes) {'crisis_id': crisisId, 'symptom': c},
+    ],
+  );
+
+  @override
+  Future<void> setTriggers(String crisisId, Iterable<String> codes) => _replaceJoinRows(
+    table: 'crisis_triggers',
+    crisisId: crisisId,
+    rows: [
+      for (final c in codes) {'crisis_id': crisisId, 'trigger': c},
+    ],
+  );
+
+  Future<void> _replaceJoinRows({
+    required String table,
+    required String crisisId,
+    required List<Map<String, dynamic>> rows,
+  }) async {
+    await _client.from(table).delete().eq('crisis_id', crisisId);
+    if (rows.isNotEmpty) {
+      await _client.from(table).insert(rows);
+    }
   }
 
   @override
