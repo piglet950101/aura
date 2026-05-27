@@ -120,8 +120,7 @@ class _StubAuth implements AuthRepository {
   }) async => const UpgradeFailure('not used');
 
   @override
-  Future<MagicLinkResult> sendMagicLink({required String email}) async =>
-      const MagicLinkSent();
+  Future<MagicLinkResult> sendMagicLink({required String email}) async => const MagicLinkSent();
 
   @override
   Future<void> signOut() async {}
