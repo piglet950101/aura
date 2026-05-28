@@ -21,7 +21,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///   - No animations on selection beyond a 120ms color/scale tween — the
 ///     persona has photophobia; flashy state changes hurt.
 class CrisisRegistrationScreen extends ConsumerStatefulWidget {
-  const CrisisRegistrationScreen({super.key});
+  const CrisisRegistrationScreen({this.initialDate, super.key});
+
+  /// When set (e.g. from the calendar's "Registar para este dia"), the crisis
+  /// is back-dated to this day at local noon instead of defaulting to NOW.
+  final DateTime? initialDate;
 
   @override
   ConsumerState<CrisisRegistrationScreen> createState() => _CrisisRegistrationScreenState();
@@ -34,9 +38,14 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
   void initState() {
     super.initState();
     // Reset the draft on every fresh open so the previous registration's
-    // values don't ghost the next one.
+    // values don't ghost the next one. If opened for a specific day, seed
+    // the occurrence date to local noon of that day.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(crisisDraftProvider.notifier).reset();
+      final notifier = ref.read(crisisDraftProvider.notifier)..reset();
+      final d = widget.initialDate;
+      if (d != null) {
+        notifier.setOccurredAt(DateTime(d.year, d.month, d.day, 12));
+      }
     });
   }
 

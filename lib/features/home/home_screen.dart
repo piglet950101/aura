@@ -3,6 +3,7 @@ import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/home/home_stats.dart';
+import 'package:aura/features/calendar/calendar_screen.dart';
 import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:aura/features/home/home_stats_provider.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,10 @@ class HomeScreen extends ConsumerWidget {
         fullscreenDialog: true,
       ),
     );
+  }
+
+  void _openCalendar(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CalendarScreen()));
   }
 
   void _showComingSoon(BuildContext context, String label) {
@@ -75,7 +80,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AuraSpacing.xl),
                     _QuickActionsGrid(
-                      onCalendar: () => _showComingSoon(context, 'Calendário'),
+                      onCalendar: () => _openCalendar(context),
                       onShare: () => _showComingSoon(context, 'Partilhar'),
                       onMedication: () => _showComingSoon(context, 'Medicação'),
                       onAppointment: () => _showComingSoon(context, 'Consulta Médica'),

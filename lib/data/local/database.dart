@@ -194,6 +194,26 @@ class AuraDatabase extends _$AuraDatabase {
 
   Future<int> deleteCrisis(String id) => (delete(crises)..where((c) => c.id.equals(id))).go();
 
+  /// Reactive list of a user's crises whose [Crises.occurredAt] falls in
+  /// `[start, end)`. Used by the calendar (a month window) and reusable for
+  /// any range report. Bounds are compared as absolute instants — pass the
+  /// UTC range that covers the local window; the caller bins by local day.
+  Stream<List<Crisis>> watchCrisesInRange({
+    required String userId,
+    required DateTime start,
+    required DateTime end,
+  }) {
+    return (select(crises)
+          ..where(
+            (c) =>
+                c.userId.equals(userId) &
+                c.occurredAt.isBiggerOrEqualValue(start) &
+                c.occurredAt.isSmallerThanValue(end),
+          )
+          ..orderBy([(c) => OrderingTerm.asc(c.occurredAt)]))
+        .watch();
+  }
+
   /// Stable English symptom codes attached to a crisis, ordered for
   /// deterministic sync payloads.
   Future<List<String>> symptomsFor(String crisisId) async {
