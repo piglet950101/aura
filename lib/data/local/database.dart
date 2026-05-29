@@ -219,6 +219,24 @@ class AuraDatabase extends _$AuraDatabase {
 
   Future<int> deleteCrisis(String id) => (delete(crises)..where((c) => c.id.equals(id))).go();
 
+  /// Full crisis rows in `[start, end)` for a user, newest first — used by the
+  /// PDF report (which then fetches symptoms / medications per crisis).
+  Future<List<Crisis>> crisesInRange({
+    required String userId,
+    required DateTime start,
+    required DateTime end,
+  }) {
+    return (select(crises)
+          ..where(
+            (c) =>
+                c.userId.equals(userId) &
+                c.occurredAt.isBiggerOrEqualValue(start) &
+                c.occurredAt.isSmallerThanValue(end),
+          )
+          ..orderBy([(c) => OrderingTerm.desc(c.occurredAt)]))
+        .get();
+  }
+
   /// Edit the editable fields of an existing crisis (used by the calendar's
   /// edit flow). Symptoms / medications are replaced separately.
   Future<void> updateCrisisFields({
