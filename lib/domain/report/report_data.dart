@@ -126,6 +126,19 @@ class ReportData {
     return list;
   }
 
+  /// Crises grouped into consecutive 7-day buckets from [start], oldest first.
+  /// Drives the "crises por semana" bar chart on the Dados screen.
+  List<int> get crisesPerWeek {
+    final weeks = (periodDays / 7).ceil().clamp(1, 53);
+    final counts = List<int>.filled(weeks, 0);
+    for (final c in crises) {
+      final dayIndex = c.occurredAt.difference(start).inDays;
+      if (dayIndex < 0) continue;
+      counts[(dayIndex ~/ 7).clamp(0, weeks - 1)]++;
+    }
+    return counts;
+  }
+
   bool get isEmpty => crises.isEmpty;
 }
 

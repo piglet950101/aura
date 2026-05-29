@@ -11,6 +11,7 @@ import 'package:aura/features/medications/medication_response_providers.dart';
 import 'package:aura/features/medications/medications_screen.dart';
 import 'package:aura/features/report/report_screen.dart';
 import 'package:aura/features/settings/settings_screen.dart';
+import 'package:aura/features/stats/stats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -52,14 +53,8 @@ class HomeScreen extends ConsumerWidget {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReportScreen()));
   }
 
-  void _showComingSoon(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$label · em breve'),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  void _openStats(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const StatsScreen()));
   }
 
   @override
@@ -98,7 +93,7 @@ class HomeScreen extends ConsumerWidget {
                       onShare: () => _openReport(context),
                       onMedication: () => _openMedications(context),
                       onAppointment: () => _openReport(context),
-                      onData: () => _showComingSoon(context, 'Dados'),
+                      onData: () => _openStats(context),
                     ),
                     const SizedBox(height: AuraSpacing.xxl),
                   ],

@@ -75,6 +75,11 @@ void main() {
     expect(usage['Ibuprofeno']!.partial, 1);
   });
 
+  test('crisesPerWeek buckets crises into 7-day windows from start', () {
+    // start 2026-04-30; day B (May 25) → week 3, day A (May 28) → week 4.
+    expect(build().crisesPerWeek, [0, 0, 0, 2, 1]);
+  });
+
   test('empty period', () {
     final d = ReportData(
       start: DateTime(2026, 4, 30),
