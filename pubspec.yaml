@@ -96,6 +96,9 @@ dev_dependencies:
 
   # ----- Tests --------------------------------------------------------------
   mocktail: ^1.0.4
+  # Pinned to the version drift resolves transitively — used only to build an
+  # old-schema DB in the Drift migration test.
+  sqlite3: ^2.9.4
 
   # ----- Splash + launcher icon generators ---------------------------------
   flutter_native_splash: ^2.4.2
