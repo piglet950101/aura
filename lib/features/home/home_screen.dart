@@ -3,9 +3,11 @@ import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/home/home_stats.dart';
+import 'package:aura/domain/medication/pending_medication_response.dart';
 import 'package:aura/features/calendar/calendar_screen.dart';
 import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:aura/features/home/home_stats_provider.dart';
+import 'package:aura/features/medications/medication_response_providers.dart';
 import 'package:aura/features/medications/medications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,6 +79,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const _Greeting(),
                     const SizedBox(height: AuraSpacing.xl),
+                    const _MedicationResponsePrompt(),
                     statsAsync.when(
                       data: (stats) =>
                           stats.isEmpty ? const _EmptyStateCard() : _SummaryList(stats: stats),
@@ -185,6 +188,77 @@ class _Greeting extends StatelessWidget {
           style: AuraTextStyles.screenTitle.copyWith(fontSize: 22),
         ),
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Medication response prompt (asked on reopen, >= 2h after a dose)
+// ---------------------------------------------------------------------------
+
+class _MedicationResponsePrompt extends ConsumerWidget {
+  const _MedicationResponsePrompt();
+
+  Future<void> _record(
+    WidgetRef ref,
+    PendingMedicationResponse pending,
+    MedicationResponse response,
+  ) async {
+    await ref
+        .read(medicationResponseRepositoryProvider)
+        .record(pending: pending, response: response);
+    ref.invalidate(pendingMedicationResponseProvider);
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pending = ref.watch(pendingMedicationResponseProvider).valueOrNull;
+    if (pending == null) return const SizedBox.shrink();
+
+    final time = DateFormat("d 'de' MMM 'às' HH:mm", 'pt_PT').format(pending.takenAt);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AuraSpacing.xl),
+      child: Container(
+        padding: const EdgeInsets.all(AuraSpacing.lg),
+        decoration: BoxDecoration(
+          color: AuraColors.bgRaised,
+          border: Border.all(color: AuraColors.accent),
+          borderRadius: BorderRadius.circular(AuraRadius.lg),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'A medicação funcionou?',
+              style: AuraTextStyles.body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 2),
+            Text('${pending.medicationName} · $time', style: AuraTextStyles.caption),
+            const SizedBox(height: AuraSpacing.md),
+            Row(
+              children: [
+                for (final r in MedicationResponse.values) ...[
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AuraColors.accent,
+                        side: const BorderSide(color: AuraColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: AuraSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AuraRadius.md),
+                        ),
+                      ),
+                      onPressed: () => _record(ref, pending, r),
+                      child: Text(r.labelPt, style: const TextStyle(fontSize: 13)),
+                    ),
+                  ),
+                  if (r != MedicationResponse.values.last) const SizedBox(width: AuraSpacing.sm),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

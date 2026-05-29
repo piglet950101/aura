@@ -6,16 +6,25 @@
 /// current presentation string; it moves into ARB files on Day 12.
 enum Symptom {
   nausea('nausea', 'Náusea'),
-  photophobia('photophobia', 'Fotofobia'),
-  phonophobia('phonophobia', 'Som'),
-  aura('aura', 'Aura'),
   vomiting('vomiting', 'Vómito'),
-  dizziness('dizziness', 'Tontura');
+  photophobia('photophobia', 'Sensibilidade à luz'),
+  phonophobia('phonophobia', 'Sensibilidade ao som'),
+  dizziness('dizziness', 'Tontura'),
+  fatigue('fatigue', 'Fadiga'),
+  other('other', 'Outro sintoma'),
+  // Aura stays a valid symptom code (stored in crisis_symptoms) but is NOT
+  // shown as a chip — the registration form asks it as a separate Sim/Não
+  // question. It's last so `chips` can simply drop it.
+  aura('aura', 'Aura');
 
   const Symptom(this.code, this.labelPt);
 
   final String code;
   final String labelPt;
+
+  /// Symptoms shown as multi-select chips (everything except [aura], which
+  /// has its own Sim/Não toggle in the form).
+  static List<Symptom> get chips => Symptom.values.where((s) => s != Symptom.aura).toList();
 
   /// Parses a stored DB / server code back to the enum, or null if
   /// it's something we no longer surface (e.g. 'tingling' which exists

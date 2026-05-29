@@ -43,7 +43,7 @@ class CrisisDraft {
 
   bool get isSaveable => intensity != null;
 
-  bool get hasMedication => takenMedicationId != null;
+  bool get hasMedication => takenMedicationId != null || takenMedicationName != null;
 
   CrisisDraft copyWith({
     DateTime? occurredAt,
@@ -52,6 +52,7 @@ class CrisisDraft {
     CrisisTrigger? trigger,
     bool clearTrigger = false,
     String? notes,
+    bool clearNotes = false,
     String? takenMedicationId,
     String? takenMedicationName,
     double? takenMedicationDoseMg,
@@ -62,7 +63,7 @@ class CrisisDraft {
       intensity: intensity ?? this.intensity,
       symptoms: symptoms ?? this.symptoms,
       trigger: clearTrigger ? null : (trigger ?? this.trigger),
-      notes: notes ?? this.notes,
+      notes: clearNotes ? null : (notes ?? this.notes),
       takenMedicationId: clearMedication ? null : (takenMedicationId ?? this.takenMedicationId),
       takenMedicationName: clearMedication
           ? null

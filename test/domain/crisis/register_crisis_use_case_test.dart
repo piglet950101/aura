@@ -14,6 +14,7 @@ import 'package:aura/domain/crisis/crisis_draft.dart';
 import 'package:aura/domain/crisis/register_crisis_use_case.dart';
 import 'package:aura/domain/crisis/symptom.dart';
 import 'package:aura/domain/crisis/trigger.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -94,6 +95,47 @@ void main() {
   test('registers without a medication when none chosen', () async {
     final id = await useCase.register(draft: const CrisisDraft(intensity: 5));
     expect(await db.crisisMedicationsFor(id), isEmpty);
+  });
+
+  test('preset medication (name only) is created in the catalog and linked', () async {
+    final id = await useCase.register(
+      draft: const CrisisDraft(intensity: 6, takenMedicationName: 'Sumatriptano'),
+    );
+
+    final meds = await db.watchActiveMedications('user-marta').first;
+    expect(meds, hasLength(1));
+    expect(meds.single.name, 'Sumatriptano');
+    expect(meds.single.kind, 'sos');
+
+    final cm = await db.crisisMedicationsFor(id);
+    expect(cm.single.medicationId, meds.single.id);
+
+    final outbox = await db.pendingOutbox();
+    expect(outbox.where((e) => e.entityType == OutboxEntityType.medication), hasLength(1));
+    expect(outbox.where((e) => e.entityType == OutboxEntityType.crisis), hasLength(1));
+  });
+
+  test('preset reuses an existing catalog medication (case-insensitive)', () async {
+    await db
+        .into(db.medications)
+        .insert(
+          MedicationsCompanion.insert(
+            id: 'existing',
+            userId: 'user-marta',
+            name: 'Ibuprofeno',
+            kind: const Value('sos'),
+          ),
+        );
+
+    final id = await useCase.register(
+      draft: const CrisisDraft(intensity: 5, takenMedicationName: 'ibuprofeno'),
+    );
+
+    final meds = await db.watchActiveMedications('user-marta').first;
+    expect(meds, hasLength(1), reason: 'no duplicate medication created');
+
+    final cm = await db.crisisMedicationsFor(id);
+    expect(cm.single.medicationId, 'existing');
   });
 
   test('persists occurredAt from the draft (or NOW when null)', () async {

@@ -66,13 +66,42 @@ class RegisterCrisisUseCase {
             .insert(CrisisTriggersCompanion.insert(crisisId: id, trigger: t.code));
       }
 
-      if (draft.takenMedicationId != null) {
+      if (draft.hasMedication) {
+        // Resolve the chosen medication to a catalog row. A catalog pick
+        // already has an id; a preset (name only) is matched to an existing
+        // active medication or created as a new SOS catalog entry so it's
+        // counted in the SOS-days metric and reusable next time.
+        var medId = draft.takenMedicationId;
+        final medName = draft.takenMedicationName ?? 'Medicação';
+        if (medId == null) {
+          final existing = await _db.findActiveMedicationByName(userId: user.id, name: medName);
+          if (existing != null) {
+            medId = existing.id;
+          } else {
+            medId = _uuid.v4();
+            await _db.insertMedication(
+              MedicationsCompanion.insert(
+                id: medId,
+                userId: user.id,
+                name: medName,
+                doseMg: Value(draft.takenMedicationDoseMg),
+                kind: const Value('sos'),
+              ),
+            );
+            await _db.enqueueOutbox(
+              entityType: OutboxEntityType.medication,
+              entityId: medId,
+              operation: OutboxOperation.upsert,
+            );
+          }
+        }
+
         await _db.insertCrisisMedication(
           CrisisMedicationsCompanion.insert(
             id: _uuid.v4(),
             crisisId: id,
-            medicationId: Value(draft.takenMedicationId),
-            medicationNameSnapshot: draft.takenMedicationName ?? 'Medicação',
+            medicationId: Value(medId),
+            medicationNameSnapshot: medName,
             doseMg: Value(draft.takenMedicationDoseMg),
             takenAt: occurredAt,
           ),

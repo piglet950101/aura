@@ -23,6 +23,33 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
     state = state.copyWith(symptoms: next);
   }
 
+  /// "Sem sintomas" — clears every symptom chip. Aura (a separate Sim/Não
+  /// question) is preserved.
+  void clearSymptoms() {
+    final next = state.symptoms.where((s) => s == Symptom.aura).toSet();
+    state = state.copyWith(symptoms: next);
+  }
+
+  /// Aura is stored as the [Symptom.aura] code but asked as Sim/Não.
+  void setAura({required bool present}) {
+    final next = Set<Symptom>.from(state.symptoms);
+    if (present) {
+      next.add(Symptom.aura);
+    } else {
+      next.remove(Symptom.aura);
+    }
+    state = state.copyWith(symptoms: next);
+  }
+
+  void setNotes(String? value) {
+    final trimmed = value?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      state = state.copyWith(clearNotes: true);
+    } else {
+      state = state.copyWith(notes: trimmed);
+    }
+  }
+
   void setTrigger(CrisisTrigger? t) {
     if (t == null) {
       state = state.copyWith(clearTrigger: true);
@@ -38,18 +65,28 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
     state = state.copyWith(occurredAt: when);
   }
 
-  /// Records the medication taken during the crisis, or clears it when [id]
-  /// is null ("Nenhuma"). Name and dose are snapshotted alongside the id.
-  void setMedication({String? id, String? name, double? doseMg}) {
-    if (id == null) {
-      state = state.copyWith(clearMedication: true);
-    } else {
-      state = state.copyWith(
-        takenMedicationId: id,
-        takenMedicationName: name,
-        takenMedicationDoseMg: doseMg,
-      );
-    }
+  /// Logs a medication chosen from the user's catalog (has a stable id).
+  void selectCatalogMedication({required String id, required String name, double? doseMg}) {
+    _setMedication(id: id, name: name, doseMg: doseMg);
+  }
+
+  /// Logs a common preset medication by name (no catalog id yet — the use
+  /// case resolves it to a catalog row, find-or-create, at save time).
+  void selectPresetMedication(String name) {
+    _setMedication(name: name);
+  }
+
+  /// "Nada tomado".
+  void clearMedication() {
+    state = state.copyWith(clearMedication: true);
+  }
+
+  void _setMedication({required String name, String? id, double? doseMg}) {
+    // Clear first so a preset (null id) doesn't inherit a previous catalog id
+    // via copyWith's null-coalescing.
+    state = state
+        .copyWith(clearMedication: true)
+        .copyWith(takenMedicationId: id, takenMedicationName: name, takenMedicationDoseMg: doseMg);
   }
 
   void reset() {

@@ -94,6 +94,7 @@ class SupabaseCrisisRemoteDataSource implements CrisisRemoteDataSource {
               'taken_at': m.takenAt.toUtc().toIso8601String(),
               'relief_at': m.reliefAt?.toUtc().toIso8601String(),
               'effective': m.effective,
+              'response': m.response,
             },
         ],
       );

@@ -1942,6 +1942,15 @@ class $CrisisMedicationsTable extends CrisisMedications
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("effective" IN (0, 1))'),
   );
+  static const VerificationMeta _responseMeta = const VerificationMeta('response');
+  @override
+  late final GeneratedColumn<String> response = GeneratedColumn<String>(
+    'response',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1952,6 +1961,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     takenAt,
     reliefAt,
     effective,
+    response,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2015,6 +2025,12 @@ class $CrisisMedicationsTable extends CrisisMedications
         effective.isAcceptableOrUnknown(data['effective']!, _effectiveMeta),
       );
     }
+    if (data.containsKey('response')) {
+      context.handle(
+        _responseMeta,
+        response.isAcceptableOrUnknown(data['response']!, _responseMeta),
+      );
+    }
     return context;
   }
 
@@ -2053,6 +2069,10 @@ class $CrisisMedicationsTable extends CrisisMedications
         DriftSqlType.bool,
         data['${effectivePrefix}effective'],
       ),
+      response: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}response'],
+      ),
     );
   }
 
@@ -2071,6 +2091,10 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
   final DateTime takenAt;
   final DateTime? reliefAt;
   final bool? effective;
+
+  /// Medication response, asked when the app reopens (≥2h after the dose):
+  /// 'none' | 'partial' | 'total'. Null = not recorded yet.
+  final String? response;
   const CrisisMedication({
     required this.id,
     required this.crisisId,
@@ -2080,6 +2104,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
     required this.takenAt,
     this.reliefAt,
     this.effective,
+    this.response,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2100,6 +2125,9 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
     if (!nullToAbsent || effective != null) {
       map['effective'] = Variable<bool>(effective);
     }
+    if (!nullToAbsent || response != null) {
+      map['response'] = Variable<String>(response);
+    }
     return map;
   }
 
@@ -2115,6 +2143,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
       takenAt: Value(takenAt),
       reliefAt: reliefAt == null && nullToAbsent ? const Value.absent() : Value(reliefAt),
       effective: effective == null && nullToAbsent ? const Value.absent() : Value(effective),
+      response: response == null && nullToAbsent ? const Value.absent() : Value(response),
     );
   }
 
@@ -2129,6 +2158,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
       takenAt: serializer.fromJson<DateTime>(json['takenAt']),
       reliefAt: serializer.fromJson<DateTime?>(json['reliefAt']),
       effective: serializer.fromJson<bool?>(json['effective']),
+      response: serializer.fromJson<String?>(json['response']),
     );
   }
   @override
@@ -2143,6 +2173,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
       'takenAt': serializer.toJson<DateTime>(takenAt),
       'reliefAt': serializer.toJson<DateTime?>(reliefAt),
       'effective': serializer.toJson<bool?>(effective),
+      'response': serializer.toJson<String?>(response),
     };
   }
 
@@ -2155,6 +2186,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
     DateTime? takenAt,
     Value<DateTime?> reliefAt = const Value.absent(),
     Value<bool?> effective = const Value.absent(),
+    Value<String?> response = const Value.absent(),
   }) => CrisisMedication(
     id: id ?? this.id,
     crisisId: crisisId ?? this.crisisId,
@@ -2164,6 +2196,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
     takenAt: takenAt ?? this.takenAt,
     reliefAt: reliefAt.present ? reliefAt.value : this.reliefAt,
     effective: effective.present ? effective.value : this.effective,
+    response: response.present ? response.value : this.response,
   );
   CrisisMedication copyWithCompanion(CrisisMedicationsCompanion data) {
     return CrisisMedication(
@@ -2177,6 +2210,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
       takenAt: data.takenAt.present ? data.takenAt.value : this.takenAt,
       reliefAt: data.reliefAt.present ? data.reliefAt.value : this.reliefAt,
       effective: data.effective.present ? data.effective.value : this.effective,
+      response: data.response.present ? data.response.value : this.response,
     );
   }
 
@@ -2190,7 +2224,8 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
           ..write('doseMg: $doseMg, ')
           ..write('takenAt: $takenAt, ')
           ..write('reliefAt: $reliefAt, ')
-          ..write('effective: $effective')
+          ..write('effective: $effective, ')
+          ..write('response: $response')
           ..write(')'))
         .toString();
   }
@@ -2205,6 +2240,7 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
     takenAt,
     reliefAt,
     effective,
+    response,
   );
   @override
   bool operator ==(Object other) =>
@@ -2217,7 +2253,8 @@ class CrisisMedication extends DataClass implements Insertable<CrisisMedication>
           other.doseMg == this.doseMg &&
           other.takenAt == this.takenAt &&
           other.reliefAt == this.reliefAt &&
-          other.effective == this.effective);
+          other.effective == this.effective &&
+          other.response == this.response);
 }
 
 class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
@@ -2229,6 +2266,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
   final Value<DateTime> takenAt;
   final Value<DateTime?> reliefAt;
   final Value<bool?> effective;
+  final Value<String?> response;
   final Value<int> rowid;
   const CrisisMedicationsCompanion({
     this.id = const Value.absent(),
@@ -2239,6 +2277,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
     this.takenAt = const Value.absent(),
     this.reliefAt = const Value.absent(),
     this.effective = const Value.absent(),
+    this.response = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CrisisMedicationsCompanion.insert({
@@ -2250,6 +2289,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
     required DateTime takenAt,
     this.reliefAt = const Value.absent(),
     this.effective = const Value.absent(),
+    this.response = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        crisisId = Value(crisisId),
@@ -2264,6 +2304,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
     Expression<DateTime>? takenAt,
     Expression<DateTime>? reliefAt,
     Expression<bool>? effective,
+    Expression<String>? response,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2275,6 +2316,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
       if (takenAt != null) 'taken_at': takenAt,
       if (reliefAt != null) 'relief_at': reliefAt,
       if (effective != null) 'effective': effective,
+      if (response != null) 'response': response,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2288,6 +2330,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
     Value<DateTime>? takenAt,
     Value<DateTime?>? reliefAt,
     Value<bool?>? effective,
+    Value<String?>? response,
     Value<int>? rowid,
   }) {
     return CrisisMedicationsCompanion(
@@ -2299,6 +2342,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
       takenAt: takenAt ?? this.takenAt,
       reliefAt: reliefAt ?? this.reliefAt,
       effective: effective ?? this.effective,
+      response: response ?? this.response,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2330,6 +2374,9 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
     if (effective.present) {
       map['effective'] = Variable<bool>(effective.value);
     }
+    if (response.present) {
+      map['response'] = Variable<String>(response.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2347,6 +2394,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
           ..write('takenAt: $takenAt, ')
           ..write('reliefAt: $reliefAt, ')
           ..write('effective: $effective, ')
+          ..write('response: $response, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4302,6 +4350,7 @@ typedef $$CrisisMedicationsTableCreateCompanionBuilder =
       required DateTime takenAt,
       Value<DateTime?> reliefAt,
       Value<bool?> effective,
+      Value<String?> response,
       Value<int> rowid,
     });
 typedef $$CrisisMedicationsTableUpdateCompanionBuilder =
@@ -4314,6 +4363,7 @@ typedef $$CrisisMedicationsTableUpdateCompanionBuilder =
       Value<DateTime> takenAt,
       Value<DateTime?> reliefAt,
       Value<bool?> effective,
+      Value<String?> response,
       Value<int> rowid,
     });
 
@@ -4382,6 +4432,9 @@ class $$CrisisMedicationsTableFilterComposer
   ColumnFilters<bool> get effective =>
       $composableBuilder(column: $table.effective, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get response =>
+      $composableBuilder(column: $table.response, builder: (column) => ColumnFilters(column));
+
   $$CrisesTableFilterComposer get crisisId {
     final $$CrisesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4448,6 +4501,9 @@ class $$CrisisMedicationsTableOrderingComposer
   ColumnOrderings<bool> get effective =>
       $composableBuilder(column: $table.effective, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get response =>
+      $composableBuilder(column: $table.response, builder: (column) => ColumnOrderings(column));
+
   $$CrisesTableOrderingComposer get crisisId {
     final $$CrisesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4511,6 +4567,9 @@ class $$CrisisMedicationsTableAnnotationComposer
 
   GeneratedColumn<bool> get effective =>
       $composableBuilder(column: $table.effective, builder: (column) => column);
+
+  GeneratedColumn<String> get response =>
+      $composableBuilder(column: $table.response, builder: (column) => column);
 
   $$CrisesTableAnnotationComposer get crisisId {
     final $$CrisesTableAnnotationComposer composer = $composerBuilder(
@@ -4585,6 +4644,7 @@ class $$CrisisMedicationsTableTableManager
                 Value<DateTime> takenAt = const Value.absent(),
                 Value<DateTime?> reliefAt = const Value.absent(),
                 Value<bool?> effective = const Value.absent(),
+                Value<String?> response = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CrisisMedicationsCompanion(
                 id: id,
@@ -4595,6 +4655,7 @@ class $$CrisisMedicationsTableTableManager
                 takenAt: takenAt,
                 reliefAt: reliefAt,
                 effective: effective,
+                response: response,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4607,6 +4668,7 @@ class $$CrisisMedicationsTableTableManager
                 required DateTime takenAt,
                 Value<DateTime?> reliefAt = const Value.absent(),
                 Value<bool?> effective = const Value.absent(),
+                Value<String?> response = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CrisisMedicationsCompanion.insert(
                 id: id,
@@ -4617,6 +4679,7 @@ class $$CrisisMedicationsTableTableManager
                 takenAt: takenAt,
                 reliefAt: reliefAt,
                 effective: effective,
+                response: response,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

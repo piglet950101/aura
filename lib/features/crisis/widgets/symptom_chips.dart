@@ -5,21 +5,31 @@ import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/crisis/symptom.dart';
 import 'package:flutter/material.dart';
 
-/// Multi-select chip grid for the 6 most-common migraine symptoms.
+/// Multi-select chip grid for symptoms (aura is excluded — it has its own
+/// Sim/Não question). A "Sem sintomas" chip clears the selection and is shown
+/// active when nothing is selected.
 class SymptomChips extends StatelessWidget {
-  const SymptomChips({required this.selected, required this.onToggle, super.key});
+  const SymptomChips({
+    required this.selected,
+    required this.onToggle,
+    required this.onClear,
+    super.key,
+  });
 
   final Set<Symptom> selected;
   final ValueChanged<Symptom> onToggle;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
+    final anySelected = Symptom.chips.any(selected.contains);
     return Wrap(
       spacing: AuraSpacing.sm,
       runSpacing: AuraSpacing.sm,
       children: [
-        for (final s in Symptom.values)
+        for (final s in Symptom.chips)
           _ChipTile(label: s.labelPt, selected: selected.contains(s), onTap: () => onToggle(s)),
+        _ChipTile(label: 'Sem sintomas', selected: !anySelected, onTap: onClear),
       ],
     );
   }

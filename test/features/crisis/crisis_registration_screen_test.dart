@@ -77,49 +77,51 @@ void main() {
     await teardownTree(tester);
   });
 
-  testWidgets('symptom chips toggle on tap', (tester) async {
+  testWidgets('symptom chips toggle, and "Sem sintomas" clears them', (tester) async {
     await tester.pumpWidget(harness());
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // Tap "Náusea" — chip should now show check icon.
-    await tester.tap(find.text('Náusea'));
-    await tester.pump();
+    // The form is tall; scroll each chip into view before tapping.
+    Future<void> tapChip(String label) async {
+      final f = find.text(label);
+      await tester.ensureVisible(f);
+      await tester.pump();
+      await tester.tap(f);
+      await tester.pump();
+    }
+
+    // "Sem sintomas" is active while nothing is selected.
     expect(find.byIcon(Icons.check), findsOneWidget);
 
-    // Tap "Fotofobia" — now two chips selected (two check icons).
-    await tester.tap(find.text('Fotofobia'));
-    await tester.pump();
+    await tapChip('Náusea');
+    expect(find.byIcon(Icons.check), findsOneWidget);
+
+    await tapChip('Sensibilidade à luz');
     expect(find.byIcon(Icons.check), findsNWidgets(2));
 
-    // Tap "Náusea" again to deselect — back to one check.
-    await tester.tap(find.text('Náusea'));
-    await tester.pump();
+    // "Sem sintomas" clears everything, only it is checked again.
+    await tapChip('Sem sintomas');
     expect(find.byIcon(Icons.check), findsOneWidget);
 
     await teardownTree(tester);
   });
 
-  testWidgets('trigger chip selects (and re-tapping clears)', (tester) async {
+  testWidgets('aura Sim/Não toggle works, triggers gone, notes present', (tester) async {
     await tester.pumpWidget(harness());
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // Initially nothing selected — tap "Stress".
-    await tester.tap(find.text('Stress'));
-    await tester.pump();
+    // Section labels are uppercased by _SectionLabel.
+    expect(find.text('AURA'), findsOneWidget);
+    expect(find.text('GATILHO MAIS PROVÁVEL'), findsNothing);
+    expect(find.text('NOTAS ADICIONAIS · OPCIONAL'), findsOneWidget);
 
-    // Tap "Stress" again — should clear (toggle behavior). No exception.
-    await tester.tap(find.text('Stress'));
+    // Toggling Sim then Não must not throw.
+    await tester.tap(find.text('Sim'));
     await tester.pump();
-
-    // Tap "Sono" — should now be selected (no exception).
-    await tester.tap(find.text('Sono'));
+    await tester.tap(find.text('Não'));
     await tester.pump();
-
-    // The CTA stays disabled because we never set intensity.
-    final btn = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Guardar crise'));
-    expect(btn.onPressed, isNull);
 
     await teardownTree(tester);
   });

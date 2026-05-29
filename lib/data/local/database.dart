@@ -9,6 +9,7 @@
 import 'dart:io' show File;
 
 import 'package:aura/domain/home/home_stats.dart';
+import 'package:aura/domain/medication/pending_medication_response.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
@@ -122,6 +123,10 @@ class CrisisMedications extends Table {
   DateTimeColumn get reliefAt => dateTime().nullable()();
   BoolColumn get effective => boolean().nullable()();
 
+  /// Medication response, asked when the app reopens (≥2h after the dose):
+  /// 'none' | 'partial' | 'total'. Null = not recorded yet.
+  TextColumn get response => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -167,7 +172,7 @@ class AuraDatabase extends _$AuraDatabase {
   AuraDatabase.test(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -179,6 +184,11 @@ class AuraDatabase extends _$AuraDatabase {
       // rows default to 'sos' via the column default, so no data is lost.
       if (from < 2) {
         await m.addColumn(medications, medications.kind);
+      }
+      // v3: crisis_medications gain a `response` column (none/partial/total),
+      // captured when the app reopens after a dose. Nullable, no backfill.
+      if (from < 3) {
+        await m.addColumn(crisisMedications, crisisMedications.response);
       }
     },
     beforeOpen: (details) async {
@@ -340,6 +350,55 @@ WHERE user_id = ? AND occurred_at >= ?
           (m) => m.userId.equals(userId) & m.isDefault.equals(true) & m.archived.equals(false),
         ))
         .getSingleOrNull();
+  }
+
+  /// Case-insensitive lookup of an active medication by name — used to resolve
+  /// a crisis-form preset to an existing catalog row before creating a new one.
+  Future<Medication?> findActiveMedicationByName({required String userId, required String name}) {
+    return (select(medications)..where(
+          (m) =>
+              m.userId.equals(userId) &
+              m.archived.equals(false) &
+              m.name.lower().equals(name.toLowerCase()),
+        ))
+        .getSingleOrNull();
+  }
+
+  /// Crisis medications still awaiting a response, taken in `[notBefore,
+  /// notAfter]` for the user. Newest first. Drives the on-reopen prompt.
+  Future<List<PendingMedicationResponse>> pendingMedicationResponses({
+    required String userId,
+    required DateTime notBefore,
+    required DateTime notAfter,
+  }) async {
+    final query =
+        select(
+            crisisMedications,
+          ).join([innerJoin(crises, crises.id.equalsExp(crisisMedications.crisisId))])
+          ..where(
+            crises.userId.equals(userId) &
+                crisisMedications.response.isNull() &
+                crisisMedications.takenAt.isSmallerOrEqualValue(notAfter) &
+                crisisMedications.takenAt.isBiggerOrEqualValue(notBefore),
+          )
+          ..orderBy([OrderingTerm.desc(crisisMedications.takenAt)]);
+
+    final rows = await query.get();
+    return rows.map((r) {
+      final cm = r.readTable(crisisMedications);
+      return PendingMedicationResponse(
+        crisisMedicationId: cm.id,
+        crisisId: cm.crisisId,
+        medicationName: cm.medicationNameSnapshot,
+        takenAt: cm.takenAt,
+      );
+    }).toList();
+  }
+
+  Future<void> setCrisisMedicationResponse({required String id, required String response}) {
+    return (update(crisisMedications)..where((cm) => cm.id.equals(id))).write(
+      CrisisMedicationsCompanion(response: Value(response)),
+    );
   }
 
   Future<void> insertMedication(MedicationsCompanion row) => into(medications).insert(row);

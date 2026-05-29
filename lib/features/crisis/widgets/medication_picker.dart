@@ -3,8 +3,10 @@ import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/data/local/database.dart';
+import 'package:aura/domain/medication/common_medications.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/features/crisis/crisis_registration_controller.dart';
+import 'package:aura/features/medications/medication_edit_screen.dart';
 import 'package:aura/features/medications/medications_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,7 +81,15 @@ class MedicationPicker extends ConsumerWidget {
 
   Future<void> _openSheet(BuildContext context, WidgetRef ref, List<Medication> meds) {
     final notifier = ref.read(crisisDraftProvider.notifier);
-    final selectedId = ref.read(crisisDraftProvider).takenMedicationId;
+    final draft = ref.read(crisisDraftProvider);
+    final selectedId = draft.takenMedicationId;
+    final selectedName = draft.takenMedicationName;
+
+    // Presets the user hasn't already added to their catalog (case-insensitive).
+    final catalogNames = meds.map((m) => m.name.toLowerCase()).toSet();
+    final presets = CommonMedications.sosPresets
+        .where((p) => !catalogNames.contains(p.toLowerCase()))
+        .toList();
 
     return showModalBottomSheet<void>(
       context: context,
@@ -91,7 +101,7 @@ class MedicationPicker extends ConsumerWidget {
       ),
       builder: (sheetContext) => SafeArea(
         top: false,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(AuraSpacing.xl, 0, AuraSpacing.xl, AuraSpacing.xl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -100,31 +110,47 @@ class MedicationPicker extends ConsumerWidget {
               const Text('Medicação tomada', style: AuraTextStyles.screenTitle),
               const SizedBox(height: AuraSpacing.lg),
               _Option(
-                label: 'Nenhuma',
-                selected: selectedId == null,
+                label: 'Nada tomado',
+                selected: !draft.hasMedication,
                 onTap: () {
-                  notifier.setMedication();
+                  notifier.clearMedication();
                   Navigator.of(sheetContext).pop();
                 },
               ),
               for (final m in meds)
                 _Option(
-                  label: _label(m),
+                  label: _label(m.name, m.doseMg),
                   kind: MedicationKind.fromCode(m.kind),
                   selected: selectedId == m.id,
                   onTap: () {
-                    notifier.setMedication(id: m.id, name: m.name, doseMg: m.doseMg);
+                    notifier.selectCatalogMedication(id: m.id, name: m.name, doseMg: m.doseMg);
                     Navigator.of(sheetContext).pop();
                   },
                 ),
-              if (meds.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(top: AuraSpacing.sm),
-                  child: Text(
-                    'Ainda não tens medicações. Adiciona-as no menu Medicação.',
-                    style: AuraTextStyles.caption,
-                  ),
+              for (final p in presets)
+                _Option(
+                  label: p,
+                  kind: MedicationKind.sos,
+                  selected: selectedId == null && selectedName == p,
+                  onTap: () {
+                    notifier.selectPresetMedication(p);
+                    Navigator.of(sheetContext).pop();
+                  },
                 ),
+              const SizedBox(height: AuraSpacing.xs),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const MedicationEditScreen(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add, size: 20, color: AuraColors.accent),
+                label: const Text('Adicionar outra', style: TextStyle(color: AuraColors.accent)),
+              ),
             ],
           ),
         ),
@@ -132,12 +158,10 @@ class MedicationPicker extends ConsumerWidget {
     );
   }
 
-  static String _label(Medication m) {
-    if (m.doseMg == null) return m.name;
-    final dose = m.doseMg == m.doseMg!.roundToDouble()
-        ? m.doseMg!.toStringAsFixed(0)
-        : m.doseMg.toString();
-    return '${m.name} · $dose mg';
+  static String _label(String name, double? doseMg) {
+    if (doseMg == null) return name;
+    final dose = doseMg == doseMg.roundToDouble() ? doseMg.toStringAsFixed(0) : doseMg.toString();
+    return '$name · $dose mg';
   }
 }
 

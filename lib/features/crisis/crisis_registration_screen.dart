@@ -2,11 +2,12 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/domain/crisis/symptom.dart';
 import 'package:aura/features/crisis/crisis_registration_controller.dart';
+import 'package:aura/features/crisis/widgets/aura_toggle.dart';
 import 'package:aura/features/crisis/widgets/intensity_picker.dart';
 import 'package:aura/features/crisis/widgets/medication_picker.dart';
 import 'package:aura/features/crisis/widgets/symptom_chips.dart';
-import 'package:aura/features/crisis/widgets/trigger_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +34,7 @@ class CrisisRegistrationScreen extends ConsumerStatefulWidget {
 
 class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScreen> {
   bool _saving = false;
+  final _notesController = TextEditingController();
 
   @override
   void initState() {
@@ -42,11 +44,18 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
     // the occurrence date to local noon of that day.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = ref.read(crisisDraftProvider.notifier)..reset();
+      _notesController.clear();
       final d = widget.initialDate;
       if (d != null) {
         notifier.setOccurredAt(DateTime(d.year, d.month, d.day, 12));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
   }
 
   Future<void> _onSave() async {
@@ -113,17 +122,38 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                     IntensityPicker(value: draft.intensity, onChanged: notifier.setIntensity),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Sintomas'),
-                    SymptomChips(selected: draft.symptoms, onToggle: notifier.toggleSymptom),
+                    const _SectionLabel('Aura'),
+                    AuraToggle(
+                      present: draft.symptoms.contains(Symptom.aura),
+                      onChanged: (v) => notifier.setAura(present: v),
+                    ),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Gatilho mais provável'),
-                    TriggerChips(selected: draft.trigger, onSelected: notifier.setTrigger),
+                    const _SectionLabel('Sintomas'),
+                    SymptomChips(
+                      selected: draft.symptoms,
+                      onToggle: notifier.toggleSymptom,
+                      onClear: notifier.clearSymptoms,
+                    ),
                     const SizedBox(height: AuraSpacing.xl),
 
                     const _SectionLabel('Medicação tomada'),
                     const MedicationPicker(),
-                    const SizedBox(height: AuraSpacing.xxxl),
+                    const SizedBox(height: AuraSpacing.xl),
+
+                    const _SectionLabel('Notas adicionais · opcional'),
+                    TextField(
+                      controller: _notesController,
+                      onChanged: notifier.setNotes,
+                      maxLines: 3,
+                      minLines: 2,
+                      maxLength: 1000,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: const InputDecoration(
+                        hintText: 'Algo a registar sobre esta crise?',
+                      ),
+                    ),
+                    const SizedBox(height: AuraSpacing.xxl),
                   ],
                 ),
               ),
