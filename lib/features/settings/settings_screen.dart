@@ -4,16 +4,20 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database.dart';
+import 'package:aura/data/local/database_provider.dart';
+import 'package:aura/features/settings/locale_provider.dart';
 import 'package:aura/features/settings/profile_edit_screen.dart';
 import 'package:aura/features/settings/settings_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Settings (Definições): profile, GDPR data controls, and about.
+/// Settings (Definições): profile, language, GDPR data controls, and about.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -26,20 +30,32 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _setLanguage(WidgetRef ref, Locale locale) async {
+    ref.read(localeProvider.notifier).state = locale;
+    final uid = ref.read(authRepositoryProvider).currentUser?.id;
+    if (uid != null) {
+      await ref
+          .read(auraDatabaseProvider)
+          .setProfileLocale(userId: uid, code: localeToCode(locale));
+    }
+  }
+
   Future<void> _exportData(BuildContext context, WidgetRef ref) async {
+    final l = AppL10n.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
       final json = await ref.read(accountServiceProvider).exportJson();
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/aura-dados.json');
       await file.writeAsString(json);
-      await Share.shareXFiles([XFile(file.path)], subject: 'Os meus dados · AURA');
+      await Share.shareXFiles([XFile(file.path)], subject: l.exportSubject);
     } on Object catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('Erro ao exportar: $e')));
+      messenger.showSnackBar(SnackBar(content: Text(l.exportError(e))));
     }
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
+    final l = AppL10n.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => const _DeleteConfirmDialog(),
@@ -54,28 +70,27 @@ class SettingsScreen extends ConsumerWidget {
       ref.invalidate(profileProvider);
       navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Conta e dados apagados'),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(l.accountDeleted), behavior: SnackBarBehavior.floating),
       );
     } on Object catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('Erro ao apagar: $e')));
+      messenger.showSnackBar(SnackBar(content: Text(l.deleteError(e))));
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final profile = ref.watch(profileProvider).valueOrNull;
+    final locale = ref.watch(localeProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Voltar',
+          tooltip: l.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Definições', style: AuraTextStyles.screenTitle),
+        title: Text(l.settings, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -88,36 +103,58 @@ class SettingsScreen extends ConsumerWidget {
             AuraSpacing.xxl,
           ),
           children: [
-            const _SectionLabel('Perfil'),
+            _SectionLabel(l.sectionProfile),
             _Tile(
               icon: Icons.person_outline,
-              title: profile?.displayName?.isNotEmpty ?? false ? profile!.displayName! : 'Perfil',
-              subtitle: 'Nome e dados para o relatório médico',
+              title: profile?.displayName?.isNotEmpty ?? false
+                  ? profile!.displayName!
+                  : l.sectionProfile,
+              subtitle: l.profileSubtitle,
               onTap: () => _openProfile(context, profile),
             ),
             const SizedBox(height: AuraSpacing.xl),
 
-            const _SectionLabel('Privacidade e dados'),
-            const _PrivacyNote(),
+            _SectionLabel(l.sectionLanguage),
+            _LanguageOption(
+              label: l.langPtPt,
+              selected: localeToCode(locale) == 'pt-PT',
+              onTap: () => _setLanguage(ref, const Locale('pt')),
+            ),
+            const SizedBox(height: AuraSpacing.sm),
+            _LanguageOption(
+              label: l.langPtBr,
+              selected: localeToCode(locale) == 'pt-BR',
+              onTap: () => _setLanguage(ref, const Locale('pt', 'BR')),
+            ),
+            const SizedBox(height: AuraSpacing.sm),
+            _LanguageOption(
+              label: l.langEn,
+              selected: localeToCode(locale) == 'en',
+              onTap: () => _setLanguage(ref, const Locale('en')),
+            ),
+            const SizedBox(height: AuraSpacing.xl),
+
+            _SectionLabel(l.sectionPrivacyData),
+            _PrivacyNote(text: l.privacyNote),
             const SizedBox(height: AuraSpacing.sm),
             _Tile(
               icon: Icons.download_outlined,
-              title: 'Exportar os meus dados',
-              subtitle: 'Recebe tudo em ficheiro JSON',
+              title: l.exportData,
+              subtitle: l.exportSubtitle,
               onTap: () => _exportData(context, ref),
             ),
             const SizedBox(height: AuraSpacing.sm),
             _Tile(
               icon: Icons.delete_outline,
-              title: 'Apagar conta e dados',
-              subtitle: 'Remove tudo, sem retorno',
+              title: l.deleteAccount,
+              subtitle: l.deleteAccountSubtitle,
               danger: true,
               onTap: () => _deleteAccount(context, ref),
             ),
             const SizedBox(height: AuraSpacing.xl),
 
-            const _SectionLabel('Sobre'),
-            const _AboutTile(),
+            _SectionLabel(l.sectionAbout),
+            _AboutTile(label: l.aboutLine),
           ],
         ),
       ),
@@ -138,8 +175,51 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
+class _LanguageOption extends StatelessWidget {
+  const _LanguageOption({required this.label, required this.selected, required this.onTap});
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AuraRadius.lg),
+      child: Container(
+        padding: const EdgeInsets.all(AuraSpacing.lg),
+        decoration: BoxDecoration(
+          color: AuraColors.bgRaised,
+          border: Border.all(color: selected ? AuraColors.accent : AuraColors.border),
+          borderRadius: BorderRadius.circular(AuraRadius.lg),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.radio_button_checked : Icons.radio_button_off,
+              size: 20,
+              color: selected ? AuraColors.accent : AuraColors.textMuted,
+            ),
+            const SizedBox(width: AuraSpacing.md),
+            Text(
+              label,
+              style: AuraTextStyles.body.copyWith(
+                fontSize: 15,
+                color: selected ? AuraColors.textPrimary : AuraColors.textSecondary,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PrivacyNote extends StatelessWidget {
-  const _PrivacyNote();
+  const _PrivacyNote({required this.text});
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -150,11 +230,7 @@ class _PrivacyNote extends StatelessWidget {
         border: Border.all(color: AuraColors.border),
         borderRadius: BorderRadius.circular(AuraRadius.md),
       ),
-      child: Text(
-        'Os teus dados ficam no dispositivo e num servidor europeu (Frankfurt), '
-        'isolados por utilizador, sem anúncios.',
-        style: AuraTextStyles.caption.copyWith(height: 1.4),
-      ),
+      child: Text(text, style: AuraTextStyles.caption.copyWith(height: 1.4)),
     );
   }
 }
@@ -217,7 +293,8 @@ class _Tile extends StatelessWidget {
 }
 
 class _AboutTile extends StatelessWidget {
-  const _AboutTile();
+  const _AboutTile({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +311,7 @@ class _AboutTile extends StatelessWidget {
           final v = snap.hasData ? '${snap.data!.version} (${snap.data!.buildNumber})' : '—';
           return Row(
             children: [
-              const Text('AURA · Diário da Enxaqueca', style: AuraTextStyles.bodySmall),
+              Text(label, style: AuraTextStyles.bodySmall),
               const Spacer(),
               Text('v$v', style: AuraTextStyles.caption),
             ],
@@ -254,7 +331,6 @@ class _DeleteConfirmDialog extends StatefulWidget {
 
 class _DeleteConfirmDialogState extends State<_DeleteConfirmDialog> {
   final _controller = TextEditingController();
-  bool get _canDelete => _controller.text.trim().toUpperCase() == 'APAGAR';
 
   @override
   void initState() {
@@ -270,36 +346,32 @@ class _DeleteConfirmDialogState extends State<_DeleteConfirmDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final word = l.confirmWord;
+    final canDelete = _controller.text.trim().toUpperCase() == word.toUpperCase();
     return AlertDialog(
       backgroundColor: AuraColors.bgElevated,
-      title: const Text('Apagar conta e dados', style: AuraTextStyles.screenTitle),
+      title: Text(l.deleteAccount, style: AuraTextStyles.screenTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Isto apaga permanentemente todas as crises, medicação e perfil, '
-            'no dispositivo e no servidor. Para confirmar, escreve APAGAR.',
-            style: AuraTextStyles.bodySmall,
-          ),
+          Text(l.deleteConfirmBody, style: AuraTextStyles.bodySmall),
           const SizedBox(height: AuraSpacing.md),
           TextField(
             controller: _controller,
             textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(hintText: 'APAGAR'),
+            decoration: InputDecoration(hintText: word),
           ),
         ],
       ),
       actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l.cancel)),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
-          onPressed: _canDelete ? () => Navigator.of(context).pop(true) : null,
+          onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
           child: Text(
-            'Apagar',
-            style: TextStyle(color: _canDelete ? AuraColors.error : AuraColors.textDisabled),
+            l.delete,
+            style: TextStyle(color: canDelete ? AuraColors.error : AuraColors.textDisabled),
           ),
         ),
       ],

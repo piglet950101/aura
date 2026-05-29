@@ -404,6 +404,12 @@ WHERE user_id = ? AND occurred_at >= ?
 
   Future<void> upsertProfile(ProfilesCompanion row) => into(profiles).insertOnConflictUpdate(row);
 
+  Future<void> setProfileLocale({required String userId, required String code}) {
+    return into(profiles).insertOnConflictUpdate(
+      ProfilesCompanion(id: Value(userId), locale: Value(code), updatedAt: Value(DateTime.now())),
+    );
+  }
+
   /// Erases every local row — used by the GDPR "delete account & data" flow
   /// after the server-side delete. Children first to satisfy foreign keys.
   Future<void> wipeAllLocalData() {

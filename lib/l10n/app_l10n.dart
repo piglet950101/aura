@@ -1,0 +1,995 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_l10n_en.dart';
+import 'app_l10n_pt.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppL10n
+/// returned by `AppL10n.of(context)`.
+///
+/// Applications need to include `AppL10n.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_l10n.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppL10n.localizationsDelegates,
+///   supportedLocales: AppL10n.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppL10n.supportedLocales
+/// property.
+abstract class AppL10n {
+  AppL10n(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppL10n of(BuildContext context) {
+    return Localizations.of<AppL10n>(context, AppL10n)!;
+  }
+
+  static const LocalizationsDelegate<AppL10n> delegate = _AppL10nDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('pt'),
+    Locale('pt', 'BR'),
+  ];
+
+  /// No description provided for @appTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'AURA'**
+  String get appTitle;
+
+  /// No description provided for @save.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardar'**
+  String get save;
+
+  /// No description provided for @cancel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In pt, this message translates to:
+  /// **'Apagar'**
+  String get delete;
+
+  /// No description provided for @back.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar'**
+  String get back;
+
+  /// No description provided for @add.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar'**
+  String get add;
+
+  /// No description provided for @yes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sim'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não'**
+  String get no;
+
+  /// No description provided for @days.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{{count} dia} other{{count} dias}}'**
+  String days(int count);
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In pt, this message translates to:
+  /// **'Olá'**
+  String get homeGreeting;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 30 dias'**
+  String get last30Days;
+
+  /// No description provided for @painNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem dor de cabeça'**
+  String get painNone;
+
+  /// No description provided for @painLeve.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dor leve'**
+  String get painLeve;
+
+  /// No description provided for @painModerada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Moderada'**
+  String get painModerada;
+
+  /// No description provided for @painForte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Forte'**
+  String get painForte;
+
+  /// No description provided for @medicationTaken.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tomou medicação'**
+  String get medicationTaken;
+
+  /// No description provided for @medicationSos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação SOS'**
+  String get medicationSos;
+
+  /// No description provided for @registerCrisis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registar crise'**
+  String get registerCrisis;
+
+  /// No description provided for @qaCalendar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário'**
+  String get qaCalendar;
+
+  /// No description provided for @qaShare.
+  ///
+  /// In pt, this message translates to:
+  /// **'Partilhar'**
+  String get qaShare;
+
+  /// No description provided for @qaMedication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação'**
+  String get qaMedication;
+
+  /// No description provided for @qaAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Consulta Médica'**
+  String get qaAppointment;
+
+  /// No description provided for @qaData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados'**
+  String get qaData;
+
+  /// No description provided for @settings.
+  ///
+  /// In pt, this message translates to:
+  /// **'Definições'**
+  String get settings;
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Bem-vindo'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regista a tua primeira crise quando precisares. Os teus dados ficam neste dispositivo e na tua conta.'**
+  String get welcomeBody;
+
+  /// No description provided for @summaryLoadError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar o resumo: {error}'**
+  String summaryLoadError(Object error);
+
+  /// No description provided for @medicationWorkedTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'A medicação funcionou?'**
+  String get medicationWorkedTitle;
+
+  /// No description provided for @respNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma'**
+  String get respNone;
+
+  /// No description provided for @respPartial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcial'**
+  String get respPartial;
+
+  /// No description provided for @respTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Total'**
+  String get respTotal;
+
+  /// No description provided for @calendar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário'**
+  String get calendar;
+
+  /// No description provided for @monthPrev.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês anterior'**
+  String get monthPrev;
+
+  /// No description provided for @monthNext.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês seguinte'**
+  String get monthNext;
+
+  /// No description provided for @statCrises.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crises'**
+  String get statCrises;
+
+  /// No description provided for @statAvgIntensity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade média'**
+  String get statAvgIntensity;
+
+  /// No description provided for @statAffectedDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dias afetados'**
+  String get statAffectedDays;
+
+  /// No description provided for @legendLeve.
+  ///
+  /// In pt, this message translates to:
+  /// **'Leve'**
+  String get legendLeve;
+
+  /// No description provided for @legendModerada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Moderada'**
+  String get legendModerada;
+
+  /// No description provided for @legendForte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Forte'**
+  String get legendForte;
+
+  /// No description provided for @tierSemDor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem dor'**
+  String get tierSemDor;
+
+  /// No description provided for @dayFuture.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia futuro.'**
+  String get dayFuture;
+
+  /// No description provided for @noCrisesThisDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem crises registadas neste dia.'**
+  String get noCrisesThisDay;
+
+  /// No description provided for @registerForThisDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registar para este dia'**
+  String get registerForThisDay;
+
+  /// No description provided for @intensityValue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade {n}'**
+  String intensityValue(int n);
+
+  /// No description provided for @auraTag.
+  ///
+  /// In pt, this message translates to:
+  /// **'aura'**
+  String get auraTag;
+
+  /// No description provided for @calendarLoadError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar o calendário: {error}'**
+  String calendarLoadError(Object error);
+
+  /// No description provided for @newCrisis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova crise'**
+  String get newCrisis;
+
+  /// No description provided for @editCrisis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar crise'**
+  String get editCrisis;
+
+  /// No description provided for @crisisSaved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crise registada'**
+  String get crisisSaved;
+
+  /// No description provided for @crisisUpdated.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crise atualizada'**
+  String get crisisUpdated;
+
+  /// No description provided for @saveError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro ao guardar: {error}'**
+  String saveError(Object error);
+
+  /// No description provided for @deleteCrisisTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Apagar crise'**
+  String get deleteCrisisTitle;
+
+  /// No description provided for @deleteCrisisBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esta crise será removida permanentemente.'**
+  String get deleteCrisisBody;
+
+  /// No description provided for @deleteError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro ao apagar: {error}'**
+  String deleteError(Object error);
+
+  /// No description provided for @formIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regista o essencial em poucos toques.'**
+  String get formIntro;
+
+  /// No description provided for @sectionIntensity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade da dor'**
+  String get sectionIntensity;
+
+  /// No description provided for @sectionAura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aura'**
+  String get sectionAura;
+
+  /// No description provided for @sectionSymptoms.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sintomas'**
+  String get sectionSymptoms;
+
+  /// No description provided for @sectionMedicationTaken.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação tomada'**
+  String get sectionMedicationTaken;
+
+  /// No description provided for @sectionNotesOptional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notas adicionais · opcional'**
+  String get sectionNotesOptional;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Algo a registar sobre esta crise?'**
+  String get notesHint;
+
+  /// No description provided for @saveCrisis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardar crise'**
+  String get saveCrisis;
+
+  /// No description provided for @symptomNausea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Náusea'**
+  String get symptomNausea;
+
+  /// No description provided for @symptomVomiting.
+  ///
+  /// In pt, this message translates to:
+  /// **'Vómito'**
+  String get symptomVomiting;
+
+  /// No description provided for @symptomPhotophobia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sensibilidade à luz'**
+  String get symptomPhotophobia;
+
+  /// No description provided for @symptomPhonophobia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sensibilidade ao som'**
+  String get symptomPhonophobia;
+
+  /// No description provided for @symptomDizziness.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tontura'**
+  String get symptomDizziness;
+
+  /// No description provided for @symptomFatigue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fadiga'**
+  String get symptomFatigue;
+
+  /// No description provided for @symptomOther.
+  ///
+  /// In pt, this message translates to:
+  /// **'Outro sintoma'**
+  String get symptomOther;
+
+  /// No description provided for @symptomAura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aura'**
+  String get symptomAura;
+
+  /// No description provided for @noSymptoms.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem sintomas'**
+  String get noSymptoms;
+
+  /// No description provided for @nothingTaken.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nada tomado'**
+  String get nothingTaken;
+
+  /// No description provided for @noMedicationLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma medicação'**
+  String get noMedicationLabel;
+
+  /// No description provided for @addAnother.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar outra'**
+  String get addAnother;
+
+  /// No description provided for @changeAction.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mudar'**
+  String get changeAction;
+
+  /// No description provided for @addAction.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar'**
+  String get addAction;
+
+  /// No description provided for @noMedsHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ainda não tens medicações. Adiciona-as no menu Medicação.'**
+  String get noMedsHint;
+
+  /// No description provided for @medication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação'**
+  String get medication;
+
+  /// No description provided for @noMedications.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem medicações'**
+  String get noMedications;
+
+  /// No description provided for @noMedicationsBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adiciona os teus medicamentos (SOS ou preventivos) para os registares rapidamente durante uma crise.'**
+  String get noMedicationsBody;
+
+  /// No description provided for @addMedication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar medicação'**
+  String get addMedication;
+
+  /// No description provided for @medsLoadError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as medicações: {error}'**
+  String medsLoadError(Object error);
+
+  /// No description provided for @newMedication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova medicação'**
+  String get newMedication;
+
+  /// No description provided for @editMedication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar medicação'**
+  String get editMedication;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get fieldName;
+
+  /// No description provided for @medNameHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: Sumatriptano'**
+  String get medNameHint;
+
+  /// No description provided for @fieldDoseOptional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dose (mg) · opcional'**
+  String get fieldDoseOptional;
+
+  /// No description provided for @doseHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: 50'**
+  String get doseHint;
+
+  /// No description provided for @fieldType.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get fieldType;
+
+  /// No description provided for @kindSos.
+  ///
+  /// In pt, this message translates to:
+  /// **'SOS'**
+  String get kindSos;
+
+  /// No description provided for @kindSosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tomada durante a crise'**
+  String get kindSosDesc;
+
+  /// No description provided for @kindPreventive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Preventiva'**
+  String get kindPreventive;
+
+  /// No description provided for @kindPreventiveDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diária / preventiva'**
+  String get kindPreventiveDesc;
+
+  /// No description provided for @defaultMed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Predefinida'**
+  String get defaultMed;
+
+  /// No description provided for @defaultMedDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparece já selecionada ao registar uma crise.'**
+  String get defaultMedDesc;
+
+  /// No description provided for @archiveMedication.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arquivar medicação'**
+  String get archiveMedication;
+
+  /// No description provided for @archiveMedBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'A medicação deixa de aparecer na lista, mas o histórico de crises mantém-se intacto.'**
+  String get archiveMedBody;
+
+  /// No description provided for @archive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arquivar'**
+  String get archive;
+
+  /// No description provided for @sectionProfile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil'**
+  String get sectionProfile;
+
+  /// No description provided for @profileSubtitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome e dados para o relatório médico'**
+  String get profileSubtitle;
+
+  /// No description provided for @sectionPrivacyData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Privacidade e dados'**
+  String get sectionPrivacyData;
+
+  /// No description provided for @privacyNote.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os teus dados ficam no dispositivo e num servidor europeu (Frankfurt), isolados por utilizador, sem anúncios.'**
+  String get privacyNote;
+
+  /// No description provided for @exportData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportar os meus dados'**
+  String get exportData;
+
+  /// No description provided for @exportSubtitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recebe tudo em ficheiro JSON'**
+  String get exportSubtitle;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Apagar conta e dados'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Remove tudo, sem retorno'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @sectionAbout.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sobre'**
+  String get sectionAbout;
+
+  /// No description provided for @aboutLine.
+  ///
+  /// In pt, this message translates to:
+  /// **'AURA · Diário da Enxaqueca'**
+  String get aboutLine;
+
+  /// No description provided for @deleteConfirmBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Isto apaga permanentemente todas as crises, medicação e perfil, no dispositivo e no servidor. Para confirmar, escreve APAGAR.'**
+  String get deleteConfirmBody;
+
+  /// No description provided for @confirmWord.
+  ///
+  /// In pt, this message translates to:
+  /// **'APAGAR'**
+  String get confirmWord;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conta e dados apagados'**
+  String get accountDeleted;
+
+  /// No description provided for @exportError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Erro ao exportar: {error}'**
+  String exportError(Object error);
+
+  /// No description provided for @exportSubject.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os meus dados · AURA'**
+  String get exportSubject;
+
+  /// No description provided for @sectionLanguage.
+  ///
+  /// In pt, this message translates to:
+  /// **'Idioma'**
+  String get sectionLanguage;
+
+  /// No description provided for @langPtPt.
+  ///
+  /// In pt, this message translates to:
+  /// **'Português (Portugal)'**
+  String get langPtPt;
+
+  /// No description provided for @langPtBr.
+  ///
+  /// In pt, this message translates to:
+  /// **'Português (Brasil)'**
+  String get langPtBr;
+
+  /// No description provided for @langEn.
+  ///
+  /// In pt, this message translates to:
+  /// **'English'**
+  String get langEn;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil'**
+  String get profileTitle;
+
+  /// No description provided for @profileIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Opcional — aparece no cabeçalho do relatório para o médico.'**
+  String get profileIntro;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'O teu nome'**
+  String get profileNameHint;
+
+  /// No description provided for @fieldBirthYear.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ano de nascimento'**
+  String get fieldBirthYear;
+
+  /// No description provided for @birthYearHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: 1990'**
+  String get birthYearHint;
+
+  /// No description provided for @fieldSex.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sexo'**
+  String get fieldSex;
+
+  /// No description provided for @sexF.
+  ///
+  /// In pt, this message translates to:
+  /// **'Feminino'**
+  String get sexF;
+
+  /// No description provided for @sexM.
+  ///
+  /// In pt, this message translates to:
+  /// **'Masculino'**
+  String get sexM;
+
+  /// No description provided for @sexOther.
+  ///
+  /// In pt, this message translates to:
+  /// **'Outro'**
+  String get sexOther;
+
+  /// No description provided for @sexNa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prefiro não dizer'**
+  String get sexNa;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório médico'**
+  String get reportTitle;
+
+  /// No description provided for @periodLast30.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 30 dias'**
+  String get periodLast30;
+
+  /// No description provided for @periodLast90.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 90 dias'**
+  String get periodLast90;
+
+  /// No description provided for @reportError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível gerar o relatório: {error}'**
+  String reportError(Object error);
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados'**
+  String get statsTitle;
+
+  /// No description provided for @period30.
+  ///
+  /// In pt, this message translates to:
+  /// **'30 dias'**
+  String get period30;
+
+  /// No description provided for @period90.
+  ///
+  /// In pt, this message translates to:
+  /// **'90 dias'**
+  String get period90;
+
+  /// No description provided for @statIntensity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade'**
+  String get statIntensity;
+
+  /// No description provided for @statDiasSos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dias SOS'**
+  String get statDiasSos;
+
+  /// No description provided for @sectionCrisesPerWeek.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crises por semana'**
+  String get sectionCrisesPerWeek;
+
+  /// No description provided for @sectionIntensityDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade (dias)'**
+  String get sectionIntensityDays;
+
+  /// No description provided for @sectionFrequentSymptoms.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sintomas mais frequentes'**
+  String get sectionFrequentSymptoms;
+
+  /// No description provided for @weekShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'S{n}'**
+  String weekShort(int n);
+
+  /// No description provided for @statsError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os dados: {error}'**
+  String statsError(Object error);
+}
+
+class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
+  const _AppL10nDelegate();
+
+  @override
+  Future<AppL10n> load(Locale locale) {
+    return SynchronousFuture<AppL10n>(lookupAppL10n(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) => <String>['en', 'pt'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppL10nDelegate old) => false;
+}
+
+AppL10n lookupAppL10n(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'BR':
+            return AppL10nPtBr();
+        }
+        break;
+      }
+  }
+
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppL10nEn();
+    case 'pt':
+      return AppL10nPt();
+  }
+
+  throw FlutterError(
+    'AppL10n.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

@@ -1,7 +1,9 @@
 import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
+import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/data/sync/outbox_worker_provider.dart';
+import 'package:aura/features/settings/locale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,10 +25,9 @@ const _kEnv = String.fromEnvironment('AURA_ENV', defaultValue: 'dev');
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load locale-specific symbols (month names etc.) so DateFormat works
-  // for 'pt_PT' on the home screen. Skip the English default — it's
-  // built in.
-  await initializeDateFormatting('pt_PT');
+  // Load date symbols for all locales so DateFormat works in pt_PT, pt_BR
+  // and en (the app switches language at runtime).
+  await initializeDateFormatting();
 
   // Status bar transparent, navigation bar matches our deep-aubergine bg.
   SystemChrome.setSystemUIOverlayStyle(
@@ -82,6 +83,15 @@ Future<void> bootstrap() async {
     // of the container (i.e. the app process).
     container.read(outboxWorkerProvider);
     debugPrint('[AURA] OutboxWorker started');
+
+    // Seed the saved language (if any) before first paint.
+    final user = container.read(authRepositoryProvider).currentUser;
+    if (user != null) {
+      final profile = await container.read(auraDatabaseProvider).getProfile(user.id);
+      if (profile != null) {
+        container.read(localeProvider.notifier).state = localeFromCode(profile.locale);
+      }
+    }
   }
 
   runApp(UncontrolledProviderScope(container: container, child: const AuraApp()));
