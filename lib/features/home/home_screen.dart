@@ -249,6 +249,13 @@ class _SummaryList extends StatelessWidget {
                 label: 'Tomou medicação',
                 count: stats.daysWithMedication,
                 unit: stats.daysWithMedication == 1 ? 'dia' : 'dias',
+                last: false,
+              ),
+              _SummaryRow(
+                color: AuraColors.intensityHigh,
+                label: 'Medicação SOS',
+                count: stats.daysWithSosMedication,
+                unit: stats.daysWithSosMedication == 1 ? 'dia' : 'dias',
                 last: true,
               ),
             ],

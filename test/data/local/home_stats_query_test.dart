@@ -6,6 +6,7 @@
 
 import 'package:aura/data/local/database.dart';
 import 'package:aura/domain/home/home_stats.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,6 +38,7 @@ void main() {
     expect(stats.daysModerada, 0);
     expect(stats.daysForte, 0);
     expect(stats.daysWithMedication, 0);
+    expect(stats.daysWithSosMedication, 0);
     expect(stats.isEmpty, isTrue);
   });
 
@@ -82,6 +84,80 @@ void main() {
     expect(stats.totalCrises, 1);
     expect(stats.daysModerada, 1);
     expect(stats.daysForte, 0);
+  });
+
+  test('SOS medication days count distinct days with an acute med taken', () async {
+    final now = DateTime(2026, 5, 27, 12);
+
+    await db
+        .into(db.medications)
+        .insert(
+          MedicationsCompanion.insert(
+            id: 'med-sos',
+            userId: userId,
+            name: 'Sumatriptano',
+            kind: const Value('sos'),
+          ),
+        );
+    await db
+        .into(db.medications)
+        .insert(
+          MedicationsCompanion.insert(
+            id: 'med-prev',
+            userId: userId,
+            name: 'Propranolol',
+            kind: const Value('preventive'),
+          ),
+        );
+
+    // Day -2: crisis with an SOS med → counts.
+    await seedCrisis('c1', DateTime(2026, 5, 25, 9), 6);
+    await db
+        .into(db.crisisMedications)
+        .insert(
+          CrisisMedicationsCompanion.insert(
+            id: 'cm1',
+            crisisId: 'c1',
+            medicationNameSnapshot: 'Sumatriptano',
+            takenAt: DateTime(2026, 5, 25, 9),
+            medicationId: const Value('med-sos'),
+          ),
+        );
+
+    // Day -1: crisis with a preventive med only → NOT an SOS day.
+    await seedCrisis('c2', DateTime(2026, 5, 26, 9), 5);
+    await db
+        .into(db.crisisMedications)
+        .insert(
+          CrisisMedicationsCompanion.insert(
+            id: 'cm2',
+            crisisId: 'c2',
+            medicationNameSnapshot: 'Propranolol',
+            takenAt: DateTime(2026, 5, 26, 9),
+            medicationId: const Value('med-prev'),
+          ),
+        );
+
+    // Day 0: crisis with a since-deleted med (null link) → counts as SOS.
+    await seedCrisis('c3', DateTime(2026, 5, 27, 8), 7);
+    await db
+        .into(db.crisisMedications)
+        .insert(
+          CrisisMedicationsCompanion.insert(
+            id: 'cm3',
+            crisisId: 'c3',
+            medicationNameSnapshot: 'Medicação antiga',
+            takenAt: DateTime(2026, 5, 27, 8),
+          ),
+        );
+
+    final stats = await db.watchHomeStatsLast30Days(userId: userId, now: now).first;
+    expect(stats.daysWithMedication, 3, reason: 'all three days had a medication');
+    expect(
+      stats.daysWithSosMedication,
+      2,
+      reason: 'sos-med day + null-link day count; preventive-only day excluded',
+    );
   });
 
   test('stream re-emits when a new crisis is inserted', () async {

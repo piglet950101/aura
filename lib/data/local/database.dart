@@ -285,6 +285,13 @@ SELECT
      JOIN crisis_medications cm ON cm.crisis_id = c.id
     WHERE c.user_id = ? AND c.occurred_at >= ?)
     AS days_with_medication,
+  (SELECT COUNT(DISTINCT date(c.occurred_at, 'unixepoch'))
+     FROM crises c
+     JOIN crisis_medications cm ON cm.crisis_id = c.id
+     LEFT JOIN medications m ON m.id = cm.medication_id
+    WHERE c.user_id = ? AND c.occurred_at >= ?
+      AND (m.kind = 'sos' OR cm.medication_id IS NULL))
+    AS days_with_sos_medication,
   COUNT(*) AS total_crises
 FROM crises
 WHERE user_id = ? AND occurred_at >= ?
@@ -294,8 +301,10 @@ WHERE user_id = ? AND occurred_at >= ?
         Variable.withDateTime(cutoff),
         Variable.withString(userId),
         Variable.withDateTime(cutoff),
+        Variable.withString(userId),
+        Variable.withDateTime(cutoff),
       ],
-      readsFrom: {crises, crisisMedications},
+      readsFrom: {crises, crisisMedications, medications},
     ).watchSingle().map((row) {
       final daysWithCrisis = row.read<int>('days_with_crisis');
       return HomeStats(
@@ -304,6 +313,7 @@ WHERE user_id = ? AND occurred_at >= ?
         daysModerada: row.read<int>('days_moderada'),
         daysForte: row.read<int>('days_forte'),
         daysWithMedication: row.read<int>('days_with_medication'),
+        daysWithSosMedication: row.read<int>('days_with_sos_medication'),
         totalCrises: row.read<int>('total_crises'),
       );
     });

@@ -12,6 +12,7 @@ class HomeStats {
     required this.daysModerada,
     required this.daysForte,
     required this.daysWithMedication,
+    required this.daysWithSosMedication,
     required this.totalCrises,
   });
 
@@ -29,8 +30,13 @@ class HomeStats {
   final int daysForte;
 
   /// Days with at least one crisis where any medication was taken.
-  /// Always 0 until the medication-logging feature lands on Day 10.
   final int daysWithMedication;
+
+  /// Days with at least one crisis where an *acute / SOS* medication was taken
+  /// (kind = 'sos', or a since-deleted medication — assumed acute because it
+  /// was logged during a crisis). This is the medication-overuse indicator
+  /// neurologists watch, so it's surfaced separately from total medication use.
+  final int daysWithSosMedication;
 
   /// Total number of crises in the window (not distinct days — every
   /// registered crisis row counts). Used to drive the empty state.
@@ -42,6 +48,7 @@ class HomeStats {
     daysModerada: 0,
     daysForte: 0,
     daysWithMedication: 0,
+    daysWithSosMedication: 0,
     totalCrises: 0,
   );
 
