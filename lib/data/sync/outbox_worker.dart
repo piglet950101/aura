@@ -59,9 +59,16 @@ class OutboxWorker {
   final Duration _maxBackoff;
 
   Timer? _timer;
+  Timer? _debounce;
   StreamSubscription<List<ConnectivityResult>>? _connSub;
+  StreamSubscription<int>? _outboxSub;
   bool _draining = false;
   bool _started = false;
+
+  /// How long to coalesce a burst of enqueues before draining. A single
+  /// crisis registration enqueues one entry, but keeping this lets several
+  /// near-simultaneous writes share one drain.
+  static const _debounceDelay = Duration(milliseconds: 250);
 
   /// Idempotent — multiple calls are no-ops.
   void start() {
@@ -76,15 +83,31 @@ class OutboxWorker {
       }
     });
 
+    // React to writes: any new queued entry drains promptly (debounced) so an
+    // online write syncs in well under a second instead of waiting for the
+    // periodic timer.
+    _outboxSub = _db.watchOutboxCount().listen((count) {
+      if (count > 0) _scheduleDrain();
+    });
+
     // Initial drain — picks up anything queued while offline last session.
     unawaited(drain());
+  }
+
+  void _scheduleDrain() {
+    _debounce?.cancel();
+    _debounce = Timer(_debounceDelay, () => unawaited(drain()));
   }
 
   void stop() {
     _timer?.cancel();
     _timer = null;
+    _debounce?.cancel();
+    _debounce = null;
     _connSub?.cancel();
     _connSub = null;
+    _outboxSub?.cancel();
+    _outboxSub = null;
     _started = false;
   }
 

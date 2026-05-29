@@ -167,6 +167,32 @@ void main() {
     expect(crisisRemote.deletes, contains('reconnect-y'));
   });
 
+  test('enqueue after start() auto-drains (no manual drain, no connectivity)', () async {
+    worker.start();
+    await Future<void>.delayed(const Duration(milliseconds: 10)); // initial empty drain
+
+    await db.insertCrisis(
+      CrisesCompanion.insert(
+        id: 'auto',
+        userId: 'u1',
+        occurredAt: DateTime.utc(2026, 5, 25, 14),
+        intensity: 5,
+      ),
+    );
+    await db.enqueueOutbox(
+      entityType: OutboxEntityType.crisis,
+      entityId: 'auto',
+      operation: OutboxOperation.upsert,
+    );
+
+    // No manual drain(), no connectivity event — the reactive outbox watch
+    // should drive a drain within the debounce window.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+
+    expect(crisisRemote.upserts.map((c) => c.id), contains('auto'));
+    expect(await db.pendingOutbox(), isEmpty);
+  });
+
   test('start() is idempotent', () async {
     worker
       ..start()

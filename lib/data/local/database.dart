@@ -552,6 +552,16 @@ WHERE user_id = ? AND occurred_at >= ?
     );
   }
 
+  /// Reactive count of queued outbox entries. The OutboxWorker watches this
+  /// so a write syncs promptly (within the debounce) instead of waiting for
+  /// the periodic timer.
+  Stream<int> watchOutboxCount() {
+    return customSelect(
+      'SELECT COUNT(*) AS c FROM outbox_entries',
+      readsFrom: {outboxEntries},
+    ).watchSingle().map((r) => r.read<int>('c'));
+  }
+
   Future<List<OutboxEntry>> pendingOutbox({int limit = 50}) {
     final now = DateTime.now();
     return (select(outboxEntries)
