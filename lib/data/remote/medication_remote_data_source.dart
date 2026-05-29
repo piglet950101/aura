@@ -50,6 +50,7 @@ Map<String, dynamic> _rowToJson(db.Medication row) => <String, dynamic>{
   'user_id': row.userId,
   'name': row.name,
   'dose_mg': row.doseMg,
+  'kind': row.kind,
   'is_default': row.isDefault,
   'archived': row.archived,
 };
@@ -60,6 +61,7 @@ db.MedicationsCompanion _jsonToCompanion(Map<String, dynamic> j) {
     userId: j['user_id'] as String,
     name: j['name'] as String,
     doseMg: Value(j['dose_mg'] != null ? (j['dose_mg'] as num).toDouble() : null),
+    kind: Value(j['kind'] as String? ?? 'sos'),
     isDefault: Value(j['is_default'] as bool? ?? false),
     archived: Value(j['archived'] as bool? ?? false),
   );

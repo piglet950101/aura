@@ -6,6 +6,7 @@ import 'package:aura/domain/home/home_stats.dart';
 import 'package:aura/features/calendar/calendar_screen.dart';
 import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:aura/features/home/home_stats_provider.dart';
+import 'package:aura/features/medications/medications_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +38,10 @@ class HomeScreen extends ConsumerWidget {
 
   void _openCalendar(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CalendarScreen()));
+  }
+
+  void _openMedications(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MedicationsScreen()));
   }
 
   void _showComingSoon(BuildContext context, String label) {
@@ -82,7 +87,7 @@ class HomeScreen extends ConsumerWidget {
                     _QuickActionsGrid(
                       onCalendar: () => _openCalendar(context),
                       onShare: () => _showComingSoon(context, 'Partilhar'),
-                      onMedication: () => _showComingSoon(context, 'Medicação'),
+                      onMedication: () => _openMedications(context),
                       onAppointment: () => _showComingSoon(context, 'Consulta Médica'),
                       onData: () => _showComingSoon(context, 'Dados'),
                     ),

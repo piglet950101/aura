@@ -51,6 +51,13 @@ class Medications extends Table {
   TextColumn get userId => text()();
   TextColumn get name => text().withLength(min: 1, max: 80)();
   RealColumn get doseMg => real().nullable()();
+
+  /// 'sos' (acute / rescue, taken during a crisis) or 'preventive' (daily
+  /// prophylactic). Drives the "Medicação SOS" overuse metric on the home
+  /// summary. Defaults to 'sos' — most logged meds are rescue meds, and it
+  /// keeps the v1→v2 migration of existing rows sensible.
+  TextColumn get kind => text().withDefault(const Constant('sos'))();
+
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
@@ -160,12 +167,19 @@ class AuraDatabase extends _$AuraDatabase {
   AuraDatabase.test(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      // v2: medications gain a `kind` column (sos / preventive). Existing
+      // rows default to 'sos' via the column default, so no data is lost.
+      if (from < 2) {
+        await m.addColumn(medications, medications.kind);
+      }
     },
     beforeOpen: (details) async {
       // Foreign keys are off by default in SQLite — turn them on for
@@ -293,6 +307,79 @@ WHERE user_id = ? AND occurred_at >= ?
         totalCrises: row.read<int>('total_crises'),
       );
     });
+  }
+
+  // --------------------------------------------------------------------
+  // Medication queries — the catalog the user manages (Day 10). Archived
+  // rows stay so historical crisis_medications keep a real reference, but
+  // they're hidden from the active list / pickers.
+  // --------------------------------------------------------------------
+
+  Stream<List<Medication>> watchActiveMedications(String userId) {
+    return (select(medications)
+          ..where((m) => m.userId.equals(userId) & m.archived.equals(false))
+          ..orderBy([(m) => OrderingTerm.desc(m.isDefault), (m) => OrderingTerm.asc(m.name)]))
+        .watch();
+  }
+
+  Future<Medication?> findMedication(String id) =>
+      (select(medications)..where((m) => m.id.equals(id))).getSingleOrNull();
+
+  Future<Medication?> defaultMedication(String userId) {
+    return (select(medications)..where(
+          (m) => m.userId.equals(userId) & m.isDefault.equals(true) & m.archived.equals(false),
+        ))
+        .getSingleOrNull();
+  }
+
+  Future<void> insertMedication(MedicationsCompanion row) => into(medications).insert(row);
+
+  Future<void> updateMedicationFields({
+    required String id,
+    required String name,
+    required String kind,
+    required bool isDefault,
+    double? doseMg,
+  }) {
+    return (update(medications)..where((m) => m.id.equals(id))).write(
+      MedicationsCompanion(
+        name: Value(name),
+        doseMg: Value(doseMg),
+        kind: Value(kind),
+        isDefault: Value(isDefault),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> archiveMedicationById(String id) {
+    return (update(medications)..where((m) => m.id.equals(id))).write(
+      MedicationsCompanion(
+        archived: const Value(true),
+        isDefault: const Value(false),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Demotes every *other* default medication for [userId] (all except
+  /// [exceptId]), returning the ids that changed so the caller can enqueue
+  /// their sync. Enforces the "one default per user" invariant.
+  Future<List<String>> demoteOtherDefaultMedications({
+    required String userId,
+    required String exceptId,
+  }) async {
+    final others =
+        await (select(medications)..where(
+              (m) => m.userId.equals(userId) & m.isDefault.equals(true) & m.id.isNotValue(exceptId),
+            ))
+            .get();
+    for (final od in others) {
+      await (update(medications)..where((m) => m.id.equals(od.id))).write(
+        MedicationsCompanion(isDefault: const Value(false), updatedAt: Value(DateTime.now())),
+      );
+    }
+    return [for (final o in others) o.id];
   }
 
   // --------------------------------------------------------------------

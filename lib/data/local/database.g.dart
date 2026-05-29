@@ -461,6 +461,16 @@ class $MedicationsTable extends Medications with TableInfo<$MedicationsTable, Me
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('sos'),
+  );
   static const VerificationMeta _isDefaultMeta = const VerificationMeta('isDefault');
   @override
   late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
@@ -509,6 +519,7 @@ class $MedicationsTable extends Medications with TableInfo<$MedicationsTable, Me
     userId,
     name,
     doseMg,
+    kind,
     isDefault,
     archived,
     createdAt,
@@ -543,6 +554,9 @@ class $MedicationsTable extends Medications with TableInfo<$MedicationsTable, Me
     }
     if (data.containsKey('dose_mg')) {
       context.handle(_doseMgMeta, doseMg.isAcceptableOrUnknown(data['dose_mg']!, _doseMgMeta));
+    }
+    if (data.containsKey('kind')) {
+      context.handle(_kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
     }
     if (data.containsKey('is_default')) {
       context.handle(
@@ -587,6 +601,7 @@ class $MedicationsTable extends Medications with TableInfo<$MedicationsTable, Me
         DriftSqlType.double,
         data['${effectivePrefix}dose_mg'],
       ),
+      kind: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
       isDefault: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_default'],
@@ -617,6 +632,12 @@ class Medication extends DataClass implements Insertable<Medication> {
   final String userId;
   final String name;
   final double? doseMg;
+
+  /// 'sos' (acute / rescue, taken during a crisis) or 'preventive' (daily
+  /// prophylactic). Drives the "Medicação SOS" overuse metric on the home
+  /// summary. Defaults to 'sos' — most logged meds are rescue meds, and it
+  /// keeps the v1→v2 migration of existing rows sensible.
+  final String kind;
   final bool isDefault;
   final bool archived;
   final DateTime createdAt;
@@ -626,6 +647,7 @@ class Medication extends DataClass implements Insertable<Medication> {
     required this.userId,
     required this.name,
     this.doseMg,
+    required this.kind,
     required this.isDefault,
     required this.archived,
     required this.createdAt,
@@ -640,6 +662,7 @@ class Medication extends DataClass implements Insertable<Medication> {
     if (!nullToAbsent || doseMg != null) {
       map['dose_mg'] = Variable<double>(doseMg);
     }
+    map['kind'] = Variable<String>(kind);
     map['is_default'] = Variable<bool>(isDefault);
     map['archived'] = Variable<bool>(archived);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -653,6 +676,7 @@ class Medication extends DataClass implements Insertable<Medication> {
       userId: Value(userId),
       name: Value(name),
       doseMg: doseMg == null && nullToAbsent ? const Value.absent() : Value(doseMg),
+      kind: Value(kind),
       isDefault: Value(isDefault),
       archived: Value(archived),
       createdAt: Value(createdAt),
@@ -667,6 +691,7 @@ class Medication extends DataClass implements Insertable<Medication> {
       userId: serializer.fromJson<String>(json['userId']),
       name: serializer.fromJson<String>(json['name']),
       doseMg: serializer.fromJson<double?>(json['doseMg']),
+      kind: serializer.fromJson<String>(json['kind']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
       archived: serializer.fromJson<bool>(json['archived']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -681,6 +706,7 @@ class Medication extends DataClass implements Insertable<Medication> {
       'userId': serializer.toJson<String>(userId),
       'name': serializer.toJson<String>(name),
       'doseMg': serializer.toJson<double?>(doseMg),
+      'kind': serializer.toJson<String>(kind),
       'isDefault': serializer.toJson<bool>(isDefault),
       'archived': serializer.toJson<bool>(archived),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -693,6 +719,7 @@ class Medication extends DataClass implements Insertable<Medication> {
     String? userId,
     String? name,
     Value<double?> doseMg = const Value.absent(),
+    String? kind,
     bool? isDefault,
     bool? archived,
     DateTime? createdAt,
@@ -702,6 +729,7 @@ class Medication extends DataClass implements Insertable<Medication> {
     userId: userId ?? this.userId,
     name: name ?? this.name,
     doseMg: doseMg.present ? doseMg.value : this.doseMg,
+    kind: kind ?? this.kind,
     isDefault: isDefault ?? this.isDefault,
     archived: archived ?? this.archived,
     createdAt: createdAt ?? this.createdAt,
@@ -713,6 +741,7 @@ class Medication extends DataClass implements Insertable<Medication> {
       userId: data.userId.present ? data.userId.value : this.userId,
       name: data.name.present ? data.name.value : this.name,
       doseMg: data.doseMg.present ? data.doseMg.value : this.doseMg,
+      kind: data.kind.present ? data.kind.value : this.kind,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
       archived: data.archived.present ? data.archived.value : this.archived,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -727,6 +756,7 @@ class Medication extends DataClass implements Insertable<Medication> {
           ..write('userId: $userId, ')
           ..write('name: $name, ')
           ..write('doseMg: $doseMg, ')
+          ..write('kind: $kind, ')
           ..write('isDefault: $isDefault, ')
           ..write('archived: $archived, ')
           ..write('createdAt: $createdAt, ')
@@ -737,7 +767,7 @@ class Medication extends DataClass implements Insertable<Medication> {
 
   @override
   int get hashCode =>
-      Object.hash(id, userId, name, doseMg, isDefault, archived, createdAt, updatedAt);
+      Object.hash(id, userId, name, doseMg, kind, isDefault, archived, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -746,6 +776,7 @@ class Medication extends DataClass implements Insertable<Medication> {
           other.userId == this.userId &&
           other.name == this.name &&
           other.doseMg == this.doseMg &&
+          other.kind == this.kind &&
           other.isDefault == this.isDefault &&
           other.archived == this.archived &&
           other.createdAt == this.createdAt &&
@@ -757,6 +788,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   final Value<String> userId;
   final Value<String> name;
   final Value<double?> doseMg;
+  final Value<String> kind;
   final Value<bool> isDefault;
   final Value<bool> archived;
   final Value<DateTime> createdAt;
@@ -767,6 +799,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     this.userId = const Value.absent(),
     this.name = const Value.absent(),
     this.doseMg = const Value.absent(),
+    this.kind = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.archived = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -778,6 +811,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     required String userId,
     required String name,
     this.doseMg = const Value.absent(),
+    this.kind = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.archived = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -791,6 +825,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     Expression<String>? userId,
     Expression<String>? name,
     Expression<double>? doseMg,
+    Expression<String>? kind,
     Expression<bool>? isDefault,
     Expression<bool>? archived,
     Expression<DateTime>? createdAt,
@@ -802,6 +837,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
       if (userId != null) 'user_id': userId,
       if (name != null) 'name': name,
       if (doseMg != null) 'dose_mg': doseMg,
+      if (kind != null) 'kind': kind,
       if (isDefault != null) 'is_default': isDefault,
       if (archived != null) 'archived': archived,
       if (createdAt != null) 'created_at': createdAt,
@@ -815,6 +851,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     Value<String>? userId,
     Value<String>? name,
     Value<double?>? doseMg,
+    Value<String>? kind,
     Value<bool>? isDefault,
     Value<bool>? archived,
     Value<DateTime>? createdAt,
@@ -826,6 +863,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
       userId: userId ?? this.userId,
       name: name ?? this.name,
       doseMg: doseMg ?? this.doseMg,
+      kind: kind ?? this.kind,
       isDefault: isDefault ?? this.isDefault,
       archived: archived ?? this.archived,
       createdAt: createdAt ?? this.createdAt,
@@ -848,6 +886,9 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     }
     if (doseMg.present) {
       map['dose_mg'] = Variable<double>(doseMg.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
     }
     if (isDefault.present) {
       map['is_default'] = Variable<bool>(isDefault.value);
@@ -874,6 +915,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
           ..write('userId: $userId, ')
           ..write('name: $name, ')
           ..write('doseMg: $doseMg, ')
+          ..write('kind: $kind, ')
           ..write('isDefault: $isDefault, ')
           ..write('archived: $archived, ')
           ..write('createdAt: $createdAt, ')
@@ -3033,6 +3075,7 @@ typedef $$MedicationsTableCreateCompanionBuilder =
       required String userId,
       required String name,
       Value<double?> doseMg,
+      Value<String> kind,
       Value<bool> isDefault,
       Value<bool> archived,
       Value<DateTime> createdAt,
@@ -3045,6 +3088,7 @@ typedef $$MedicationsTableUpdateCompanionBuilder =
       Value<String> userId,
       Value<String> name,
       Value<double?> doseMg,
+      Value<String> kind,
       Value<bool> isDefault,
       Value<bool> archived,
       Value<DateTime> createdAt,
@@ -3092,6 +3136,9 @@ class $$MedicationsTableFilterComposer extends Composer<_$AuraDatabase, $Medicat
 
   ColumnFilters<double> get doseMg =>
       $composableBuilder(column: $table.doseMg, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => ColumnFilters(column));
@@ -3146,6 +3193,9 @@ class $$MedicationsTableOrderingComposer extends Composer<_$AuraDatabase, $Medic
   ColumnOrderings<double> get doseMg =>
       $composableBuilder(column: $table.doseMg, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => ColumnOrderings(column));
 
@@ -3178,6 +3228,9 @@ class $$MedicationsTableAnnotationComposer extends Composer<_$AuraDatabase, $Med
 
   GeneratedColumn<double> get doseMg =>
       $composableBuilder(column: $table.doseMg, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
 
   GeneratedColumn<bool> get isDefault =>
       $composableBuilder(column: $table.isDefault, builder: (column) => column);
@@ -3242,6 +3295,7 @@ class $$MedicationsTableTableManager
                 Value<String> userId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<double?> doseMg = const Value.absent(),
+                Value<String> kind = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -3252,6 +3306,7 @@ class $$MedicationsTableTableManager
                 userId: userId,
                 name: name,
                 doseMg: doseMg,
+                kind: kind,
                 isDefault: isDefault,
                 archived: archived,
                 createdAt: createdAt,
@@ -3264,6 +3319,7 @@ class $$MedicationsTableTableManager
                 required String userId,
                 required String name,
                 Value<double?> doseMg = const Value.absent(),
+                Value<String> kind = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -3274,6 +3330,7 @@ class $$MedicationsTableTableManager
                 userId: userId,
                 name: name,
                 doseMg: doseMg,
+                kind: kind,
                 isDefault: isDefault,
                 archived: archived,
                 createdAt: createdAt,
