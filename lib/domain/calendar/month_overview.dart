@@ -35,6 +35,9 @@ class DayLoad {
 
   IntensityTier get tier =>
       hasCrisis ? IntensityTier.fromIntensity(maxIntensity) : IntensityTier.none;
+
+  /// True when any crisis on this day recorded an aura.
+  bool get hasAura => crises.any((c) => c.hasAura);
 }
 
 /// Aggregated view of one month: per-day loads plus the header stat strip.

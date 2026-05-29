@@ -122,6 +122,15 @@ class CalendarScreen extends ConsumerWidget {
             ),
           );
         },
+        onEdit: (crisisId) {
+          Navigator.of(sheetContext).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => CrisisRegistrationScreen(editCrisisId: crisisId),
+              fullscreenDialog: true,
+            ),
+          );
+        },
       ),
     );
   }
@@ -288,6 +297,7 @@ class _MonthGrid extends StatelessWidget {
           dayNum: dayNum,
           tier: load?.tier ?? IntensityTier.none,
           count: load?.count ?? 0,
+          hasAura: load?.hasAura ?? false,
           isToday: date == today,
           onTap: () => onDayTap(date, load),
         ),
@@ -310,6 +320,7 @@ class _DayCell extends StatelessWidget {
     required this.dayNum,
     required this.tier,
     required this.count,
+    required this.hasAura,
     required this.isToday,
     required this.onTap,
   });
@@ -317,6 +328,7 @@ class _DayCell extends StatelessWidget {
   final int dayNum;
   final IntensityTier tier;
   final int count;
+  final bool hasAura;
   final bool isToday;
   final VoidCallback onTap;
 
@@ -324,45 +336,54 @@ class _DayCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final heat = tierColor(tier);
     final filled = tier != IntensityTier.none;
+    final semantics = filled
+        ? 'Dia $dayNum, $count ${count == 1 ? 'crise' : 'crises'}${hasAura ? ', com aura' : ''}'
+        : 'Dia $dayNum';
     return Semantics(
       button: true,
-      label: filled ? 'Dia $dayNum, $count ${count == 1 ? 'crise' : 'crises'}' : 'Dia $dayNum',
+      label: semantics,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AuraRadius.md),
-        child: Container(
-          decoration: BoxDecoration(
-            color: filled ? heat.withValues(alpha: 0.20) : Colors.transparent,
-            borderRadius: BorderRadius.circular(AuraRadius.md),
-            border: Border.all(
-              color: isToday
-                  ? AuraColors.accent
-                  : (filled ? heat.withValues(alpha: 0.55) : AuraColors.border),
-              width: isToday ? 1.5 : 1,
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$dayNum',
-                style: AuraTextStyles.bodySmall.copyWith(
-                  fontSize: 14,
-                  color: filled ? AuraColors.textPrimary : AuraColors.textMuted,
-                  fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: filled ? heat.withValues(alpha: 0.20) : Colors.transparent,
+                borderRadius: BorderRadius.circular(AuraRadius.md),
+                border: Border.all(
+                  color: isToday
+                      ? AuraColors.accent
+                      : (filled ? heat.withValues(alpha: 0.55) : AuraColors.border),
+                  width: isToday ? 1.5 : 1,
                 ),
               ),
-              if (count > 1)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    '×$count',
-                    style: AuraTextStyles.caption.copyWith(color: heat, fontSize: 9),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$dayNum',
+                    style: AuraTextStyles.bodySmall.copyWith(
+                      fontSize: 14,
+                      color: filled ? AuraColors.textPrimary : AuraColors.textMuted,
+                      fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                    ),
                   ),
-                ),
-            ],
-          ),
+                  if (count > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        '×$count',
+                        style: AuraTextStyles.caption.copyWith(color: heat, fontSize: 9),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (hasAura)
+              const Positioned(top: 2, right: 3, child: Text('✨', style: TextStyle(fontSize: 9))),
+          ],
         ),
       ),
     );
@@ -419,11 +440,17 @@ class _LegendItem extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _DaySheet extends StatelessWidget {
-  const _DaySheet({required this.date, required this.load, required this.onRegister});
+  const _DaySheet({
+    required this.date,
+    required this.load,
+    required this.onRegister,
+    required this.onEdit,
+  });
 
   final DateTime date;
   final DayLoad? load;
   final VoidCallback onRegister;
+  final void Function(String crisisId) onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -451,7 +478,7 @@ class _DaySheet extends StatelessWidget {
                 style: AuraTextStyles.bodySmall,
               )
             else
-              ...crises.map((c) => _CrisisRow(crisis: c)),
+              ...crises.map((c) => _CrisisRow(crisis: c, onTap: () => onEdit(c.id))),
             if (!isFuture) ...[
               const SizedBox(height: AuraSpacing.xl),
               OutlinedButton.icon(
@@ -474,38 +501,48 @@ class _DaySheet extends StatelessWidget {
 }
 
 class _CrisisRow extends StatelessWidget {
-  const _CrisisRow({required this.crisis});
+  const _CrisisRow({required this.crisis, required this.onTap});
 
   final CrisisSummary crisis;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final tier = IntensityTier.fromIntensity(crisis.intensity);
     final time = DateFormat('HH:mm', 'pt_PT').format(crisis.occurredAt);
-    return Container(
-      margin: const EdgeInsets.only(bottom: AuraSpacing.sm),
-      padding: const EdgeInsets.all(AuraSpacing.md),
-      decoration: BoxDecoration(
-        color: AuraColors.bgElevated,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(AuraRadius.md),
-        border: Border.all(color: AuraColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(color: tierColor(tier), shape: BoxShape.circle),
+        child: Container(
+          padding: const EdgeInsets.all(AuraSpacing.md),
+          decoration: BoxDecoration(
+            color: AuraColors.bgElevated,
+            borderRadius: BorderRadius.circular(AuraRadius.md),
+            border: Border.all(color: AuraColors.border),
           ),
-          const SizedBox(width: AuraSpacing.md),
-          Expanded(
-            child: Text(
-              'Intensidade ${crisis.intensity} · ${tierLabel(tier)}',
-              style: AuraTextStyles.body.copyWith(fontSize: 14),
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: tierColor(tier), shape: BoxShape.circle),
+              ),
+              const SizedBox(width: AuraSpacing.md),
+              Expanded(
+                child: Text(
+                  'Intensidade ${crisis.intensity} · ${tierLabel(tier)}'
+                  '${crisis.hasAura ? ' · aura ✨' : ''}',
+                  style: AuraTextStyles.body.copyWith(fontSize: 14),
+                ),
+              ),
+              Text(time, style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.textMuted)),
+              const SizedBox(width: AuraSpacing.sm),
+              const Icon(Icons.chevron_right, size: 18, color: AuraColors.textMuted),
+            ],
           ),
-          Text(time, style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.textMuted)),
-        ],
+        ),
       ),
     );
   }

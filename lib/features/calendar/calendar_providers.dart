@@ -1,7 +1,6 @@
 import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/domain/calendar/month_overview.dart';
-import 'package:aura/domain/crisis/crisis_summary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The month currently shown in the calendar (first-of-month, local time).
@@ -30,17 +29,7 @@ final monthOverviewProvider = StreamProvider.autoDispose<MonthOverview>((ref) {
   final start = DateTime(month.year, month.month).subtract(const Duration(days: 1));
   final end = DateTime(month.year, month.month + 1).add(const Duration(days: 1));
 
-  return db.watchCrisesInRange(userId: user.id, start: start, end: end).map((rows) {
-    final summaries = rows
-        .map(
-          (r) => CrisisSummary(
-            id: r.id,
-            occurredAt: r.occurredAt.toLocal(),
-            intensity: r.intensity,
-            notes: r.notes,
-          ),
-        )
-        .toList();
-    return MonthOverview.fromCrises(month: month, crises: summaries);
-  });
+  return db
+      .watchCrisisSummariesInRange(userId: user.id, start: start, end: end)
+      .map((summaries) => MonthOverview.fromCrises(month: month, crises: summaries));
 });

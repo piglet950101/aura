@@ -92,6 +92,27 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
   void reset() {
     state = const CrisisDraft();
   }
+
+  /// Loads an existing crisis into the draft for editing.
+  void hydrate({
+    required int intensity,
+    required Set<Symptom> symptoms,
+    DateTime? occurredAt,
+    String? notes,
+    String? medicationId,
+    String? medicationName,
+    double? medicationDoseMg,
+  }) {
+    state = CrisisDraft(
+      occurredAt: occurredAt,
+      intensity: intensity,
+      symptoms: symptoms,
+      notes: notes,
+      takenMedicationId: medicationId,
+      takenMedicationName: medicationName,
+      takenMedicationDoseMg: medicationDoseMg,
+    );
+  }
 }
 
 final crisisDraftProvider = NotifierProvider<CrisisDraftNotifier, CrisisDraft>(

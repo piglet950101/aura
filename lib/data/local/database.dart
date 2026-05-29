@@ -8,6 +8,7 @@
 
 import 'dart:io' show File;
 
+import 'package:aura/domain/crisis/crisis_summary.dart';
 import 'package:aura/domain/home/home_stats.dart';
 import 'package:aura/domain/medication/pending_medication_response.dart';
 import 'package:drift/drift.dart';
@@ -218,24 +219,67 @@ class AuraDatabase extends _$AuraDatabase {
 
   Future<int> deleteCrisis(String id) => (delete(crises)..where((c) => c.id.equals(id))).go();
 
-  /// Reactive list of a user's crises whose [Crises.occurredAt] falls in
-  /// `[start, end)`. Used by the calendar (a month window) and reusable for
-  /// any range report. Bounds are compared as absolute instants — pass the
-  /// UTC range that covers the local window; the caller bins by local day.
-  Stream<List<Crisis>> watchCrisesInRange({
+  /// Edit the editable fields of an existing crisis (used by the calendar's
+  /// edit flow). Symptoms / medications are replaced separately.
+  Future<void> updateCrisisFields({
+    required String id,
+    required DateTime occurredAt,
+    required int intensity,
+    String? notes,
+  }) {
+    return (update(crises)..where((c) => c.id.equals(id))).write(
+      CrisesCompanion(
+        occurredAt: Value(occurredAt),
+        intensity: Value(intensity),
+        notes: Value(notes),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<int> deleteSymptomsFor(String crisisId) =>
+      (delete(crisisSymptoms)..where((cs) => cs.crisisId.equals(crisisId))).go();
+
+  Future<int> deleteCrisisMedicationsFor(String crisisId) =>
+      (delete(crisisMedications)..where((cm) => cm.crisisId.equals(crisisId))).go();
+
+  /// Reactive [CrisisSummary] list for crises whose [Crises.occurredAt] falls
+  /// in `[start, end)`, ascending. Each carries a `hasAura` flag (computed via
+  /// an EXISTS over crisis_symptoms) so the calendar can mark aura days.
+  /// Re-emits when crises OR their symptoms change. Bounds compare as absolute
+  /// instants; the caller bins by local day.
+  Stream<List<CrisisSummary>> watchCrisisSummariesInRange({
     required String userId,
     required DateTime start,
     required DateTime end,
   }) {
-    return (select(crises)
-          ..where(
-            (c) =>
-                c.userId.equals(userId) &
-                c.occurredAt.isBiggerOrEqualValue(start) &
-                c.occurredAt.isSmallerThanValue(end),
-          )
-          ..orderBy([(c) => OrderingTerm.asc(c.occurredAt)]))
-        .watch();
+    return customSelect(
+      '''
+SELECT c.id AS id, c.occurred_at AS occurred_at, c.intensity AS intensity, c.notes AS notes,
+  EXISTS(SELECT 1 FROM crisis_symptoms cs WHERE cs.crisis_id = c.id AND cs.symptom = 'aura')
+    AS has_aura
+FROM crises c
+WHERE c.user_id = ? AND c.occurred_at >= ? AND c.occurred_at < ?
+ORDER BY c.occurred_at ASC
+''',
+      variables: [
+        Variable.withString(userId),
+        Variable.withDateTime(start),
+        Variable.withDateTime(end),
+      ],
+      readsFrom: {crises, crisisSymptoms},
+    ).watch().map((rows) {
+      return rows.map((row) {
+        final secs = row.read<int>('occurred_at');
+        return CrisisSummary(
+          id: row.read<String>('id'),
+          occurredAt: DateTime.fromMillisecondsSinceEpoch(secs * 1000),
+          intensity: row.read<int>('intensity'),
+          notes: row.read<String?>('notes'),
+          hasAura: row.read<int>('has_aura') == 1,
+        );
+      }).toList();
+    });
   }
 
   /// Stable English symptom codes attached to a crisis, ordered for

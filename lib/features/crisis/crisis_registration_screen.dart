@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/domain/crisis/symptom.dart';
 import 'package:aura/features/crisis/crisis_registration_controller.dart';
 import 'package:aura/features/crisis/widgets/aura_toggle.dart';
@@ -22,11 +25,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///   - No animations on selection beyond a 120ms color/scale tween — the
 ///     persona has photophobia; flashy state changes hurt.
 class CrisisRegistrationScreen extends ConsumerStatefulWidget {
-  const CrisisRegistrationScreen({this.initialDate, super.key});
+  const CrisisRegistrationScreen({this.initialDate, this.editCrisisId, super.key});
 
   /// When set (e.g. from the calendar's "Registar para este dia"), the crisis
   /// is back-dated to this day at local noon instead of defaulting to NOW.
   final DateTime? initialDate;
+
+  /// When set, the screen edits this existing crisis instead of creating one:
+  /// the form is pre-filled from the DB and saving updates in place.
+  final String? editCrisisId;
 
   @override
   ConsumerState<CrisisRegistrationScreen> createState() => _CrisisRegistrationScreenState();
@@ -36,18 +43,24 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
   bool _saving = false;
   final _notesController = TextEditingController();
 
+  bool get _isEdit => widget.editCrisisId != null;
+
   @override
   void initState() {
     super.initState();
-    // Reset the draft on every fresh open so the previous registration's
-    // values don't ghost the next one. If opened for a specific day, seed
-    // the occurrence date to local noon of that day.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = ref.read(crisisDraftProvider.notifier)..reset();
-      _notesController.clear();
-      final d = widget.initialDate;
-      if (d != null) {
-        notifier.setOccurredAt(DateTime(d.year, d.month, d.day, 12));
+      if (_isEdit) {
+        unawaited(_hydrate(widget.editCrisisId!));
+      } else {
+        // Reset the draft on every fresh open so the previous registration's
+        // values don't ghost the next one. If opened for a specific day, seed
+        // the occurrence date to local noon of that day.
+        final notifier = ref.read(crisisDraftProvider.notifier)..reset();
+        _notesController.clear();
+        final d = widget.initialDate;
+        if (d != null) {
+          notifier.setOccurredAt(DateTime(d.year, d.month, d.day, 12));
+        }
       }
     });
   }
@@ -58,18 +71,44 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
     super.dispose();
   }
 
+  Future<void> _hydrate(String crisisId) async {
+    final db = ref.read(auraDatabaseProvider);
+    final crisis = await db.findCrisis(crisisId);
+    if (crisis == null) return;
+    final symptomCodes = await db.symptomsFor(crisisId);
+    final meds = await db.crisisMedicationsFor(crisisId);
+    final med = meds.isNotEmpty ? meds.first : null;
+    if (!mounted) return;
+    ref
+        .read(crisisDraftProvider.notifier)
+        .hydrate(
+          occurredAt: crisis.occurredAt,
+          intensity: crisis.intensity,
+          symptoms: symptomCodes.map(Symptom.fromCode).whereType<Symptom>().toSet(),
+          notes: crisis.notes,
+          medicationId: med?.medicationId,
+          medicationName: med?.medicationNameSnapshot,
+          medicationDoseMg: med?.doseMg,
+        );
+    _notesController.text = crisis.notes ?? '';
+  }
+
   Future<void> _onSave() async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
       final draft = ref.read(crisisDraftProvider);
       final useCase = ref.read(registerCrisisUseCaseProvider);
-      await useCase.register(draft: draft);
+      if (_isEdit) {
+        await useCase.update(crisisId: widget.editCrisisId!, draft: draft);
+      } else {
+        await useCase.register(draft: draft);
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Crise registada'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(_isEdit ? 'Crise atualizada' : 'Crise registada'),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -79,6 +118,38 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao guardar: $e')));
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _onDelete() async {
+    final crisisId = widget.editCrisisId;
+    if (crisisId == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuraColors.bgElevated,
+        title: const Text('Apagar crise', style: AuraTextStyles.screenTitle),
+        content: const Text(
+          'Esta crise será removida permanentemente.',
+          style: AuraTextStyles.bodySmall,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Apagar', style: TextStyle(color: AuraColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref.read(registerCrisisUseCaseProvider).delete(crisisId: crisisId);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } on Object catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao apagar: $e')));
     }
   }
 
@@ -94,8 +165,16 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
           tooltip: 'Cancelar',
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Nova crise', style: AuraTextStyles.screenTitle),
+        title: Text(_isEdit ? 'Editar crise' : 'Nova crise', style: AuraTextStyles.screenTitle),
         centerTitle: false,
+        actions: [
+          if (_isEdit)
+            IconButton(
+              tooltip: 'Apagar',
+              icon: const Icon(Icons.delete_outline, color: AuraColors.error),
+              onPressed: _onDelete,
+            ),
+        ],
       ),
       body: SafeArea(
         top: false,

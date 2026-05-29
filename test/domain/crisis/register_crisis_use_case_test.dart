@@ -13,7 +13,6 @@ import 'package:aura/data/sync/outbox_worker.dart';
 import 'package:aura/domain/crisis/crisis_draft.dart';
 import 'package:aura/domain/crisis/register_crisis_use_case.dart';
 import 'package:aura/domain/crisis/symptom.dart';
-import 'package:aura/domain/crisis/trigger.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,11 +32,10 @@ void main() {
     await db.close();
   });
 
-  test('writes crisis + symptoms + trigger + outbox entry in one transaction', () async {
+  test('writes crisis + symptoms + outbox entry in one transaction', () async {
     const draft = CrisisDraft(
       intensity: 7,
       symptoms: {Symptom.nausea, Symptom.photophobia, Symptom.phonophobia},
-      trigger: CrisisTrigger.stress,
     );
 
     final id = await useCase.register(draft: draft);
@@ -52,9 +50,8 @@ void main() {
     final symptoms = await db.symptomsFor(id);
     expect(symptoms, ['nausea', 'phonophobia', 'photophobia']);
 
-    // Trigger persisted.
-    final triggers = await db.triggersFor(id);
-    expect(triggers, ['stress']);
+    // Triggers were removed from the form — none are written.
+    expect(await db.triggersFor(id), isEmpty);
 
     // Outbox entry queued so the worker can sync.
     final pending = await db.pendingOutbox();
@@ -178,6 +175,93 @@ void main() {
     final id2 = await useCase.register(draft: const CrisisDraft(intensity: 8));
     expect(id1, isNot(id2));
     expect(await db.pendingOutbox(), hasLength(2));
+  });
+
+  Future<void> seedMed(String id, String name) {
+    return db
+        .into(db.medications)
+        .insert(
+          MedicationsCompanion.insert(
+            id: id,
+            userId: 'user-marta',
+            name: name,
+            kind: const Value('sos'),
+          ),
+        );
+  }
+
+  test('update edits fields, replaces symptoms, and preserves response if med unchanged', () async {
+    await seedMed('med-x', 'Sumatriptano');
+    final id = await useCase.register(
+      draft: const CrisisDraft(
+        intensity: 5,
+        symptoms: {Symptom.nausea},
+        takenMedicationId: 'med-x',
+        takenMedicationName: 'Sumatriptano',
+      ),
+    );
+    final cm = (await db.crisisMedicationsFor(id)).single;
+    await db.setCrisisMedicationResponse(id: cm.id, response: 'total');
+
+    await useCase.update(
+      crisisId: id,
+      draft: const CrisisDraft(
+        intensity: 8,
+        symptoms: {Symptom.photophobia, Symptom.aura},
+        takenMedicationId: 'med-x',
+        takenMedicationName: 'Sumatriptano',
+      ),
+    );
+
+    final crisis = await db.findCrisis(id);
+    expect(crisis!.intensity, 8);
+    expect(await db.symptomsFor(id), ['aura', 'photophobia']);
+    final cm2 = (await db.crisisMedicationsFor(id)).single;
+    expect(cm2.medicationId, 'med-x');
+    expect(cm2.response, 'total', reason: 'response preserved when medication unchanged');
+  });
+
+  test('update to a different medication starts a fresh (null) response', () async {
+    await seedMed('med-a', 'A');
+    await seedMed('med-b', 'B');
+    final id = await useCase.register(
+      draft: const CrisisDraft(intensity: 5, takenMedicationId: 'med-a', takenMedicationName: 'A'),
+    );
+    await db.setCrisisMedicationResponse(
+      id: (await db.crisisMedicationsFor(id)).single.id,
+      response: 'total',
+    );
+
+    await useCase.update(
+      crisisId: id,
+      draft: const CrisisDraft(intensity: 5, takenMedicationId: 'med-b', takenMedicationName: 'B'),
+    );
+
+    final cm = (await db.crisisMedicationsFor(id)).single;
+    expect(cm.medicationId, 'med-b');
+    expect(cm.response, isNull, reason: 'different medication → no carried response');
+  });
+
+  test('update removing the medication clears crisis_medications', () async {
+    await seedMed('med-a', 'A');
+    final id = await useCase.register(
+      draft: const CrisisDraft(intensity: 5, takenMedicationId: 'med-a', takenMedicationName: 'A'),
+    );
+    await useCase.update(crisisId: id, draft: const CrisisDraft(intensity: 5));
+    expect(await db.crisisMedicationsFor(id), isEmpty);
+  });
+
+  test('delete removes the crisis (cascade) and enqueues a delete', () async {
+    final id = await useCase.register(
+      draft: const CrisisDraft(intensity: 6, symptoms: {Symptom.nausea}),
+    );
+    await useCase.delete(crisisId: id);
+
+    expect(await db.findCrisis(id), isNull);
+    expect(await db.symptomsFor(id), isEmpty, reason: 'FK cascade removed children');
+
+    final outbox = await db.pendingOutbox();
+    expect(outbox.any((e) => e.entityId == id && e.operation == OutboxOperation.delete), isTrue);
   });
 }
 

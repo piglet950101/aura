@@ -12,10 +12,14 @@ class CrisisSummary {
     required this.occurredAt,
     required this.intensity,
     this.notes,
+    this.hasAura = false,
   });
 
   final String id;
   final DateTime occurredAt;
   final int intensity;
   final String? notes;
+
+  /// True when this crisis recorded an aura — surfaced as a ✨ on the calendar.
+  final bool hasAura;
 }
