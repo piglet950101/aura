@@ -9,6 +9,7 @@ import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:aura/features/home/home_stats_provider.dart';
 import 'package:aura/features/medications/medication_response_providers.dart';
 import 'package:aura/features/medications/medications_screen.dart';
+import 'package:aura/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -150,13 +151,9 @@ class _TopBar extends StatelessWidget {
             tooltip: 'Definições',
             icon: const Icon(Icons.settings_outlined, size: 22),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Definições · em breve'),
-                  behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 2),
-                ),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
             },
           ),
         ],

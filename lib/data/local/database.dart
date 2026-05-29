@@ -374,6 +374,33 @@ WHERE user_id = ? AND occurred_at >= ?
   }
 
   // --------------------------------------------------------------------
+  // Profile — one row per user (id == auth uid). Used for the PDF header and
+  // the Settings screen. Created lazily on first edit.
+  // --------------------------------------------------------------------
+
+  Stream<Profile?> watchProfile(String id) =>
+      (select(profiles)..where((p) => p.id.equals(id))).watchSingleOrNull();
+
+  Future<Profile?> getProfile(String id) =>
+      (select(profiles)..where((p) => p.id.equals(id))).getSingleOrNull();
+
+  Future<void> upsertProfile(ProfilesCompanion row) => into(profiles).insertOnConflictUpdate(row);
+
+  /// Erases every local row — used by the GDPR "delete account & data" flow
+  /// after the server-side delete. Children first to satisfy foreign keys.
+  Future<void> wipeAllLocalData() {
+    return transaction(() async {
+      await delete(crisisMedications).go();
+      await delete(crisisSymptoms).go();
+      await delete(crisisTriggers).go();
+      await delete(crises).go();
+      await delete(medications).go();
+      await delete(profiles).go();
+      await delete(outboxEntries).go();
+    });
+  }
+
+  // --------------------------------------------------------------------
   // Medication queries — the catalog the user manages (Day 10). Archived
   // rows stay so historical crisis_medications keep a real reference, but
   // they're hidden from the active list / pickers.
@@ -388,6 +415,10 @@ WHERE user_id = ? AND occurred_at >= ?
 
   Future<Medication?> findMedication(String id) =>
       (select(medications)..where((m) => m.id.equals(id))).getSingleOrNull();
+
+  /// Every medication for a user, including archived — used by data export.
+  Future<List<Medication>> allMedications(String userId) =>
+      (select(medications)..where((m) => m.userId.equals(userId))).get();
 
   Future<Medication?> defaultMedication(String userId) {
     return (select(medications)..where(
