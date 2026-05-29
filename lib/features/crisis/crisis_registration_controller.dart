@@ -38,6 +38,20 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
     state = state.copyWith(occurredAt: when);
   }
 
+  /// Records the medication taken during the crisis, or clears it when [id]
+  /// is null ("Nenhuma"). Name and dose are snapshotted alongside the id.
+  void setMedication({String? id, String? name, double? doseMg}) {
+    if (id == null) {
+      state = state.copyWith(clearMedication: true);
+    } else {
+      state = state.copyWith(
+        takenMedicationId: id,
+        takenMedicationName: name,
+        takenMedicationDoseMg: doseMg,
+      );
+    }
+  }
+
   void reset() {
     state = const CrisisDraft();
   }

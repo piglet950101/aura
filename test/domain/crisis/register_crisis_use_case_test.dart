@@ -63,6 +63,39 @@ void main() {
     expect(pending.single.operation, OutboxOperation.upsert);
   });
 
+  test('logs the taken medication as a crisis_medication row', () async {
+    // The medication must exist (FK from crisis_medications) — the picker only
+    // ever offers meds from the user's catalog.
+    await db
+        .into(db.medications)
+        .insert(
+          MedicationsCompanion.insert(id: 'med-1', userId: 'user-marta', name: 'Sumatriptano'),
+        );
+
+    final when = DateTime.utc(2026, 5, 25, 14, 30);
+    final id = await useCase.register(
+      draft: CrisisDraft(
+        intensity: 6,
+        occurredAt: when,
+        takenMedicationId: 'med-1',
+        takenMedicationName: 'Sumatriptano',
+        takenMedicationDoseMg: 50,
+      ),
+    );
+
+    final meds = await db.crisisMedicationsFor(id);
+    expect(meds, hasLength(1));
+    expect(meds.single.medicationId, 'med-1');
+    expect(meds.single.medicationNameSnapshot, 'Sumatriptano');
+    expect(meds.single.doseMg, 50);
+    expect(meds.single.takenAt.toUtc(), when);
+  });
+
+  test('registers without a medication when none chosen', () async {
+    final id = await useCase.register(draft: const CrisisDraft(intensity: 5));
+    expect(await db.crisisMedicationsFor(id), isEmpty);
+  });
+
   test('persists occurredAt from the draft (or NOW when null)', () async {
     final whenExplicit = DateTime.utc(2026, 5, 25, 14, 30);
     final id1 = await useCase.register(draft: CrisisDraft(intensity: 5, occurredAt: whenExplicit));

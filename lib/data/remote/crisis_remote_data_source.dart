@@ -29,6 +29,11 @@ abstract class CrisisRemoteDataSource {
   /// crisis in practice but the schema allows many.
   Future<void> setTriggers(String crisisId, Iterable<String> codes);
 
+  /// Replace the medications logged against a crisis. Delete-then-insert of
+  /// the full rows (each carries its own id + name snapshot) so the server
+  /// reflects current local state.
+  Future<void> setMedications(String crisisId, Iterable<db.CrisisMedication> rows);
+
   /// Fetch every crisis updated server-side strictly after [since], for the
   /// given [userId]. RLS will only return the user's own rows even if a bug
   /// asks for someone else's.
@@ -72,6 +77,26 @@ class SupabaseCrisisRemoteDataSource implements CrisisRemoteDataSource {
       for (final c in codes) {'crisis_id': crisisId, 'trigger': c},
     ],
   );
+
+  @override
+  Future<void> setMedications(String crisisId, Iterable<db.CrisisMedication> rows) =>
+      _replaceJoinRows(
+        table: 'crisis_medications',
+        crisisId: crisisId,
+        rows: [
+          for (final m in rows)
+            {
+              'id': m.id,
+              'crisis_id': m.crisisId,
+              'medication_id': m.medicationId,
+              'medication_name_snapshot': m.medicationNameSnapshot,
+              'dose_mg': m.doseMg,
+              'taken_at': m.takenAt.toUtc().toIso8601String(),
+              'relief_at': m.reliefAt?.toUtc().toIso8601String(),
+              'effective': m.effective,
+            },
+        ],
+      );
 
   Future<void> _replaceJoinRows({
     required String table,

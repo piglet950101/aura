@@ -42,6 +42,14 @@ void main() {
     );
   }
 
+  // The medication picker subscribes to a Drift watch stream; disposing the
+  // tree and pumping lets its stream-cancel cleanup timer fire before the
+  // test framework's no-pending-timers invariant runs.
+  Future<void> teardownTree(WidgetTester tester) async {
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
   testWidgets('save is disabled until intensity is chosen', (tester) async {
     await tester.pumpWidget(harness());
     await tester.pump();
@@ -51,6 +59,8 @@ void main() {
     expect(save, findsOneWidget);
     final btn = tester.widget<ElevatedButton>(save);
     expect(btn.onPressed, isNull); // disabled
+
+    await teardownTree(tester);
   });
 
   testWidgets('tapping an intensity dot enables save', (tester) async {
@@ -63,6 +73,8 @@ void main() {
 
     final btn = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Guardar crise'));
     expect(btn.onPressed, isNotNull);
+
+    await teardownTree(tester);
   });
 
   testWidgets('symptom chips toggle on tap', (tester) async {
@@ -84,6 +96,8 @@ void main() {
     await tester.tap(find.text('Náusea'));
     await tester.pump();
     expect(find.byIcon(Icons.check), findsOneWidget);
+
+    await teardownTree(tester);
   });
 
   testWidgets('trigger chip selects (and re-tapping clears)', (tester) async {
@@ -106,6 +120,8 @@ void main() {
     // The CTA stays disabled because we never set intensity.
     final btn = tester.widget<ElevatedButton>(find.widgetWithText(ElevatedButton, 'Guardar crise'));
     expect(btn.onPressed, isNull);
+
+    await teardownTree(tester);
   });
 }
 

@@ -344,6 +344,14 @@ WHERE user_id = ? AND occurred_at >= ?
 
   Future<void> insertMedication(MedicationsCompanion row) => into(medications).insert(row);
 
+  Future<void> insertCrisisMedication(CrisisMedicationsCompanion row) =>
+      into(crisisMedications).insert(row);
+
+  /// Medication doses logged against a crisis (for sync + detail views).
+  Future<List<CrisisMedication>> crisisMedicationsFor(String crisisId) {
+    return (select(crisisMedications)..where((cm) => cm.crisisId.equals(crisisId))).get();
+  }
+
   Future<void> updateMedicationFields({
     required String id,
     required String name,

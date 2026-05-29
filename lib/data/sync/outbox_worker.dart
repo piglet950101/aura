@@ -149,8 +149,10 @@ class OutboxWorker {
         await _crisisRemote.upsert(row);
         final symptoms = await _db.symptomsFor(entry.entityId);
         final triggers = await _db.triggersFor(entry.entityId);
+        final medications = await _db.crisisMedicationsFor(entry.entityId);
         await _crisisRemote.setSymptoms(entry.entityId, symptoms);
         await _crisisRemote.setTriggers(entry.entityId, triggers);
+        await _crisisRemote.setMedications(entry.entityId, medications);
       case OutboxOperation.delete:
         // The Supabase schema has ON DELETE CASCADE on the join tables, so
         // a single delete here removes the symptoms/triggers too.

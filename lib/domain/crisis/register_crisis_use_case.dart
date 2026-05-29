@@ -66,6 +66,19 @@ class RegisterCrisisUseCase {
             .insert(CrisisTriggersCompanion.insert(crisisId: id, trigger: t.code));
       }
 
+      if (draft.takenMedicationId != null) {
+        await _db.insertCrisisMedication(
+          CrisisMedicationsCompanion.insert(
+            id: _uuid.v4(),
+            crisisId: id,
+            medicationId: Value(draft.takenMedicationId),
+            medicationNameSnapshot: draft.takenMedicationName ?? 'Medicação',
+            doseMg: Value(draft.takenMedicationDoseMg),
+            takenAt: occurredAt,
+          ),
+        );
+      }
+
       await _db.enqueueOutbox(
         entityType: OutboxEntityType.crisis,
         entityId: id,

@@ -211,6 +211,7 @@ class _FakeCrisisRemote implements CrisisRemoteDataSource {
 
   final Map<String, List<String>> symptomsSet = {};
   final Map<String, List<String>> triggersSet = {};
+  final Map<String, List<CrisisMedication>> medicationsSet = {};
 
   @override
   Future<void> setSymptoms(String crisisId, Iterable<String> codes) async {
@@ -222,6 +223,12 @@ class _FakeCrisisRemote implements CrisisRemoteDataSource {
   Future<void> setTriggers(String crisisId, Iterable<String> codes) async {
     _maybeFail();
     triggersSet[crisisId] = codes.toList();
+  }
+
+  @override
+  Future<void> setMedications(String crisisId, Iterable<CrisisMedication> rows) async {
+    _maybeFail();
+    medicationsSet[crisisId] = rows.toList();
   }
 }
 

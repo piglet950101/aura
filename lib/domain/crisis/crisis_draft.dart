@@ -10,6 +10,9 @@ class CrisisDraft {
     this.symptoms = const <Symptom>{},
     this.trigger,
     this.notes,
+    this.takenMedicationId,
+    this.takenMedicationName,
+    this.takenMedicationDoseMg,
   });
 
   /// When the crisis started. Null means "use NOW when saving" — most users
@@ -30,7 +33,17 @@ class CrisisDraft {
 
   final String? notes;
 
+  /// The medication the user logged as taken during this crisis (from their
+  /// catalog), or null for "none". Name and dose are snapshotted at selection
+  /// so the saved crisis_medication survives the medication later being
+  /// archived/renamed.
+  final String? takenMedicationId;
+  final String? takenMedicationName;
+  final double? takenMedicationDoseMg;
+
   bool get isSaveable => intensity != null;
+
+  bool get hasMedication => takenMedicationId != null;
 
   CrisisDraft copyWith({
     DateTime? occurredAt,
@@ -39,6 +52,10 @@ class CrisisDraft {
     CrisisTrigger? trigger,
     bool clearTrigger = false,
     String? notes,
+    String? takenMedicationId,
+    String? takenMedicationName,
+    double? takenMedicationDoseMg,
+    bool clearMedication = false,
   }) {
     return CrisisDraft(
       occurredAt: occurredAt ?? this.occurredAt,
@@ -46,6 +63,13 @@ class CrisisDraft {
       symptoms: symptoms ?? this.symptoms,
       trigger: clearTrigger ? null : (trigger ?? this.trigger),
       notes: notes ?? this.notes,
+      takenMedicationId: clearMedication ? null : (takenMedicationId ?? this.takenMedicationId),
+      takenMedicationName: clearMedication
+          ? null
+          : (takenMedicationName ?? this.takenMedicationName),
+      takenMedicationDoseMg: clearMedication
+          ? null
+          : (takenMedicationDoseMg ?? this.takenMedicationDoseMg),
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/features/crisis/crisis_registration_controller.dart';
 import 'package:aura/features/crisis/widgets/intensity_picker.dart';
-import 'package:aura/features/crisis/widgets/medication_card.dart';
+import 'package:aura/features/crisis/widgets/medication_picker.dart';
 import 'package:aura/features/crisis/widgets/symptom_chips.dart';
 import 'package:aura/features/crisis/widgets/trigger_chips.dart';
 import 'package:flutter/material.dart';
@@ -121,8 +121,8 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                     TriggerChips(selected: draft.trigger, onSelected: notifier.setTrigger),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Medicação'),
-                    const MedicationCard(),
+                    const _SectionLabel('Medicação tomada'),
+                    const MedicationPicker(),
                     const SizedBox(height: AuraSpacing.xxxl),
                   ],
                 ),
