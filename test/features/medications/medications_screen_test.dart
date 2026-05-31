@@ -11,6 +11,7 @@ import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/domain/medication/medication_repository.dart';
 import 'package:aura/features/medications/medications_screen.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,12 @@ void main() {
         _StubAuth(const AppUser(id: 'u-marta', isAnonymous: true)),
       ),
     ],
-    child: const MaterialApp(home: MedicationsScreen()),
+    child: const MaterialApp(
+      locale: Locale('pt'),
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      home: MedicationsScreen(),
+    ),
   );
 
   Future<void> settle(WidgetTester tester) async {

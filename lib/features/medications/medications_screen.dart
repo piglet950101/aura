@@ -6,6 +6,8 @@ import 'package:aura/data/local/database.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/features/medications/medication_edit_screen.dart';
 import 'package:aura/features/medications/medications_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,16 +28,17 @@ class MedicationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final medsAsync = ref.watch(activeMedicationsProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Voltar',
+          tooltip: l.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Medicação', style: AuraTextStyles.screenTitle),
+        title: Text(l.medication, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -67,7 +70,7 @@ class MedicationsScreen extends ConsumerWidget {
                     child: CircularProgressIndicator(strokeWidth: 2, color: AuraColors.accent),
                   ),
                 ),
-                error: (e, _) => _ErrorCard(message: '$e'),
+                error: (e, _) => _ErrorCard(message: l.medsLoadError('$e')),
               ),
             ),
             _AddBar(onAdd: () => _openEditor(context)),
@@ -164,6 +167,7 @@ class _KindBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final isSos = kind == MedicationKind.sos;
     final color = isSos ? AuraColors.intensityHigh : AuraColors.intensityLow;
     return Container(
@@ -174,7 +178,7 @@ class _KindBadge extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
-        kind.labelPt,
+        medicationKindLabel(l, kind),
         style: AuraTextStyles.caption.copyWith(color: color, fontWeight: FontWeight.w700),
       ),
     );
@@ -186,6 +190,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AuraSpacing.xxl),
@@ -195,17 +200,12 @@ class _EmptyState extends StatelessWidget {
             const Icon(Icons.medication_outlined, size: 40, color: AuraColors.textMuted),
             const SizedBox(height: AuraSpacing.lg),
             Text(
-              'Sem medicações',
+              l.noMedications,
               style: AuraTextStyles.screenTitle.copyWith(fontSize: 18),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AuraSpacing.sm),
-            const Text(
-              'Adiciona os teus medicamentos (SOS ou preventivos) para os '
-              'registares rapidamente durante uma crise.',
-              style: AuraTextStyles.bodySmall,
-              textAlign: TextAlign.center,
-            ),
+            Text(l.noMedicationsBody, style: AuraTextStyles.bodySmall, textAlign: TextAlign.center),
           ],
         ),
       ),
@@ -223,7 +223,7 @@ class _ErrorCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AuraSpacing.xl),
         child: Text(
-          'Não foi possível carregar as medicações: $message',
+          message,
           style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error),
           textAlign: TextAlign.center,
         ),
@@ -239,6 +239,7 @@ class _AddBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AuraSpacing.xl,
@@ -262,9 +263,9 @@ class _AddBar extends StatelessWidget {
           ),
           onPressed: onAdd,
           icon: const Icon(Icons.add, size: 20),
-          label: const Text(
-            'Adicionar medicação',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+          label: Text(
+            l.addMedication,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
           ),
         ),
       ),

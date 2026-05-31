@@ -6,6 +6,7 @@ import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/features/stats/stats_screen.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ void main() {
   late AuraDatabase db;
 
   setUpAll(() async {
-    await initializeDateFormatting('pt_PT');
+    await initializeDateFormatting();
   });
 
   setUp(() {
@@ -34,7 +35,12 @@ void main() {
         _StubAuth(const AppUser(id: 'u-marta', isAnonymous: true)),
       ),
     ],
-    child: const MaterialApp(home: StatsScreen()),
+    child: const MaterialApp(
+      locale: Locale('pt'),
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      home: StatsScreen(),
+    ),
   );
 
   testWidgets('renders stat sections from seeded data', (tester) async {

@@ -24,10 +24,11 @@ void main() {
   late AuraDatabase db;
 
   setUpAll(() async {
-    // The home-screen greeting uses DateFormat('pt_PT'); production code
-    // initializes this in bootstrap.dart. Tests pump AuraApp directly so
-    // we have to do the same once before any test runs.
-    await initializeDateFormatting('pt_PT');
+    // The home-screen greeting uses DateFormat for the active locale; production
+    // code initializes this in bootstrap.dart. Tests pump AuraApp directly so
+    // we have to do the same once before any test runs. Initialize all locales
+    // since the app can switch language at runtime.
+    await initializeDateFormatting();
   });
 
   setUp(() {

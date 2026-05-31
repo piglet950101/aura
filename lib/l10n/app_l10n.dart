@@ -379,6 +379,24 @@ abstract class AppL10n {
   /// **'Não foi possível carregar o calendário: {error}'**
   String calendarLoadError(Object error);
 
+  /// No description provided for @daySemantic.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia {n}'**
+  String daySemantic(int n);
+
+  /// No description provided for @crisesCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 crise} other{{count} crises}}'**
+  String crisesCount(int count);
+
+  /// No description provided for @withAura.
+  ///
+  /// In pt, this message translates to:
+  /// **', com aura'**
+  String get withAura;
+
   /// No description provided for @newCrisis.
   ///
   /// In pt, this message translates to:
@@ -474,6 +492,48 @@ abstract class AppL10n {
   /// In pt, this message translates to:
   /// **'Guardar crise'**
   String get saveCrisis;
+
+  /// No description provided for @intensityScaleMin.
+  ///
+  /// In pt, this message translates to:
+  /// **'leve'**
+  String get intensityScaleMin;
+
+  /// No description provided for @intensityScaleMax.
+  ///
+  /// In pt, this message translates to:
+  /// **'incapacitante'**
+  String get intensityScaleMax;
+
+  /// No description provided for @intensityLabelMild.
+  ///
+  /// In pt, this message translates to:
+  /// **'LEVE'**
+  String get intensityLabelMild;
+
+  /// No description provided for @intensityLabelModerate.
+  ///
+  /// In pt, this message translates to:
+  /// **'MODERADA'**
+  String get intensityLabelModerate;
+
+  /// No description provided for @intensityLabelIntense.
+  ///
+  /// In pt, this message translates to:
+  /// **'INTENSA'**
+  String get intensityLabelIntense;
+
+  /// No description provided for @intensityLabelDisabling.
+  ///
+  /// In pt, this message translates to:
+  /// **'INCAPACITANTE'**
+  String get intensityLabelDisabling;
+
+  /// No description provided for @intensityOutOf.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade {n} de 10'**
+  String intensityOutOf(int n);
 
   /// No description provided for @symptomNausea.
   ///
@@ -691,6 +751,60 @@ abstract class AppL10n {
   /// **'Arquivar'**
   String get archive;
 
+  /// No description provided for @fieldReminder.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lembrete diário'**
+  String get fieldReminder;
+
+  /// No description provided for @reminderNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem lembrete'**
+  String get reminderNone;
+
+  /// No description provided for @reminderSet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Definir hora'**
+  String get reminderSet;
+
+  /// No description provided for @reminderClear.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar'**
+  String get reminderClear;
+
+  /// No description provided for @reminderOnlyPreventive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível apenas para medicação preventiva.'**
+  String get reminderOnlyPreventive;
+
+  /// No description provided for @reminderAt.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário às {time}'**
+  String reminderAt(String time);
+
+  /// No description provided for @medsReminderTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hora da medicação preventiva'**
+  String get medsReminderTitle;
+
+  /// No description provided for @medsReminderBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Está na hora de tomar {name}.'**
+  String medsReminderBody(String name);
+
+  /// No description provided for @notificationPermissionDenied.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem permissão de notificações — o lembrete não vai disparar.'**
+  String get notificationPermissionDenied;
+
   /// No description provided for @sectionProfile.
   ///
   /// In pt, this message translates to:
@@ -805,6 +919,90 @@ abstract class AppL10n {
   /// **'English'**
   String get langEn;
 
+  /// No description provided for @sectionSupportAndPro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Suporte e versão Pro'**
+  String get sectionSupportAndPro;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Contactar suporte'**
+  String get contactSupport;
+
+  /// No description provided for @contactSupportDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuda, comentário ou sugestões'**
+  String get contactSupportDesc;
+
+  /// No description provided for @rateApp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Avaliar app'**
+  String get rateApp;
+
+  /// No description provided for @rateAppDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deixa uma avaliação na loja'**
+  String get rateAppDesc;
+
+  /// No description provided for @shareApp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Partilhar app'**
+  String get shareApp;
+
+  /// No description provided for @shareAppDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recomenda a um amigo'**
+  String get shareAppDesc;
+
+  /// No description provided for @unlockPro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desbloquear versão Pro'**
+  String get unlockPro;
+
+  /// No description provided for @unlockProDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Funcionalidades premium em breve'**
+  String get unlockProDesc;
+
+  /// No description provided for @shareAppText.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acompanha as tuas enxaquecas com a AURA · Diário da Enxaqueca.'**
+  String get shareAppText;
+
+  /// No description provided for @supportEmailSubject.
+  ///
+  /// In pt, this message translates to:
+  /// **'AURA · Suporte'**
+  String get supportEmailSubject;
+
+  /// No description provided for @proComingSoon.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em breve — a versão Pro chega após o lançamento na loja.'**
+  String get proComingSoon;
+
+  /// No description provided for @fieldEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Email'**
+  String get fieldEmail;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'exemplo@dominio.com'**
+  String get emailHint;
+
   /// No description provided for @profileTitle.
   ///
   /// In pt, this message translates to:
@@ -888,6 +1086,162 @@ abstract class AppL10n {
   /// In pt, this message translates to:
   /// **'Não foi possível gerar o relatório: {error}'**
   String reportError(Object error);
+
+  /// No description provided for @appointments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Consulta Médica'**
+  String get appointments;
+
+  /// No description provided for @appointmentsIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Histórico, próximas consultas e relatório para o médico.'**
+  String get appointmentsIntro;
+
+  /// No description provided for @generateReport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerar relatório médico'**
+  String get generateReport;
+
+  /// No description provided for @generateReportDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'PDF com as crises e medicação para a próxima consulta'**
+  String get generateReportDesc;
+
+  /// No description provided for @sectionUpcoming.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximas consultas'**
+  String get sectionUpcoming;
+
+  /// No description provided for @sectionPast.
+  ///
+  /// In pt, this message translates to:
+  /// **'Passadas'**
+  String get sectionPast;
+
+  /// No description provided for @noAppointments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem consultas registadas'**
+  String get noAppointments;
+
+  /// No description provided for @noAppointmentsBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adiciona a próxima consulta para a teres à mão.'**
+  String get noAppointmentsBody;
+
+  /// No description provided for @addAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar consulta'**
+  String get addAppointment;
+
+  /// No description provided for @newAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova consulta'**
+  String get newAppointment;
+
+  /// No description provided for @editAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar consulta'**
+  String get editAppointment;
+
+  /// No description provided for @saveAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardar consulta'**
+  String get saveAppointment;
+
+  /// No description provided for @appointmentSaved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Consulta guardada'**
+  String get appointmentSaved;
+
+  /// No description provided for @appointmentUpdated.
+  ///
+  /// In pt, this message translates to:
+  /// **'Consulta atualizada'**
+  String get appointmentUpdated;
+
+  /// No description provided for @deleteAppointmentTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Apagar consulta'**
+  String get deleteAppointmentTitle;
+
+  /// No description provided for @deleteAppointmentBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'A consulta será removida permanentemente.'**
+  String get deleteAppointmentBody;
+
+  /// No description provided for @fieldDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get fieldDate;
+
+  /// No description provided for @fieldTime.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hora'**
+  String get fieldTime;
+
+  /// No description provided for @fieldDoctor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Médico'**
+  String get fieldDoctor;
+
+  /// No description provided for @doctorHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: Dr. Silva'**
+  String get doctorHint;
+
+  /// No description provided for @fieldLocation.
+  ///
+  /// In pt, this message translates to:
+  /// **'Local'**
+  String get fieldLocation;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: Hospital de Santa Maria'**
+  String get locationHint;
+
+  /// No description provided for @fieldAppointmentNotes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notas · opcional'**
+  String get fieldAppointmentNotes;
+
+  /// No description provided for @appointmentNotesHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tópicos a discutir com o médico'**
+  String get appointmentNotesHint;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher data'**
+  String get selectDate;
+
+  /// No description provided for @selectTime.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher hora'**
+  String get selectTime;
 
   /// No description provided for @statsTitle.
   ///

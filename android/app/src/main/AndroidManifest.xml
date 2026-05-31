@@ -1,4 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Local notifications for preventive medication daily reminders.
+         POST_NOTIFICATIONS is a runtime permission on Android 13+.
+         SCHEDULE_EXACT_ALARM is user-grantable on Android 12+; the plugin
+         falls back to inexact scheduling if it isn't granted.
+         RECEIVE_BOOT_COMPLETED lets the plugin reschedule pending alarms
+         after a reboot so the user doesn't silently miss a dose. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:label="aura"
         android:name="${applicationName}"
@@ -40,6 +53,19 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Settings → Contactar Suporte uses url_launcher's mailto: scheme.
+             Android 11+ package-visibility forces apps to declare which other
+             intents they want to resolve; without this, canLaunchUrl(mailto:)
+             returns false even when Gmail (or similar) is installed. -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="mailto"/>
+        </intent>
+        <!-- Settings → Avaliar/Partilhar app open https Play Store URLs. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

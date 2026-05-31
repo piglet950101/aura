@@ -3,6 +3,8 @@ import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/crisis/symptom.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 
 /// Multi-select chip grid for symptoms (aura is excluded — it has its own
@@ -22,14 +24,19 @@ class SymptomChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final anySelected = Symptom.chips.any(selected.contains);
     return Wrap(
       spacing: AuraSpacing.sm,
       runSpacing: AuraSpacing.sm,
       children: [
         for (final s in Symptom.chips)
-          _ChipTile(label: s.labelPt, selected: selected.contains(s), onTap: () => onToggle(s)),
-        _ChipTile(label: 'Sem sintomas', selected: !anySelected, onTap: onClear),
+          _ChipTile(
+            label: symptomLabel(l, s),
+            selected: selected.contains(s),
+            onTap: () => onToggle(s),
+          ),
+        _ChipTile(label: l.noSymptoms, selected: !anySelected, onTap: onClear),
       ],
     );
   }

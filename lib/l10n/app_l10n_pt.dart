@@ -165,6 +165,25 @@ class AppL10nPt extends AppL10n {
   }
 
   @override
+  String daySemantic(int n) {
+    return 'Dia $n';
+  }
+
+  @override
+  String crisesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count crises',
+      one: '1 crise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get withAura => ', com aura';
+
+  @override
   String get newCrisis => 'Nova crise';
 
   @override
@@ -215,6 +234,29 @@ class AppL10nPt extends AppL10n {
 
   @override
   String get saveCrisis => 'Guardar crise';
+
+  @override
+  String get intensityScaleMin => 'leve';
+
+  @override
+  String get intensityScaleMax => 'incapacitante';
+
+  @override
+  String get intensityLabelMild => 'LEVE';
+
+  @override
+  String get intensityLabelModerate => 'MODERADA';
+
+  @override
+  String get intensityLabelIntense => 'INTENSA';
+
+  @override
+  String get intensityLabelDisabling => 'INCAPACITANTE';
+
+  @override
+  String intensityOutOf(int n) {
+    return 'Intensidade $n de 10';
+  }
 
   @override
   String get symptomNausea => 'Náusea';
@@ -329,6 +371,38 @@ class AppL10nPt extends AppL10n {
   String get archive => 'Arquivar';
 
   @override
+  String get fieldReminder => 'Lembrete diário';
+
+  @override
+  String get reminderNone => 'Sem lembrete';
+
+  @override
+  String get reminderSet => 'Definir hora';
+
+  @override
+  String get reminderClear => 'Limpar';
+
+  @override
+  String get reminderOnlyPreventive => 'Disponível apenas para medicação preventiva.';
+
+  @override
+  String reminderAt(String time) {
+    return 'Diário às $time';
+  }
+
+  @override
+  String get medsReminderTitle => 'Hora da medicação preventiva';
+
+  @override
+  String medsReminderBody(String name) {
+    return 'Está na hora de tomar $name.';
+  }
+
+  @override
+  String get notificationPermissionDenied =>
+      'Sem permissão de notificações — o lembrete não vai disparar.';
+
+  @override
   String get sectionProfile => 'Perfil';
 
   @override
@@ -390,6 +464,48 @@ class AppL10nPt extends AppL10n {
   String get langEn => 'English';
 
   @override
+  String get sectionSupportAndPro => 'Suporte e versão Pro';
+
+  @override
+  String get contactSupport => 'Contactar suporte';
+
+  @override
+  String get contactSupportDesc => 'Ajuda, comentário ou sugestões';
+
+  @override
+  String get rateApp => 'Avaliar app';
+
+  @override
+  String get rateAppDesc => 'Deixa uma avaliação na loja';
+
+  @override
+  String get shareApp => 'Partilhar app';
+
+  @override
+  String get shareAppDesc => 'Recomenda a um amigo';
+
+  @override
+  String get unlockPro => 'Desbloquear versão Pro';
+
+  @override
+  String get unlockProDesc => 'Funcionalidades premium em breve';
+
+  @override
+  String get shareAppText => 'Acompanha as tuas enxaquecas com a AURA · Diário da Enxaqueca.';
+
+  @override
+  String get supportEmailSubject => 'AURA · Suporte';
+
+  @override
+  String get proComingSoon => 'Em breve — a versão Pro chega após o lançamento na loja.';
+
+  @override
+  String get fieldEmail => 'Email';
+
+  @override
+  String get emailHint => 'exemplo@dominio.com';
+
+  @override
   String get profileTitle => 'Perfil';
 
   @override
@@ -432,6 +548,84 @@ class AppL10nPt extends AppL10n {
   String reportError(Object error) {
     return 'Não foi possível gerar o relatório: $error';
   }
+
+  @override
+  String get appointments => 'Consulta Médica';
+
+  @override
+  String get appointmentsIntro => 'Histórico, próximas consultas e relatório para o médico.';
+
+  @override
+  String get generateReport => 'Gerar relatório médico';
+
+  @override
+  String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
+
+  @override
+  String get sectionUpcoming => 'Próximas consultas';
+
+  @override
+  String get sectionPast => 'Passadas';
+
+  @override
+  String get noAppointments => 'Sem consultas registadas';
+
+  @override
+  String get noAppointmentsBody => 'Adiciona a próxima consulta para a teres à mão.';
+
+  @override
+  String get addAppointment => 'Adicionar consulta';
+
+  @override
+  String get newAppointment => 'Nova consulta';
+
+  @override
+  String get editAppointment => 'Editar consulta';
+
+  @override
+  String get saveAppointment => 'Guardar consulta';
+
+  @override
+  String get appointmentSaved => 'Consulta guardada';
+
+  @override
+  String get appointmentUpdated => 'Consulta atualizada';
+
+  @override
+  String get deleteAppointmentTitle => 'Apagar consulta';
+
+  @override
+  String get deleteAppointmentBody => 'A consulta será removida permanentemente.';
+
+  @override
+  String get fieldDate => 'Data';
+
+  @override
+  String get fieldTime => 'Hora';
+
+  @override
+  String get fieldDoctor => 'Médico';
+
+  @override
+  String get doctorHint => 'Ex.: Dr. Silva';
+
+  @override
+  String get fieldLocation => 'Local';
+
+  @override
+  String get locationHint => 'Ex.: Hospital de Santa Maria';
+
+  @override
+  String get fieldAppointmentNotes => 'Notas · opcional';
+
+  @override
+  String get appointmentNotesHint => 'Tópicos a discutir com o médico';
+
+  @override
+  String get selectDate => 'Escolher data';
+
+  @override
+  String get selectTime => 'Escolher hora';
 
   @override
   String get statsTitle => 'Dados';
@@ -629,6 +823,25 @@ class AppL10nPtBr extends AppL10nPt {
   }
 
   @override
+  String daySemantic(int n) {
+    return 'Dia $n';
+  }
+
+  @override
+  String crisesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count crises',
+      one: '1 crise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get withAura => ', com aura';
+
+  @override
   String get newCrisis => 'Nova crise';
 
   @override
@@ -679,6 +892,29 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get saveCrisis => 'Salvar crise';
+
+  @override
+  String get intensityScaleMin => 'leve';
+
+  @override
+  String get intensityScaleMax => 'incapacitante';
+
+  @override
+  String get intensityLabelMild => 'LEVE';
+
+  @override
+  String get intensityLabelModerate => 'MODERADA';
+
+  @override
+  String get intensityLabelIntense => 'INTENSA';
+
+  @override
+  String get intensityLabelDisabling => 'INCAPACITANTE';
+
+  @override
+  String intensityOutOf(int n) {
+    return 'Intensidade $n de 10';
+  }
 
   @override
   String get symptomNausea => 'Náusea';
@@ -793,6 +1029,38 @@ class AppL10nPtBr extends AppL10nPt {
   String get archive => 'Arquivar';
 
   @override
+  String get fieldReminder => 'Lembrete diário';
+
+  @override
+  String get reminderNone => 'Sem lembrete';
+
+  @override
+  String get reminderSet => 'Definir horário';
+
+  @override
+  String get reminderClear => 'Limpar';
+
+  @override
+  String get reminderOnlyPreventive => 'Disponível apenas para medicação preventiva.';
+
+  @override
+  String reminderAt(String time) {
+    return 'Diariamente às $time';
+  }
+
+  @override
+  String get medsReminderTitle => 'Hora da medicação preventiva';
+
+  @override
+  String medsReminderBody(String name) {
+    return 'É hora de tomar $name.';
+  }
+
+  @override
+  String get notificationPermissionDenied =>
+      'Sem permissão de notificações — o lembrete não vai disparar.';
+
+  @override
   String get sectionProfile => 'Perfil';
 
   @override
@@ -854,6 +1122,48 @@ class AppL10nPtBr extends AppL10nPt {
   String get langEn => 'English';
 
   @override
+  String get sectionSupportAndPro => 'Suporte e versão Pro';
+
+  @override
+  String get contactSupport => 'Contatar suporte';
+
+  @override
+  String get contactSupportDesc => 'Ajuda, comentário ou sugestões';
+
+  @override
+  String get rateApp => 'Avaliar app';
+
+  @override
+  String get rateAppDesc => 'Deixe uma avaliação na loja';
+
+  @override
+  String get shareApp => 'Compartilhar app';
+
+  @override
+  String get shareAppDesc => 'Recomende a um amigo';
+
+  @override
+  String get unlockPro => 'Desbloquear versão Pro';
+
+  @override
+  String get unlockProDesc => 'Funcionalidades premium em breve';
+
+  @override
+  String get shareAppText => 'Acompanhe suas enxaquecas com a AURA · Diário da Enxaqueca.';
+
+  @override
+  String get supportEmailSubject => 'AURA · Suporte';
+
+  @override
+  String get proComingSoon => 'Em breve — a versão Pro chega após o lançamento na loja.';
+
+  @override
+  String get fieldEmail => 'Email';
+
+  @override
+  String get emailHint => 'exemplo@dominio.com';
+
+  @override
   String get profileTitle => 'Perfil';
 
   @override
@@ -896,6 +1206,84 @@ class AppL10nPtBr extends AppL10nPt {
   String reportError(Object error) {
     return 'Não foi possível gerar o relatório: $error';
   }
+
+  @override
+  String get appointments => 'Consulta Médica';
+
+  @override
+  String get appointmentsIntro => 'Histórico, próximas consultas e relatório para o médico.';
+
+  @override
+  String get generateReport => 'Gerar relatório médico';
+
+  @override
+  String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
+
+  @override
+  String get sectionUpcoming => 'Próximas consultas';
+
+  @override
+  String get sectionPast => 'Passadas';
+
+  @override
+  String get noAppointments => 'Sem consultas registradas';
+
+  @override
+  String get noAppointmentsBody => 'Adicione a próxima consulta para tê-la à mão.';
+
+  @override
+  String get addAppointment => 'Adicionar consulta';
+
+  @override
+  String get newAppointment => 'Nova consulta';
+
+  @override
+  String get editAppointment => 'Editar consulta';
+
+  @override
+  String get saveAppointment => 'Salvar consulta';
+
+  @override
+  String get appointmentSaved => 'Consulta salva';
+
+  @override
+  String get appointmentUpdated => 'Consulta atualizada';
+
+  @override
+  String get deleteAppointmentTitle => 'Excluir consulta';
+
+  @override
+  String get deleteAppointmentBody => 'A consulta será removida permanentemente.';
+
+  @override
+  String get fieldDate => 'Data';
+
+  @override
+  String get fieldTime => 'Hora';
+
+  @override
+  String get fieldDoctor => 'Médico';
+
+  @override
+  String get doctorHint => 'Ex.: Dr. Silva';
+
+  @override
+  String get fieldLocation => 'Local';
+
+  @override
+  String get locationHint => 'Ex.: Hospital Santa Maria';
+
+  @override
+  String get fieldAppointmentNotes => 'Notas · opcional';
+
+  @override
+  String get appointmentNotesHint => 'Tópicos a discutir com o médico';
+
+  @override
+  String get selectDate => 'Escolher data';
+
+  @override
+  String get selectTime => 'Escolher hora';
 
   @override
   String get statsTitle => 'Dados';

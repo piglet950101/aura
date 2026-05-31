@@ -2,8 +2,11 @@ import 'package:aura/app/app.dart';
 import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database_provider.dart';
+import 'package:aura/data/notifications/reminder_service_provider.dart';
 import 'package:aura/data/sync/outbox_worker_provider.dart';
+import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/features/settings/locale_provider.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,10 +89,41 @@ Future<void> bootstrap() async {
 
     // Seed the saved language (if any) before first paint.
     final user = container.read(authRepositoryProvider).currentUser;
+    var activeLocale = container.read(localeProvider);
     if (user != null) {
       final profile = await container.read(auraDatabaseProvider).getProfile(user.id);
       if (profile != null) {
-        container.read(localeProvider.notifier).state = localeFromCode(profile.locale);
+        activeLocale = localeFromCode(profile.locale);
+        container.read(localeProvider.notifier).state = activeLocale;
+      }
+    }
+
+    // Re-apply preventive-medication daily reminders so they survive reboots
+    // and app upgrades. Init is idempotent, and rescheduleAll cancels stale
+    // alarms before scheduling the current catalog — safe to run on every
+    // launch. Skipped silently when no user is signed in.
+    if (user != null) {
+      try {
+        final reminderService = container.read(reminderServiceProvider);
+        final l = lookupAppL10n(activeLocale);
+        final meds = await container.read(auraDatabaseProvider).allMedications(user.id);
+        final actionable = meds
+            .where(
+              (m) =>
+                  !m.archived &&
+                  m.kind == MedicationKind.preventive.code &&
+                  m.reminderMinutes != null,
+            )
+            .toList();
+        await reminderService.rescheduleAll(
+          actionable,
+          title: l.medsReminderTitle,
+          bodyFor: (m) => l.medsReminderBody(m.name),
+        );
+        debugPrint('[AURA] Reminders re-applied: ${actionable.length}');
+      } on Object catch (e, st) {
+        // Notifications are non-critical — never block app launch on them.
+        debugPrint('[AURA] Reminder reschedule failed (non-fatal): $e\n$st');
       }
     }
   }

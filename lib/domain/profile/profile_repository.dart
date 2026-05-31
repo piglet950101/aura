@@ -10,12 +10,20 @@ class ProfileRepository {
 
   final AuraDatabase _db;
 
-  Future<void> save({required String userId, String? displayName, int? birthYear, String? sex}) {
+  Future<void> save({
+    required String userId,
+    String? displayName,
+    String? email,
+    int? birthYear,
+    String? sex,
+  }) {
     final name = displayName?.trim();
+    final mail = email?.trim();
     return _db.upsertProfile(
       ProfilesCompanion(
         id: Value(userId),
         displayName: Value(name == null || name.isEmpty ? null : name),
+        email: Value(mail == null || mail.isEmpty ? null : mail),
         birthYear: Value(birthYear),
         sex: Value(sex),
         updatedAt: Value(DateTime.now()),

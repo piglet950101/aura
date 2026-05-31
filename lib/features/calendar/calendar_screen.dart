@@ -6,6 +6,8 @@ import 'package:aura/domain/calendar/month_overview.dart';
 import 'package:aura/domain/crisis/crisis_summary.dart';
 import 'package:aura/features/calendar/calendar_providers.dart';
 import 'package:aura/features/crisis/crisis_registration_screen.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -20,8 +22,6 @@ import 'package:intl/intl.dart';
 class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
 
-  static const _weekdayLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
   void _shiftMonth(WidgetRef ref, int delta) {
     final m = ref.read(calendarMonthProvider);
     ref.read(calendarMonthProvider.notifier).state = DateTime(m.year, m.month + delta);
@@ -29,6 +29,15 @@ class CalendarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    // Monday-first short weekday labels for the current locale. 2024-09-02 is a
+    // Monday, so adding 0..6 days walks Mon→Sun.
+    final weekdayDf = DateFormat.E(localeName);
+    final monday = DateTime(2024, 9, 2);
+    final weekdayLabels = [
+      for (var i = 0; i < 7; i++) weekdayDf.format(monday.add(Duration(days: i))),
+    ];
     final month = ref.watch(calendarMonthProvider);
     final overviewAsync = ref.watch(monthOverviewProvider);
 
@@ -36,10 +45,10 @@ class CalendarScreen extends ConsumerWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Voltar',
+          tooltip: l.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Calendário', style: AuraTextStyles.screenTitle),
+        title: Text(l.calendar, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -72,7 +81,7 @@ class CalendarScreen extends ConsumerWidget {
                   children: [
                     _StatsStrip(overview: overview),
                     const SizedBox(height: AuraSpacing.xl),
-                    const _WeekdayHeader(labels: _weekdayLabels),
+                    _WeekdayHeader(labels: weekdayLabels),
                     const SizedBox(height: AuraSpacing.sm),
                     _MonthGrid(
                       overview: overview,
@@ -92,7 +101,7 @@ class CalendarScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                error: (e, _) => _ErrorCard(message: '$e'),
+                error: (e, _) => _ErrorCard(message: l.calendarLoadError('$e')),
               ),
             ],
           ),
@@ -149,19 +158,21 @@ class _MonthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final raw = DateFormat('MMMM yyyy', 'pt_PT').format(month);
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final raw = DateFormat('MMMM yyyy', localeName).format(month);
     final label = raw.isEmpty ? raw : '${raw[0].toUpperCase()}${raw.substring(1)}';
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          tooltip: 'Mês anterior',
+          tooltip: l.monthPrev,
           icon: const Icon(Icons.chevron_left, color: AuraColors.textSecondary),
           onPressed: onPrev,
         ),
         Text(label, style: AuraTextStyles.screenTitle.copyWith(fontSize: 20)),
         IconButton(
-          tooltip: 'Mês seguinte',
+          tooltip: l.monthNext,
           icon: const Icon(Icons.chevron_right, color: AuraColors.textSecondary),
           onPressed: onNext,
         ),
@@ -181,22 +192,24 @@ class _StatsStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final avg = overview.averageIntensity;
-    final avgText = avg == null ? '—' : NumberFormat('0.0', 'pt_PT').format(avg);
+    final avgText = avg == null ? '—' : NumberFormat('0.0', localeName).format(avg);
     return Row(
       children: [
         Expanded(
-          child: _StatTile(value: '${overview.totalCrises}', label: 'Crises'),
+          child: _StatTile(value: '${overview.totalCrises}', label: l.statCrises),
         ),
         const SizedBox(width: AuraSpacing.sm),
         Expanded(
-          child: _StatTile(value: avgText, label: 'Intensidade média'),
+          child: _StatTile(value: avgText, label: l.statAvgIntensity),
         ),
         const SizedBox(width: AuraSpacing.sm),
         Expanded(
           child: _StatTile(
             value: '${overview.affectedDays}/${overview.daysInMonth}',
-            label: 'Dias afetados',
+            label: l.statAffectedDays,
           ),
         ),
       ],
@@ -334,11 +347,12 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final heat = tierColor(tier);
     final filled = tier != IntensityTier.none;
     final semantics = filled
-        ? 'Dia $dayNum, $count ${count == 1 ? 'crise' : 'crises'}${hasAura ? ', com aura' : ''}'
-        : 'Dia $dayNum';
+        ? '${l.daySemantic(dayNum)}, ${l.crisesCount(count)}${hasAura ? l.withAura : ''}'
+        : l.daySemantic(dayNum);
     return Semantics(
       button: true,
       label: semantics,
@@ -399,14 +413,15 @@ class _Legend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Wrap(
       spacing: AuraSpacing.lg,
       runSpacing: AuraSpacing.sm,
       alignment: WrapAlignment.center,
       children: [
-        _LegendItem(color: tierColor(IntensityTier.low), label: 'Leve'),
-        _LegendItem(color: tierColor(IntensityTier.med), label: 'Moderada'),
-        _LegendItem(color: tierColor(IntensityTier.high), label: 'Forte'),
+        _LegendItem(color: tierColor(IntensityTier.low), label: l.legendLeve),
+        _LegendItem(color: tierColor(IntensityTier.med), label: l.legendModerada),
+        _LegendItem(color: tierColor(IntensityTier.high), label: l.legendForte),
       ],
     );
   }
@@ -454,9 +469,11 @@ class _DaySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final now = DateTime.now();
     final isFuture = date.isAfter(DateTime(now.year, now.month, now.day));
-    final titleRaw = DateFormat("EEEE · d 'de' MMMM", 'pt_PT').format(date);
+    final titleRaw = DateFormat.MMMMEEEEd(localeName).format(date);
     final title = titleRaw.isEmpty
         ? titleRaw
         : '${titleRaw[0].toUpperCase()}${titleRaw.substring(1)}';
@@ -473,10 +490,7 @@ class _DaySheet extends StatelessWidget {
             Text(title, style: AuraTextStyles.screenTitle.copyWith(fontSize: 18)),
             const SizedBox(height: AuraSpacing.lg),
             if (crises.isEmpty)
-              Text(
-                isFuture ? 'Dia futuro.' : 'Sem crises registadas neste dia.',
-                style: AuraTextStyles.bodySmall,
-              )
+              Text(isFuture ? l.dayFuture : l.noCrisesThisDay, style: AuraTextStyles.bodySmall)
             else
               ...crises.map((c) => _CrisisRow(crisis: c, onTap: () => onEdit(c.id))),
             if (!isFuture) ...[
@@ -490,7 +504,7 @@ class _DaySheet extends StatelessWidget {
                 ),
                 onPressed: onRegister,
                 icon: const Icon(Icons.add, size: 20),
-                label: const Text('Registar para este dia'),
+                label: Text(l.registerForThisDay),
               ),
             ],
           ],
@@ -508,8 +522,10 @@ class _CrisisRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final tier = IntensityTier.fromIntensity(crisis.intensity);
-    final time = DateFormat('HH:mm', 'pt_PT').format(crisis.occurredAt);
+    final time = DateFormat.Hm(localeName).format(crisis.occurredAt);
     return Padding(
       padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
       child: InkWell(
@@ -532,8 +548,8 @@ class _CrisisRow extends StatelessWidget {
               const SizedBox(width: AuraSpacing.md),
               Expanded(
                 child: Text(
-                  'Intensidade ${crisis.intensity} · ${tierLabel(tier)}'
-                  '${crisis.hasAura ? ' · aura ✨' : ''}',
+                  '${l.intensityValue(crisis.intensity)} · ${tierLabel(l, tier)}'
+                  '${crisis.hasAura ? ' · ${l.auraTag} ✨' : ''}',
                   style: AuraTextStyles.body.copyWith(fontSize: 14),
                 ),
               ),
@@ -562,10 +578,7 @@ class _ErrorCard extends StatelessWidget {
         border: Border.all(color: AuraColors.error),
         borderRadius: BorderRadius.circular(AuraRadius.lg),
       ),
-      child: Text(
-        'Não foi possível carregar o calendário: $message',
-        style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error),
-      ),
+      child: Text(message, style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error)),
     );
   }
 }
@@ -584,18 +597,5 @@ Color tierColor(IntensityTier tier) {
       return AuraColors.intensityMed;
     case IntensityTier.high:
       return AuraColors.intensityHigh;
-  }
-}
-
-String tierLabel(IntensityTier tier) {
-  switch (tier) {
-    case IntensityTier.none:
-      return 'Sem dor';
-    case IntensityTier.low:
-      return 'Leve';
-    case IntensityTier.med:
-      return 'Moderada';
-    case IntensityTier.high:
-      return 'Forte';
   }
 }

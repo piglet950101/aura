@@ -4,6 +4,7 @@ import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/data/report/report_generator.dart';
 import 'package:aura/features/report/report_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:printing/printing.dart';
@@ -15,6 +16,7 @@ class ReportScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final days = ref.watch(reportPeriodDaysProvider);
     final dataAsync = ref.watch(reportDataProvider);
 
@@ -22,10 +24,10 @@ class ReportScreen extends ConsumerWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Voltar',
+          tooltip: l.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Relatório médico', style: AuraTextStyles.screenTitle),
+        title: Text(l.reportTitle, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -42,13 +44,13 @@ class ReportScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   _PeriodChip(
-                    label: 'Últimos 30 dias',
+                    label: l.periodLast30,
                     selected: days == 30,
                     onTap: () => ref.read(reportPeriodDaysProvider.notifier).state = 30,
                   ),
                   const SizedBox(width: AuraSpacing.sm),
                   _PeriodChip(
-                    label: 'Últimos 90 dias',
+                    label: l.periodLast90,
                     selected: days == 90,
                     onTap: () => ref.read(reportPeriodDaysProvider.notifier).state = 90,
                   ),
@@ -70,7 +72,7 @@ class ReportScreen extends ConsumerWidget {
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(AuraSpacing.xl),
                   child: Text(
-                    'Não foi possível gerar o relatório: $e',
+                    l.reportError(e),
                     style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error),
                   ),
                 ),

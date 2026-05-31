@@ -8,6 +8,8 @@ import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/features/crisis/crisis_registration_controller.dart';
 import 'package:aura/features/medications/medication_edit_screen.dart';
 import 'package:aura/features/medications/medications_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,6 +22,7 @@ class MedicationPicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final draft = ref.watch(crisisDraftProvider);
     final meds = ref.watch(activeMedicationsProvider).valueOrNull ?? const <Medication>[];
     final selectedName = draft.takenMedicationName;
@@ -57,7 +60,7 @@ class MedicationPicker extends ConsumerWidget {
             const SizedBox(width: AuraSpacing.md),
             Expanded(
               child: Text(
-                hasSelection ? (selectedName ?? 'Medicação') : 'Nenhuma medicação',
+                hasSelection ? (selectedName ?? l.medication) : l.noMedicationLabel,
                 style: AuraTextStyles.body.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -66,7 +69,7 @@ class MedicationPicker extends ConsumerWidget {
               ),
             ),
             Text(
-              hasSelection ? 'Mudar' : 'Adicionar',
+              hasSelection ? l.changeAction : l.addAction,
               style: AuraTextStyles.caption.copyWith(
                 color: AuraColors.accent,
                 fontWeight: FontWeight.w700,
@@ -80,6 +83,7 @@ class MedicationPicker extends ConsumerWidget {
   }
 
   Future<void> _openSheet(BuildContext context, WidgetRef ref, List<Medication> meds) {
+    final l = AppL10n.of(context);
     final notifier = ref.read(crisisDraftProvider.notifier);
     final draft = ref.read(crisisDraftProvider);
     final selectedId = draft.takenMedicationId;
@@ -107,10 +111,10 @@ class MedicationPicker extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Medicação tomada', style: AuraTextStyles.screenTitle),
+              Text(l.sectionMedicationTaken, style: AuraTextStyles.screenTitle),
               const SizedBox(height: AuraSpacing.lg),
               _Option(
-                label: 'Nada tomado',
+                label: l.nothingTaken,
                 selected: !draft.hasMedication,
                 onTap: () {
                   notifier.clearMedication();
@@ -149,7 +153,7 @@ class MedicationPicker extends ConsumerWidget {
                   );
                 },
                 icon: const Icon(Icons.add, size: 20, color: AuraColors.accent),
-                label: const Text('Adicionar outra', style: TextStyle(color: AuraColors.accent)),
+                label: Text(l.addAnother, style: const TextStyle(color: AuraColors.accent)),
               ),
             ],
           ),
@@ -222,6 +226,7 @@ class _KindTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final color = kind == MedicationKind.sos ? AuraColors.intensityHigh : AuraColors.intensityLow;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm, vertical: 2),
@@ -231,7 +236,7 @@ class _KindTag extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
-        kind.labelPt,
+        medicationKindLabel(l, kind),
         style: AuraTextStyles.caption.copyWith(color: color, fontWeight: FontWeight.w700),
       ),
     );

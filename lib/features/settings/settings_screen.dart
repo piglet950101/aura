@@ -16,6 +16,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+// TODO(marcelo): replace with the real client-side support address before
+// store launch. Anyone tapping "Contactar suporte" opens their mail client
+// with this as the To: and AURA · Suporte as the subject.
+const _kSupportEmail = 'suporte@aura.app';
 
 /// Settings (Definições): profile, language, GDPR data controls, and about.
 class SettingsScreen extends ConsumerWidget {
@@ -52,6 +58,58 @@ class SettingsScreen extends ConsumerWidget {
     } on Object catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(l.exportError(e))));
     }
+  }
+
+  Future<void> _contactSupport(BuildContext context, WidgetRef ref) async {
+    final l = AppL10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    // Build a mailto: URI. We hand-encode the query string because
+    // Uri.queryParameters encodes spaces as '+' which most clients show
+    // literally in the subject line.
+    final subject = Uri.encodeQueryComponent(l.supportEmailSubject);
+    final body = await _supportBody(ref);
+    final uri = Uri.parse(
+      'mailto:$_kSupportEmail?subject=$subject&body=${Uri.encodeQueryComponent(body)}',
+    );
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok) {
+      messenger.showSnackBar(SnackBar(content: Text(l.contactSupport)));
+    }
+  }
+
+  /// Email body that pre-fills the user's app version + locale + (if known)
+  /// their saved profile email, so support replies land in their inbox even
+  /// when the device account differs.
+  Future<String> _supportBody(WidgetRef ref) async {
+    final info = await PackageInfo.fromPlatform();
+    final profile = ref.read(profileProvider).valueOrNull;
+    final mail = profile?.email;
+    return '\n\n---\nAURA v${info.version} (${info.buildNumber})\n'
+        '${mail != null && mail.isNotEmpty ? 'email: $mail\n' : ''}';
+  }
+
+  Future<void> _rateApp(BuildContext context) async {
+    final l = AppL10n.of(context);
+    final info = await PackageInfo.fromPlatform();
+    final uri = Uri.parse('https://play.google.com/store/apps/details?id=${info.packageName}');
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.rateApp)));
+    }
+  }
+
+  Future<void> _shareApp(BuildContext context) async {
+    final l = AppL10n.of(context);
+    final info = await PackageInfo.fromPlatform();
+    final url = 'https://play.google.com/store/apps/details?id=${info.packageName}';
+    await Share.share('${l.shareAppText} $url');
+  }
+
+  void _showProComingSoon(BuildContext context) {
+    final l = AppL10n.of(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.proComingSoon), behavior: SnackBarBehavior.floating));
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
@@ -109,8 +167,41 @@ class SettingsScreen extends ConsumerWidget {
               title: profile?.displayName?.isNotEmpty ?? false
                   ? profile!.displayName!
                   : l.sectionProfile,
-              subtitle: l.profileSubtitle,
+              // Once the user fills the email field it's the most useful
+              // identifier to surface here (medical report header, support
+              // replies). Falls back to the generic descriptor otherwise.
+              subtitle: profile?.email?.isNotEmpty ?? false ? profile!.email! : l.profileSubtitle,
               onTap: () => _openProfile(context, profile),
+            ),
+            const SizedBox(height: AuraSpacing.xl),
+
+            _SectionLabel(l.sectionSupportAndPro),
+            _Tile(
+              icon: Icons.support_agent_outlined,
+              title: l.contactSupport,
+              subtitle: l.contactSupportDesc,
+              onTap: () => _contactSupport(context, ref),
+            ),
+            const SizedBox(height: AuraSpacing.sm),
+            _Tile(
+              icon: Icons.star_outline,
+              title: l.rateApp,
+              subtitle: l.rateAppDesc,
+              onTap: () => _rateApp(context),
+            ),
+            const SizedBox(height: AuraSpacing.sm),
+            _Tile(
+              icon: Icons.share_outlined,
+              title: l.shareApp,
+              subtitle: l.shareAppDesc,
+              onTap: () => _shareApp(context),
+            ),
+            const SizedBox(height: AuraSpacing.sm),
+            _Tile(
+              icon: Icons.workspace_premium_outlined,
+              title: l.unlockPro,
+              subtitle: l.unlockProDesc,
+              onTap: () => _showProComingSoon(context),
             ),
             const SizedBox(height: AuraSpacing.xl),
 

@@ -69,6 +69,14 @@ dependencies:
   share_plus: ^10.1.2
   package_info_plus: ^8.1.1
   device_info_plus: ^11.1.1
+  # Mailto for Contactar Suporte and store URLs for Avaliar / Partilhar app.
+  url_launcher: ^6.3.1
+
+  # ----- Local notifications (preventive medication daily reminder) --------
+  flutter_local_notifications: ^18.0.1
+  # Needed for tz.local zone-aware scheduling of recurring daily reminders.
+  timezone: ^0.10.0
+  flutter_timezone: ^4.0.0
 
 dev_dependencies:
   flutter_test:

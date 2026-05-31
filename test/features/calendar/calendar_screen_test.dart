@@ -12,6 +12,7 @@ import 'package:aura/data/local/database.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/features/calendar/calendar_providers.dart';
 import 'package:aura/features/calendar/calendar_screen.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,7 @@ void main() {
   late AuraDatabase db;
 
   setUpAll(() async {
-    await initializeDateFormatting('pt_PT');
+    await initializeDateFormatting();
   });
 
   setUp(() {
@@ -47,7 +48,12 @@ void main() {
       ),
       calendarMonthProvider.overrideWith((ref) => DateTime(2026, 5)),
     ],
-    child: const MaterialApp(home: CalendarScreen()),
+    child: const MaterialApp(
+      locale: Locale('pt'),
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      home: CalendarScreen(),
+    ),
   );
 
   Future<void> settle(WidgetTester tester) async {

@@ -165,6 +165,25 @@ class AppL10nEn extends AppL10n {
   }
 
   @override
+  String daySemantic(int n) {
+    return 'Day $n';
+  }
+
+  @override
+  String crisesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count crises',
+      one: '1 crisis',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get withAura => ', with aura';
+
+  @override
   String get newCrisis => 'New crisis';
 
   @override
@@ -215,6 +234,29 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get saveCrisis => 'Save crisis';
+
+  @override
+  String get intensityScaleMin => 'mild';
+
+  @override
+  String get intensityScaleMax => 'disabling';
+
+  @override
+  String get intensityLabelMild => 'MILD';
+
+  @override
+  String get intensityLabelModerate => 'MODERATE';
+
+  @override
+  String get intensityLabelIntense => 'INTENSE';
+
+  @override
+  String get intensityLabelDisabling => 'DISABLING';
+
+  @override
+  String intensityOutOf(int n) {
+    return 'Intensity $n of 10';
+  }
 
   @override
   String get symptomNausea => 'Nausea';
@@ -329,6 +371,38 @@ class AppL10nEn extends AppL10n {
   String get archive => 'Archive';
 
   @override
+  String get fieldReminder => 'Daily reminder';
+
+  @override
+  String get reminderNone => 'No reminder';
+
+  @override
+  String get reminderSet => 'Set time';
+
+  @override
+  String get reminderClear => 'Clear';
+
+  @override
+  String get reminderOnlyPreventive => 'Available only for preventive medication.';
+
+  @override
+  String reminderAt(String time) {
+    return 'Daily at $time';
+  }
+
+  @override
+  String get medsReminderTitle => 'Time for your preventive medication';
+
+  @override
+  String medsReminderBody(String name) {
+    return 'Time to take $name.';
+  }
+
+  @override
+  String get notificationPermissionDenied =>
+      'Notifications permission denied — the reminder won\'t fire.';
+
+  @override
   String get sectionProfile => 'Profile';
 
   @override
@@ -390,6 +464,48 @@ class AppL10nEn extends AppL10n {
   String get langEn => 'English';
 
   @override
+  String get sectionSupportAndPro => 'Support and Pro';
+
+  @override
+  String get contactSupport => 'Contact support';
+
+  @override
+  String get contactSupportDesc => 'Help, feedback or suggestions';
+
+  @override
+  String get rateApp => 'Rate this app';
+
+  @override
+  String get rateAppDesc => 'Leave a review in the store';
+
+  @override
+  String get shareApp => 'Share this app';
+
+  @override
+  String get shareAppDesc => 'Recommend it to a friend';
+
+  @override
+  String get unlockPro => 'Unlock Pro version';
+
+  @override
+  String get unlockProDesc => 'Premium features coming soon';
+
+  @override
+  String get shareAppText => 'Track your migraines with AURA · Migraine Diary.';
+
+  @override
+  String get supportEmailSubject => 'AURA · Support';
+
+  @override
+  String get proComingSoon => 'Coming soon — Pro unlocks after the store launch.';
+
+  @override
+  String get fieldEmail => 'Email';
+
+  @override
+  String get emailHint => 'name@example.com';
+
+  @override
   String get profileTitle => 'Profile';
 
   @override
@@ -432,6 +548,84 @@ class AppL10nEn extends AppL10n {
   String reportError(Object error) {
     return 'Couldn\'t generate the report: $error';
   }
+
+  @override
+  String get appointments => 'Doctor visits';
+
+  @override
+  String get appointmentsIntro => 'History, upcoming appointments and the report for the doctor.';
+
+  @override
+  String get generateReport => 'Generate medical report';
+
+  @override
+  String get generateReportDesc => 'PDF with crises and medication for the next appointment';
+
+  @override
+  String get sectionUpcoming => 'Upcoming appointments';
+
+  @override
+  String get sectionPast => 'Past';
+
+  @override
+  String get noAppointments => 'No appointments logged';
+
+  @override
+  String get noAppointmentsBody => 'Add the next appointment so you have it handy.';
+
+  @override
+  String get addAppointment => 'Add appointment';
+
+  @override
+  String get newAppointment => 'New appointment';
+
+  @override
+  String get editAppointment => 'Edit appointment';
+
+  @override
+  String get saveAppointment => 'Save appointment';
+
+  @override
+  String get appointmentSaved => 'Appointment saved';
+
+  @override
+  String get appointmentUpdated => 'Appointment updated';
+
+  @override
+  String get deleteAppointmentTitle => 'Delete appointment';
+
+  @override
+  String get deleteAppointmentBody => 'The appointment will be permanently removed.';
+
+  @override
+  String get fieldDate => 'Date';
+
+  @override
+  String get fieldTime => 'Time';
+
+  @override
+  String get fieldDoctor => 'Doctor';
+
+  @override
+  String get doctorHint => 'e.g. Dr. Silva';
+
+  @override
+  String get fieldLocation => 'Location';
+
+  @override
+  String get locationHint => 'e.g. St. Mary\'s Hospital';
+
+  @override
+  String get fieldAppointmentNotes => 'Notes · optional';
+
+  @override
+  String get appointmentNotesHint => 'Topics to discuss with the doctor';
+
+  @override
+  String get selectDate => 'Pick a date';
+
+  @override
+  String get selectTime => 'Pick a time';
 
   @override
   String get statsTitle => 'Data';

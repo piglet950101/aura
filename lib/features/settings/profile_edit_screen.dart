@@ -5,6 +5,7 @@ import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/data/auth/auth_repository_provider.dart';
 import 'package:aura/data/local/database.dart';
 import 'package:aura/features/settings/settings_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,14 +21,8 @@ class ProfileEditScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
-  static const _sexes = <(String, String)>[
-    ('f', 'Feminino'),
-    ('m', 'Masculino'),
-    ('other', 'Outro'),
-    ('na', 'Prefiro não dizer'),
-  ];
-
   late final TextEditingController _name;
+  late final TextEditingController _email;
   late final TextEditingController _year;
   String? _sex;
   bool _saving = false;
@@ -36,6 +31,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   void initState() {
     super.initState();
     _name = TextEditingController(text: widget.existing?.displayName ?? '');
+    _email = TextEditingController(text: widget.existing?.email ?? '');
     _year = TextEditingController(text: widget.existing?.birthYear?.toString() ?? '');
     _sex = widget.existing?.sex;
   }
@@ -43,12 +39,14 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   @override
   void dispose() {
     _name.dispose();
+    _email.dispose();
     _year.dispose();
     super.dispose();
   }
 
   Future<void> _onSave() async {
     if (_saving) return;
+    final l = AppL10n.of(context);
     setState(() => _saving = true);
     try {
       final userId = ref.read(authRepositoryProvider).currentUser?.id;
@@ -59,6 +57,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           .save(
             userId: userId,
             displayName: _name.text,
+            email: _email.text,
             birthYear: (year != null && year >= 1900 && year <= 2100) ? year : null,
             sex: _sex,
           );
@@ -66,7 +65,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       Navigator.of(context).pop();
     } on Object catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao guardar: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.saveError(e))));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -74,14 +73,21 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final sexes = <(String, String)>[
+      ('f', l.sexF),
+      ('m', l.sexM),
+      ('other', l.sexOther),
+      ('na', l.sexNa),
+    ];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
-          tooltip: 'Cancelar',
+          tooltip: l.cancel,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Perfil', style: AuraTextStyles.screenTitle),
+        title: Text(l.profileTitle, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -99,21 +105,27 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Opcional — aparece no cabeçalho do relatório para o médico.',
-                      style: AuraTextStyles.bodySmall,
-                    ),
+                    Text(l.profileIntro, style: AuraTextStyles.bodySmall),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _Label('Nome'),
+                    _Label(l.fieldName),
                     TextField(
                       controller: _name,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(hintText: 'O teu nome'),
+                      decoration: InputDecoration(hintText: l.profileNameHint),
                     ),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _Label('Ano de nascimento'),
+                    _Label(l.fieldEmail),
+                    TextField(
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      decoration: InputDecoration(hintText: l.emailHint),
+                    ),
+                    const SizedBox(height: AuraSpacing.xl),
+
+                    _Label(l.fieldBirthYear),
                     TextField(
                       controller: _year,
                       keyboardType: TextInputType.number,
@@ -121,16 +133,16 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                         FilteringTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(4),
                       ],
-                      decoration: const InputDecoration(hintText: 'Ex.: 1990'),
+                      decoration: InputDecoration(hintText: l.birthYearHint),
                     ),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _Label('Sexo'),
+                    _Label(l.fieldSex),
                     Wrap(
                       spacing: AuraSpacing.sm,
                       runSpacing: AuraSpacing.sm,
                       children: [
-                        for (final (code, label) in _sexes)
+                        for (final (code, label) in sexes)
                           _Choice(
                             label: label,
                             selected: _sex == code,
@@ -232,9 +244,13 @@ class _SaveBar extends StatelessWidget {
                   width: 22,
                   child: CircularProgressIndicator(strokeWidth: 2.5, color: AuraColors.bgBase),
                 )
-              : const Text(
-                  'Guardar',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              : Text(
+                  AppL10n.of(context).save,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
                 ),
         ),
       ),

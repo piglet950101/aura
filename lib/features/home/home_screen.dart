@@ -4,14 +4,17 @@ import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/home/home_stats.dart';
 import 'package:aura/domain/medication/pending_medication_response.dart';
+import 'package:aura/features/appointments/appointments_screen.dart';
 import 'package:aura/features/calendar/calendar_screen.dart';
 import 'package:aura/features/crisis/crisis_registration_screen.dart';
 import 'package:aura/features/home/home_stats_provider.dart';
 import 'package:aura/features/medications/medication_response_providers.dart';
 import 'package:aura/features/medications/medications_screen.dart';
-import 'package:aura/features/report/report_screen.dart';
 import 'package:aura/features/settings/settings_screen.dart';
 import 'package:aura/features/stats/stats_screen.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -23,8 +26,7 @@ import 'package:intl/intl.dart';
 ///   2. Greeting + today's date
 ///   3. "Últimos 30 dias" — five-row breakdown (no pain / leve / moderada
 ///      / forte / dias com medicação) computed reactively from Drift.
-///   4. 3+2 button grid (Calendário · Partilhar · Medicação ;
-///      Consulta Médica · Dados) — placeholders until later days.
+///   4. 2×2 button grid (Calendário · Medicação ; Consulta Médica · Dados).
 ///   5. Fixed bottom "Registar crise" CTA, always thumb-reachable.
 ///
 /// Empty state (zero crises in the window) collapses the breakdown into
@@ -49,8 +51,8 @@ class HomeScreen extends ConsumerWidget {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const MedicationsScreen()));
   }
 
-  void _openReport(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReportScreen()));
+  void _openAppointments(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AppointmentsScreen()));
   }
 
   void _openStats(BuildContext context) {
@@ -83,16 +85,15 @@ class HomeScreen extends ConsumerWidget {
                     const _MedicationResponsePrompt(),
                     statsAsync.when(
                       data: (stats) =>
-                          stats.isEmpty ? const _EmptyStateCard() : _SummaryList(stats: stats),
+                          stats.isEmpty ? const _EmptyStateCard() : _SummaryDonut(stats: stats),
                       loading: () => const _SummarySkeleton(),
                       error: (e, _) => _ErrorCard(message: '$e'),
                     ),
                     const SizedBox(height: AuraSpacing.xl),
                     _QuickActionsGrid(
                       onCalendar: () => _openCalendar(context),
-                      onShare: () => _openReport(context),
                       onMedication: () => _openMedications(context),
-                      onAppointment: () => _openReport(context),
+                      onAppointment: () => _openAppointments(context),
                       onData: () => _openStats(context),
                     ),
                     const SizedBox(height: AuraSpacing.xxl),
@@ -148,7 +149,7 @@ class _TopBar extends StatelessWidget {
           ),
           const Spacer(),
           IconButton(
-            tooltip: 'Definições',
+            tooltip: AppL10n.of(context).settings,
             icon: const Icon(Icons.settings_outlined, size: 22),
             onPressed: () {
               Navigator.of(
@@ -171,12 +172,13 @@ class _Greeting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFmt = DateFormat("d 'de' MMMM", 'pt_PT');
+    final locale = Localizations.localeOf(context).toString();
+    final dateFmt = DateFormat.MMMMd(locale);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Olá',
+          AppL10n.of(context).homeGreeting,
           style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.textMuted, fontSize: 14),
         ),
         const SizedBox(height: 2),
@@ -209,10 +211,12 @@ class _MedicationResponsePrompt extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final pending = ref.watch(pendingMedicationResponseProvider).valueOrNull;
     if (pending == null) return const SizedBox.shrink();
 
-    final time = DateFormat("d 'de' MMM 'às' HH:mm", 'pt_PT').format(pending.takenAt);
+    final locale = Localizations.localeOf(context).toString();
+    final time = DateFormat.MMMd(locale).add_Hm().format(pending.takenAt);
     return Padding(
       padding: const EdgeInsets.only(bottom: AuraSpacing.xl),
       child: Container(
@@ -226,7 +230,7 @@ class _MedicationResponsePrompt extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'A medicação funcionou?',
+              l.medicationWorkedTitle,
               style: AuraTextStyles.body.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 2),
@@ -246,7 +250,10 @@ class _MedicationResponsePrompt extends ConsumerWidget {
                         ),
                       ),
                       onPressed: () => _record(ref, pending, r),
-                      child: Text(r.labelPt, style: const TextStyle(fontSize: 13)),
+                      child: Text(
+                        medicationResponseLabel(l, r),
+                        style: const TextStyle(fontSize: 13),
+                      ),
                     ),
                   ),
                   if (r != MedicationResponse.values.last) const SizedBox(width: AuraSpacing.sm),
@@ -261,73 +268,82 @@ class _MedicationResponsePrompt extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Summary list (5 rows)
+// 30-day summary: donut (4 intensity tiers as the slices) over a 30-day window,
+// with a count center and 2 highlight tiles below for the medication metrics
+// (which can't go in the partition — a day with meds is also a day with pain).
 // ---------------------------------------------------------------------------
 
-class _SummaryList extends StatelessWidget {
-  const _SummaryList({required this.stats});
+class _SummaryDonut extends StatelessWidget {
+  const _SummaryDonut({required this.stats});
 
   final HomeStats stats;
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final tiers = <_Tier>[
+      _Tier(AuraColors.textDisabled, l.painNone, stats.daysNoPain),
+      _Tier(AuraColors.intensityLow, l.painLeve, stats.daysLeve),
+      _Tier(AuraColors.intensityMed, l.painModerada, stats.daysModerada),
+      _Tier(AuraColors.intensityHigh, l.painForte, stats.daysForte),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: AuraSpacing.md),
-          child: Text('ÚLTIMOS 30 DIAS', style: AuraTextStyles.sectionLabel),
+        Padding(
+          padding: const EdgeInsets.only(bottom: AuraSpacing.md),
+          child: Text(l.last30Days.toUpperCase(), style: AuraTextStyles.sectionLabel),
         ),
         Container(
+          padding: const EdgeInsets.all(AuraSpacing.lg),
           decoration: BoxDecoration(
             color: AuraColors.bgRaised,
             border: Border.all(color: AuraColors.border),
             borderRadius: BorderRadius.circular(AuraRadius.lg),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.md),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SummaryRow(
-                color: AuraColors.textDisabled,
-                label: 'Sem dor de cabeça',
-                count: stats.daysNoPain,
-                unit: stats.daysNoPain == 1 ? 'dia' : 'dias',
-                last: false,
+              SizedBox(
+                height: 160,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    PieChart(
+                      PieChartData(
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 48,
+                        startDegreeOffset: -90,
+                        sections: [
+                          for (final t in tiers)
+                            PieChartSectionData(
+                              value: t.count.toDouble(),
+                              color: t.color,
+                              radius: 22,
+                              showTitle: false,
+                            ),
+                        ],
+                      ),
+                    ),
+                    _DonutCenter(crises: stats.totalCrises),
+                  ],
+                ),
               ),
-              _SummaryRow(
-                color: AuraColors.intensityLow,
-                label: 'Dor leve',
-                count: stats.daysLeve,
-                unit: stats.daysLeve == 1 ? 'dia' : 'dias',
-                last: false,
-              ),
-              _SummaryRow(
-                color: AuraColors.intensityMed,
-                label: 'Moderada',
-                count: stats.daysModerada,
-                unit: stats.daysModerada == 1 ? 'dia' : 'dias',
-                last: false,
-              ),
-              _SummaryRow(
-                color: AuraColors.intensityHigh,
-                label: 'Forte',
-                count: stats.daysForte,
-                unit: stats.daysForte == 1 ? 'dia' : 'dias',
-                last: false,
-              ),
-              _SummaryRow(
+              const SizedBox(height: AuraSpacing.md),
+              _DonutLegend(tiers: tiers),
+              const SizedBox(height: AuraSpacing.lg),
+              const Divider(height: 1, color: AuraColors.border),
+              const SizedBox(height: AuraSpacing.sm),
+              _MedicationRow(
                 color: AuraColors.accent,
-                label: 'Tomou medicação',
+                label: l.medicationTaken,
                 count: stats.daysWithMedication,
-                unit: stats.daysWithMedication == 1 ? 'dia' : 'dias',
-                last: false,
               ),
-              _SummaryRow(
+              _MedicationRow(
                 color: AuraColors.intensityHigh,
-                label: 'Medicação SOS',
+                label: l.medicationSos,
                 count: stats.daysWithSosMedication,
-                unit: stats.daysWithSosMedication == 1 ? 'dia' : 'dias',
-                last: true,
               ),
             ],
           ),
@@ -337,28 +353,80 @@ class _SummaryList extends StatelessWidget {
   }
 }
 
-class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({
-    required this.color,
-    required this.label,
-    required this.count,
-    required this.unit,
-    required this.last,
-  });
+class _Tier {
+  const _Tier(this.color, this.label, this.count);
+  final Color color;
+  final String label;
+  final int count;
+}
+
+class _DonutCenter extends StatelessWidget {
+  const _DonutCenter({required this.crises});
+
+  final int crises;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('$crises', style: AuraTextStyles.numeric.copyWith(fontSize: 28, height: 1)),
+        const SizedBox(height: 2),
+        Text(
+          l.statCrises.toLowerCase(),
+          style: AuraTextStyles.caption.copyWith(color: AuraColors.textMuted, fontSize: 11),
+        ),
+      ],
+    );
+  }
+}
+
+class _DonutLegend extends StatelessWidget {
+  const _DonutLegend({required this.tiers});
+
+  final List<_Tier> tiers;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Wrap(
+      spacing: AuraSpacing.lg,
+      runSpacing: AuraSpacing.xs,
+      alignment: WrapAlignment.center,
+      children: [
+        for (final t in tiers)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(color: t.color, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: AuraSpacing.xs),
+              Text(
+                '${t.label} · ${l.days(t.count)}',
+                style: AuraTextStyles.caption.copyWith(fontSize: 11),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _MedicationRow extends StatelessWidget {
+  const _MedicationRow({required this.color, required this.label, required this.count});
 
   final Color color;
   final String label;
   final int count;
-  final String unit;
-  final bool last;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: last ? null : const Border(bottom: BorderSide(color: AuraColors.border)),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: AuraSpacing.md, horizontal: AuraSpacing.xs),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AuraSpacing.sm, horizontal: AuraSpacing.xs),
       child: Row(
         children: [
           Container(
@@ -367,9 +435,7 @@ class _SummaryRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
-              boxShadow: color == AuraColors.textDisabled
-                  ? null
-                  : [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 6)],
             ),
           ),
           const SizedBox(width: AuraSpacing.md),
@@ -383,21 +449,9 @@ class _SummaryRow extends StatelessWidget {
               ),
             ),
           ),
-          RichText(
-            text: TextSpan(
-              text: '$count',
-              style: AuraTextStyles.numeric.copyWith(fontSize: 16),
-              children: [
-                TextSpan(
-                  text: ' $unit',
-                  style: AuraTextStyles.bodySmall.copyWith(
-                    fontSize: 11,
-                    color: AuraColors.textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            AppL10n.of(context).days(count),
+            style: AuraTextStyles.numeric.copyWith(fontSize: 15),
           ),
         ],
       ),
@@ -442,11 +496,13 @@ class _EmptyStateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Bem-vindo', style: AuraTextStyles.screenTitle.copyWith(fontSize: 20)),
+          Text(
+            AppL10n.of(context).welcomeTitle,
+            style: AuraTextStyles.screenTitle.copyWith(fontSize: 20),
+          ),
           const SizedBox(height: AuraSpacing.sm),
           Text(
-            'Regista a tua primeira crise quando precisares. '
-            'Os teus dados ficam neste dispositivo e na tua conta.',
+            AppL10n.of(context).welcomeBody,
             style: AuraTextStyles.body.copyWith(
               fontSize: 14,
               color: AuraColors.textSecondary,
@@ -473,7 +529,7 @@ class _ErrorCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AuraRadius.lg),
       ),
       child: Text(
-        'Não foi possível carregar o resumo: $message',
+        AppL10n.of(context).summaryLoadError(message),
         style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error),
       ),
     );
@@ -487,20 +543,19 @@ class _ErrorCard extends StatelessWidget {
 class _QuickActionsGrid extends StatelessWidget {
   const _QuickActionsGrid({
     required this.onCalendar,
-    required this.onShare,
     required this.onMedication,
     required this.onAppointment,
     required this.onData,
   });
 
   final VoidCallback onCalendar;
-  final VoidCallback onShare;
   final VoidCallback onMedication;
   final VoidCallback onAppointment;
   final VoidCallback onData;
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Column(
       children: [
         Row(
@@ -508,23 +563,15 @@ class _QuickActionsGrid extends StatelessWidget {
             Expanded(
               child: _QuickButton(
                 icon: Icons.calendar_month_outlined,
-                label: 'Calendário',
+                label: l.qaCalendar,
                 onTap: onCalendar,
               ),
             ),
             const SizedBox(width: AuraSpacing.sm),
             Expanded(
               child: _QuickButton(
-                icon: Icons.ios_share_outlined,
-                label: 'Partilhar',
-                onTap: onShare,
-              ),
-            ),
-            const SizedBox(width: AuraSpacing.sm),
-            Expanded(
-              child: _QuickButton(
                 icon: Icons.medication_outlined,
-                label: 'Medicação',
+                label: l.qaMedication,
                 onTap: onMedication,
               ),
             ),
@@ -536,13 +583,13 @@ class _QuickActionsGrid extends StatelessWidget {
             Expanded(
               child: _QuickButton(
                 icon: Icons.monitor_heart_outlined,
-                label: 'Consulta Médica',
+                label: l.qaAppointment,
                 onTap: onAppointment,
               ),
             ),
             const SizedBox(width: AuraSpacing.sm),
             Expanded(
-              child: _QuickButton(icon: Icons.bar_chart_outlined, label: 'Dados', onTap: onData),
+              child: _QuickButton(icon: Icons.bar_chart_outlined, label: l.qaData, onTap: onData),
             ),
           ],
         ),
@@ -631,9 +678,9 @@ class _RegisterCrisisBar extends StatelessWidget {
           ),
           onPressed: onTap,
           icon: const Icon(Icons.add, size: 20),
-          label: const Text(
-            'Registar crise',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+          label: Text(
+            AppL10n.of(context).registerCrisis,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
           ),
         ),
       ),

@@ -4,6 +4,8 @@ import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/domain/report/report_data.dart';
 import 'package:aura/features/stats/stats_providers.dart';
+import 'package:aura/l10n/app_l10n.dart';
+import 'package:aura/l10n/l10n_labels.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,7 @@ class StatsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppL10n.of(context);
     final days = ref.watch(statsPeriodDaysProvider);
     final dataAsync = ref.watch(statsDataProvider);
 
@@ -22,10 +25,10 @@ class StatsScreen extends ConsumerWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Voltar',
+          tooltip: l.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Dados', style: AuraTextStyles.screenTitle),
+        title: Text(l.statsTitle, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -42,13 +45,13 @@ class StatsScreen extends ConsumerWidget {
               Row(
                 children: [
                   _PeriodChip(
-                    label: '30 dias',
+                    label: l.period30,
                     selected: days == 30,
                     onTap: () => ref.read(statsPeriodDaysProvider.notifier).state = 30,
                   ),
                   const SizedBox(width: AuraSpacing.sm),
                   _PeriodChip(
-                    label: '90 dias',
+                    label: l.period90,
                     selected: days == 90,
                     onTap: () => ref.read(statsPeriodDaysProvider.notifier).state = 90,
                   ),
@@ -57,14 +60,14 @@ class StatsScreen extends ConsumerWidget {
               const SizedBox(height: AuraSpacing.lg),
               _StatsRow(data: data),
               const SizedBox(height: AuraSpacing.xl),
-              const _SectionLabel('Crises por semana'),
+              _SectionLabel(l.sectionCrisesPerWeek),
               _WeeklyChart(data: data),
               const SizedBox(height: AuraSpacing.xl),
-              const _SectionLabel('Intensidade (dias)'),
+              _SectionLabel(l.sectionIntensityDays),
               _IntensityBars(data: data),
               if (data.symptomFrequency.isNotEmpty) ...[
                 const SizedBox(height: AuraSpacing.xl),
-                const _SectionLabel('Sintomas mais frequentes'),
+                _SectionLabel(l.sectionFrequentSymptoms),
                 _SymptomBars(data: data),
               ],
             ],
@@ -79,7 +82,7 @@ class StatsScreen extends ConsumerWidget {
           error: (e, _) => Padding(
             padding: const EdgeInsets.all(AuraSpacing.xl),
             child: Text(
-              'Não foi possível carregar os dados: $e',
+              l.statsError(e),
               style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error),
             ),
           ),
@@ -95,19 +98,21 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final avg = data.averageIntensity;
     return Row(
       children: [
-        _Tile(value: '${data.totalCrises}', label: 'Crises'),
+        _Tile(value: '${data.totalCrises}', label: l.statCrises),
         const SizedBox(width: AuraSpacing.sm),
-        _Tile(value: '${data.affectedDays}', label: 'Dias afetados'),
+        _Tile(value: '${data.affectedDays}', label: l.statAffectedDays),
         const SizedBox(width: AuraSpacing.sm),
         _Tile(
-          value: avg == null ? '—' : NumberFormat('0.0', 'pt_PT').format(avg),
-          label: 'Intensidade',
+          value: avg == null ? '—' : NumberFormat('0.0', localeName).format(avg),
+          label: l.statIntensity,
         ),
         const SizedBox(width: AuraSpacing.sm),
-        _Tile(value: '${data.sosDays}', label: 'Dias SOS', danger: data.sosDays >= 10),
+        _Tile(value: '${data.sosDays}', label: l.statDiasSos, danger: data.sosDays >= 10),
       ],
     );
   }
@@ -153,6 +158,7 @@ class _WeeklyChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final weeks = data.crisesPerWeek;
     final maxCount = weeks.fold<int>(0, (m, v) => v > m ? v : m);
     final maxY = (maxCount + 1).toDouble();
@@ -200,12 +206,19 @@ class _WeeklyChart extends StatelessWidget {
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
                   final i = value.toInt();
-                  if (i < 0 || i >= weeks.length) return const SizedBox.shrink();
+                  if (i < 0 || i >= weeks.length) {
+                    return const SizedBox.shrink();
+                  }
                   // Avoid clutter for 90-day (13 weeks): label every other.
-                  if (weeks.length > 7 && i.isOdd) return const SizedBox.shrink();
+                  if (weeks.length > 7 && i.isOdd) {
+                    return const SizedBox.shrink();
+                  }
                   return Padding(
                     padding: const EdgeInsets.only(top: 4),
-                    child: Text('S${i + 1}', style: AuraTextStyles.caption.copyWith(fontSize: 9)),
+                    child: Text(
+                      l.weekShort(i + 1),
+                      style: AuraTextStyles.caption.copyWith(fontSize: 9),
+                    ),
                   );
                 },
               ),
@@ -237,13 +250,14 @@ class _IntensityBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final max = data.periodDays;
     return Column(
       children: [
-        _HBar('Sem dor de cabeça', data.daysNoPain, max, AuraColors.textDisabled),
-        _HBar('Dor leve', data.daysLeve, max, AuraColors.intensityLow),
-        _HBar('Moderada', data.daysModerada, max, AuraColors.intensityMed),
-        _HBar('Forte', data.daysForte, max, AuraColors.intensityHigh),
+        _HBar(l.painNone, data.daysNoPain, max, AuraColors.textDisabled),
+        _HBar(l.painLeve, data.daysLeve, max, AuraColors.intensityLow),
+        _HBar(l.painModerada, data.daysModerada, max, AuraColors.intensityMed),
+        _HBar(l.painForte, data.daysForte, max, AuraColors.intensityHigh),
       ],
     );
   }
@@ -255,10 +269,13 @@ class _SymptomBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final top = data.symptomFrequency.take(5).toList();
     final max = top.isEmpty ? 1 : top.first.value;
     return Column(
-      children: [for (final e in top) _HBar(e.key.labelPt, e.value, max, AuraColors.accent)],
+      children: [
+        for (final e in top) _HBar(symptomLabel(l, e.key), e.value, max, AuraColors.accent),
+      ],
     );
   }
 }

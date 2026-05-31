@@ -29,12 +29,17 @@ class MedicationRepository {
 
   /// Creates a new medication (when [id] is null) or updates an existing one.
   /// Returns the medication id. Throws [StateError] if no user is signed in.
+  ///
+  /// [reminderMinutes] schedules a daily local notification at that minute of
+  /// day (0..1439). Only persists on `kind = preventive` rows; SOS meds ignore
+  /// it. Pass `null` to clear an existing reminder.
   Future<String> save({
     required String name,
     required MedicationKind kind,
     required bool isDefault,
     String? id,
     double? doseMg,
+    int? reminderMinutes,
   }) async {
     final user = _auth.currentUser;
     if (user == null) {
@@ -61,6 +66,11 @@ class MedicationRepository {
         }
       }
 
+      // Reminders only make sense for daily-preventive meds. Force-clear it on
+      // SOS rows so a user who flips kind back to SOS doesn't leave a stale
+      // reminder firing in the background.
+      final effectiveReminder = kind == MedicationKind.preventive ? reminderMinutes : null;
+
       final existing = await _db.findMedication(medId);
       if (existing == null) {
         await _db.insertMedication(
@@ -71,6 +81,7 @@ class MedicationRepository {
             doseMg: Value(doseMg),
             kind: Value(kind.code),
             isDefault: Value(isDefault),
+            reminderMinutes: Value(effectiveReminder),
           ),
         );
       } else {
@@ -80,6 +91,7 @@ class MedicationRepository {
           doseMg: doseMg,
           kind: kind.code,
           isDefault: isDefault,
+          reminderMinutes: effectiveReminder,
         );
       }
 

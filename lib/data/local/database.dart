@@ -36,6 +36,10 @@ part 'database.g.dart';
 class Profiles extends Table {
   TextColumn get id => text()();
   TextColumn get displayName => text().nullable()();
+  // Optional email shown in the medical report header and used as the suggested
+  // address when the user contacts support. Distinct from `auth.users.email` —
+  // a user can fill this without upgrading from the anonymous session.
+  TextColumn get email => text().nullable()();
   IntColumn get birthYear => integer().nullable()();
   TextColumn get sex => text().nullable()();
   TextColumn get locale => text().withDefault(const Constant('pt-PT'))();
@@ -62,6 +66,32 @@ class Medications extends Table {
 
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
+
+  /// Minute-of-day (0..1439) at which to fire a daily reminder for this
+  /// medication. Null = no reminder. Only meaningful for `kind = preventive`;
+  /// the scheduler ignores reminders set on SOS rows. Storing minutes (not
+  /// `TimeOfDay`) keeps the column an integer that Drift can index trivially.
+  IntColumn get reminderMinutes => integer().nullable()();
+
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Upcoming and past doctor appointments. Local-only for v1 — the report
+/// screen reaches this table for the "próximas consultas" list but the
+/// outbox doesn't push it anywhere yet (no remote table on Supabase).
+@DataClassName('Appointment')
+@TableIndex(name: 'appointments_user_when_idx', columns: {#userId, #occursAt})
+class Appointments extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text()();
+  DateTimeColumn get occursAt => dateTime()();
+  TextColumn get doctorName => text().nullable()();
+  TextColumn get location => text().nullable()();
+  TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -158,6 +188,7 @@ class OutboxEntries extends Table {
   tables: [
     Profiles,
     Medications,
+    Appointments,
     Crises,
     CrisisSymptoms,
     CrisisTriggers,
@@ -173,7 +204,7 @@ class AuraDatabase extends _$AuraDatabase {
   AuraDatabase.test(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -190,6 +221,17 @@ class AuraDatabase extends _$AuraDatabase {
       // captured when the app reopens after a dose. Nullable, no backfill.
       if (from < 3) {
         await m.addColumn(crisisMedications, crisisMedications.response);
+      }
+      // v4 adds three independent things; all nullable / new tables, so any
+      // existing row survives unchanged:
+      //   • profiles.email                 — surfaced in the medical report
+      //   • medications.reminderMinutes    — daily reminder time-of-day
+      //   • new `appointments` table       — "próximas consultas" feature
+      if (from < 4) {
+        await m.addColumn(profiles, profiles.email);
+        await m.addColumn(medications, medications.reminderMinutes);
+        await m.createTable(appointments);
+        await m.createIndex(appointmentsUserWhenIdx);
       }
     },
     beforeOpen: (details) async {
@@ -419,10 +461,37 @@ WHERE user_id = ? AND occurred_at >= ?
       await delete(crisisTriggers).go();
       await delete(crises).go();
       await delete(medications).go();
+      await delete(appointments).go();
       await delete(profiles).go();
       await delete(outboxEntries).go();
     });
   }
+
+  // --------------------------------------------------------------------
+  // Appointments — local-only "próximas consultas" history (v4).
+  // --------------------------------------------------------------------
+
+  Future<void> upsertAppointment(AppointmentsCompanion row) =>
+      into(appointments).insertOnConflictUpdate(row);
+
+  Future<int> deleteAppointment(String id) =>
+      (delete(appointments)..where((a) => a.id.equals(id))).go();
+
+  /// All appointments for a user, ordered chronologically (oldest → newest).
+  /// The UI splits the result into "próximas" (>= now) and "passadas" (< now)
+  /// in a single pass without re-querying.
+  Stream<List<Appointment>> watchAppointments(String userId) {
+    return (select(appointments)
+          ..where((a) => a.userId.equals(userId))
+          ..orderBy([(a) => OrderingTerm.asc(a.occursAt)]))
+        .watch();
+  }
+
+  Future<List<Appointment>> allAppointments(String userId) =>
+      (select(appointments)
+            ..where((a) => a.userId.equals(userId))
+            ..orderBy([(a) => OrderingTerm.asc(a.occursAt)]))
+          .get();
 
   // --------------------------------------------------------------------
   // Medication queries — the catalog the user manages (Day 10). Archived
@@ -516,6 +585,7 @@ WHERE user_id = ? AND occurred_at >= ?
     required String kind,
     required bool isDefault,
     double? doseMg,
+    int? reminderMinutes,
   }) {
     return (update(medications)..where((m) => m.id.equals(id))).write(
       MedicationsCompanion(
@@ -523,6 +593,7 @@ WHERE user_id = ? AND occurred_at >= ?
         doseMg: Value(doseMg),
         kind: Value(kind),
         isDefault: Value(isDefault),
+        reminderMinutes: Value(reminderMinutes),
         updatedAt: Value(DateTime.now()),
       ),
     );

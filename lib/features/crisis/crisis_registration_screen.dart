@@ -11,6 +11,7 @@ import 'package:aura/features/crisis/widgets/aura_toggle.dart';
 import 'package:aura/features/crisis/widgets/intensity_picker.dart';
 import 'package:aura/features/crisis/widgets/medication_picker.dart';
 import 'package:aura/features/crisis/widgets/symptom_chips.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -95,6 +96,7 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
 
   Future<void> _onSave() async {
     if (_saving) return;
+    final l = AppL10n.of(context);
     setState(() => _saving = true);
     try {
       final draft = ref.read(crisisDraftProvider);
@@ -107,7 +109,7 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isEdit ? 'Crise atualizada' : 'Crise registada'),
+          content: Text(_isEdit ? l.crisisUpdated : l.crisisSaved),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -115,7 +117,7 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
       Navigator.of(context).pop();
     } on Object catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao guardar: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.saveError(e))));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -124,20 +126,18 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
   Future<void> _onDelete() async {
     final crisisId = widget.editCrisisId;
     if (crisisId == null) return;
+    final l = AppL10n.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AuraColors.bgElevated,
-        title: const Text('Apagar crise', style: AuraTextStyles.screenTitle),
-        content: const Text(
-          'Esta crise será removida permanentemente.',
-          style: AuraTextStyles.bodySmall,
-        ),
+        title: Text(l.deleteCrisisTitle, style: AuraTextStyles.screenTitle),
+        content: Text(l.deleteCrisisBody, style: AuraTextStyles.bodySmall),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l.cancel)),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Apagar', style: TextStyle(color: AuraColors.error)),
+            child: Text(l.delete, style: const TextStyle(color: AuraColors.error)),
           ),
         ],
       ),
@@ -149,12 +149,13 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
       Navigator.of(context).pop();
     } on Object catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao apagar: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.deleteError(e))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     final draft = ref.watch(crisisDraftProvider);
     final notifier = ref.read(crisisDraftProvider.notifier);
 
@@ -162,15 +163,15 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
-          tooltip: 'Cancelar',
+          tooltip: l.cancel,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(_isEdit ? 'Editar crise' : 'Nova crise', style: AuraTextStyles.screenTitle),
+        title: Text(_isEdit ? l.editCrisis : l.newCrisis, style: AuraTextStyles.screenTitle),
         centerTitle: false,
         actions: [
           if (_isEdit)
             IconButton(
-              tooltip: 'Apagar',
+              tooltip: l.delete,
               icon: const Icon(Icons.delete_outline, color: AuraColors.error),
               onPressed: _onDelete,
             ),
@@ -191,24 +192,21 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Regista o essencial em poucos toques.',
-                      style: AuraTextStyles.bodySmall,
-                    ),
+                    Text(l.formIntro, style: AuraTextStyles.bodySmall),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Intensidade da dor'),
+                    _SectionLabel(l.sectionIntensity),
                     IntensityPicker(value: draft.intensity, onChanged: notifier.setIntensity),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Aura'),
+                    _SectionLabel(l.sectionAura),
                     AuraToggle(
                       present: draft.symptoms.contains(Symptom.aura),
                       onChanged: (v) => notifier.setAura(present: v),
                     ),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Sintomas'),
+                    _SectionLabel(l.sectionSymptoms),
                     SymptomChips(
                       selected: draft.symptoms,
                       onToggle: notifier.toggleSymptom,
@@ -216,11 +214,11 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                     ),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Medicação tomada'),
+                    _SectionLabel(l.sectionMedicationTaken),
                     const MedicationPicker(),
                     const SizedBox(height: AuraSpacing.xl),
 
-                    const _SectionLabel('Notas adicionais · opcional'),
+                    _SectionLabel(l.sectionNotesOptional),
                     TextField(
                       controller: _notesController,
                       onChanged: notifier.setNotes,
@@ -228,9 +226,7 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                       minLines: 2,
                       maxLength: 1000,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(
-                        hintText: 'Algo a registar sobre esta crise?',
-                      ),
+                      decoration: InputDecoration(hintText: l.notesHint),
                     ),
                     const SizedBox(height: AuraSpacing.xxl),
                   ],
@@ -269,6 +265,7 @@ class _SaveBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AuraSpacing.xl,
@@ -298,9 +295,13 @@ class _SaveBar extends StatelessWidget {
                   width: 22,
                   child: CircularProgressIndicator(strokeWidth: 2.5, color: AuraColors.bgBase),
                 )
-              : const Text(
-                  'Guardar crise',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.3),
+              : Text(
+                  l.saveCrisis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
                 ),
         ),
       ),

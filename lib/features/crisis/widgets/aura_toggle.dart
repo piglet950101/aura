@@ -2,6 +2,7 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Sim/Não selector for whether the crisis had an aura. Two large pills so it
@@ -14,14 +15,15 @@ class AuraToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Row(
       children: [
         Expanded(
-          child: _Pill(label: 'Não', selected: !present, onTap: () => onChanged(false)),
+          child: _Pill(label: l.no, selected: !present, onTap: () => onChanged(false)),
         ),
         const SizedBox(width: AuraSpacing.sm),
         Expanded(
-          child: _Pill(label: 'Sim', selected: present, onTap: () => onChanged(true)),
+          child: _Pill(label: l.yes, selected: present, onTap: () => onChanged(true)),
         ),
       ],
     );

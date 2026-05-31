@@ -2,6 +2,7 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 
 /// Ten circular dots labelled 1..10. The selected dot scales up slightly
@@ -16,6 +17,7 @@ class IntensityPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -32,16 +34,16 @@ class IntensityPicker extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('leve', style: AuraTextStyles.caption),
+              Text(l.intensityScaleMin, style: AuraTextStyles.caption),
               if (value != null)
                 Text(
-                  _label(value!),
+                  _label(l, value!),
                   style: AuraTextStyles.caption.copyWith(
                     color: _color(value!),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-              const Text('incapacitante', style: AuraTextStyles.caption),
+              Text(l.intensityScaleMax, style: AuraTextStyles.caption),
             ],
           ),
         ),
@@ -60,7 +62,7 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _color(value);
     return Semantics(
-      label: 'Intensidade $value de 10',
+      label: AppL10n.of(context).intensityOutOf(value),
       selected: selected,
       button: true,
       child: GestureDetector(
@@ -106,11 +108,11 @@ Color _color(int value) {
   return AuraColors.intensityHigh;
 }
 
-String _label(int value) {
-  if (value <= 3) return 'LEVE';
-  if (value <= 6) return 'MODERADA';
-  if (value <= 8) return 'INTENSA';
-  return 'INCAPACITANTE';
+String _label(AppL10n l, int value) {
+  if (value <= 3) return l.intensityLabelMild;
+  if (value <= 6) return l.intensityLabelModerate;
+  if (value <= 8) return l.intensityLabelIntense;
+  return l.intensityLabelDisabling;
 }
 
 // Unused import suppression for AuraRadius — kept so the widget can be
