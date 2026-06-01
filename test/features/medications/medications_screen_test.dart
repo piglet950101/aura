@@ -63,17 +63,50 @@ void main() {
     await teardownTree(tester);
   });
 
-  testWidgets('renders a seeded medication with its kind badge', (tester) async {
-    await MedicationRepository(
+  testWidgets('groups meds by kind under Preventiva / SOS sections', (tester) async {
+    final repo = MedicationRepository(
       database: db,
       auth: _StubAuth(const AppUser(id: 'u-marta', isAnonymous: true)),
-    ).save(name: 'Sumatriptano', kind: MedicationKind.sos, isDefault: true, doseMg: 50);
+    );
+    await repo.save(
+      name: 'Topiramato',
+      kind: MedicationKind.preventive,
+      isDefault: false,
+      doseMg: 50,
+      reminderMinutes: 1080, // 18:00 — the inline line must render
+    );
+    await repo.save(name: 'Sumatriptano', kind: MedicationKind.sos, isDefault: true, doseMg: 50);
 
     await tester.pumpWidget(harness());
     await settle(tester);
 
+    // Both section headers visible, uppercased.
+    expect(find.text('MEDICAÇÃO PREVENTIVA'), findsOneWidget);
+    expect(find.text('MEDICAÇÃO SOS / CRISE'), findsOneWidget);
+
+    // Both tiles render their name + dose.
+    expect(find.textContaining('Topiramato'), findsOneWidget);
     expect(find.textContaining('Sumatriptano'), findsOneWidget);
-    expect(find.text('SOS'), findsOneWidget);
+
+    // The reminder line shows under the preventive med (uses the platform's
+    // localized time format, so just assert "Diariamente" is there).
+    expect(find.textContaining('Diariamente'), findsOneWidget);
+
+    await teardownTree(tester);
+  });
+
+  testWidgets('omits empty section headers (only SOS meds present)', (tester) async {
+    await MedicationRepository(
+      database: db,
+      auth: _StubAuth(const AppUser(id: 'u-marta', isAnonymous: true)),
+    ).save(name: 'Aspirina', kind: MedicationKind.sos, isDefault: true, doseMg: 500);
+
+    await tester.pumpWidget(harness());
+    await settle(tester);
+
+    expect(find.text('MEDICAÇÃO PREVENTIVA'), findsNothing);
+    expect(find.text('MEDICAÇÃO SOS / CRISE'), findsOneWidget);
+    expect(find.textContaining('Aspirina'), findsOneWidget);
 
     await teardownTree(tester);
   });

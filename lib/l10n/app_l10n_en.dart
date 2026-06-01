@@ -389,8 +389,14 @@ class AppL10nEn extends AppL10n {
 
   @override
   String reminderAt(String time) {
-    return 'Daily at $time';
+    return 'Daily · $time';
   }
+
+  @override
+  String get sectionMedPreventive => 'Preventive medication';
+
+  @override
+  String get sectionMedSos => 'Acute (SOS) medication';
 
   @override
   String get medsReminderTitle => 'Time for your preventive medication';

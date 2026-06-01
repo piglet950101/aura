@@ -7,7 +7,6 @@ import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/features/medications/medication_edit_screen.dart';
 import 'package:aura/features/medications/medications_providers.dart';
 import 'package:aura/l10n/app_l10n.dart';
-import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,19 +48,9 @@ class MedicationsScreen extends ConsumerWidget {
               child: medsAsync.when(
                 data: (meds) => meds.isEmpty
                     ? const _EmptyState()
-                    : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(
-                          AuraSpacing.xl,
-                          AuraSpacing.lg,
-                          AuraSpacing.xl,
-                          AuraSpacing.lg,
-                        ),
-                        itemCount: meds.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: AuraSpacing.sm),
-                        itemBuilder: (_, i) => _MedicationTile(
-                          med: meds[i],
-                          onTap: () => _openEditor(context, existing: meds[i]),
-                        ),
+                    : _MedicationsList(
+                        meds: meds,
+                        onEdit: (m) => _openEditor(context, existing: m),
                       ),
                 loading: () => const Center(
                   child: SizedBox(
@@ -81,6 +70,69 @@ class MedicationsScreen extends ConsumerWidget {
   }
 }
 
+/// Groups the active catalog into Preventiva + SOS sections per Marcelo's
+/// mockup. Empty sections are omitted to avoid showing dead headers.
+class _MedicationsList extends StatelessWidget {
+  const _MedicationsList({required this.meds, required this.onEdit});
+
+  final List<Medication> meds;
+  final void Function(Medication) onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final preventive = <Medication>[];
+    final sos = <Medication>[];
+    for (final m in meds) {
+      if (m.kind == MedicationKind.preventive.code) {
+        preventive.add(m);
+      } else {
+        sos.add(m);
+      }
+    }
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AuraSpacing.xl,
+        AuraSpacing.lg,
+        AuraSpacing.xl,
+        AuraSpacing.lg,
+      ),
+      children: [
+        if (preventive.isNotEmpty) ...[
+          _SectionLabel(l.sectionMedPreventive),
+          for (final m in preventive)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
+              child: _MedicationTile(med: m, onTap: () => onEdit(m)),
+            ),
+          const SizedBox(height: AuraSpacing.lg),
+        ],
+        if (sos.isNotEmpty) ...[
+          _SectionLabel(l.sectionMedSos),
+          for (final m in sos)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
+              child: _MedicationTile(med: m, onTap: () => onEdit(m)),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AuraSpacing.md),
+      child: Text(text.toUpperCase(), style: AuraTextStyles.sectionLabel),
+    );
+  }
+}
+
 class _MedicationTile extends StatelessWidget {
   const _MedicationTile({required this.med, required this.onTap});
 
@@ -89,11 +141,24 @@ class _MedicationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final kind = MedicationKind.fromCode(med.kind);
+    final l = AppL10n.of(context);
     final dose = med.doseMg != null
         ? ' · ${med.doseMg == med.doseMg!.roundToDouble() ? med.doseMg!.toStringAsFixed(0) : med.doseMg}'
               ' mg'
         : '';
+    // Preventive meds with a reminder set get a second line "Diariamente ·
+    // 18:00" — matches the mockup so the user can see the alarm time without
+    // opening the editor.
+    final isPreventive = med.kind == MedicationKind.preventive.code;
+    final mins = med.reminderMinutes;
+    final showReminder = isPreventive && mins != null;
+    final reminderText = showReminder
+        ? l.reminderAt(
+            MaterialLocalizations.of(
+              context,
+            ).formatTimeOfDay(TimeOfDay(hour: mins ~/ 60, minute: mins % 60)),
+          )
+        : null;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AuraRadius.lg),
@@ -147,39 +212,28 @@ class _MedicationTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  const SizedBox(height: AuraSpacing.xs),
-                  _KindBadge(kind: kind),
+                  if (reminderText != null) ...[
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        const Icon(Icons.alarm, size: 13, color: AuraColors.accent),
+                        const SizedBox(width: 4),
+                        Text(
+                          reminderText,
+                          style: AuraTextStyles.caption.copyWith(
+                            color: AuraColors.accent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
             const Icon(Icons.chevron_right, color: AuraColors.textMuted),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _KindBadge extends StatelessWidget {
-  const _KindBadge({required this.kind});
-
-  final MedicationKind kind;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppL10n.of(context);
-    final isSos = kind == MedicationKind.sos;
-    final color = isSos ? AuraColors.intensityHigh : AuraColors.intensityLow;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(AuraRadius.pill),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
-      ),
-      child: Text(
-        medicationKindLabel(l, kind),
-        style: AuraTextStyles.caption.copyWith(color: color, fontWeight: FontWeight.w700),
       ),
     );
   }

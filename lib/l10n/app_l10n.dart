@@ -785,8 +785,20 @@ abstract class AppL10n {
   /// No description provided for @reminderAt.
   ///
   /// In pt, this message translates to:
-  /// **'Diário às {time}'**
+  /// **'Diariamente · {time}'**
   String reminderAt(String time);
+
+  /// No description provided for @sectionMedPreventive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação Preventiva'**
+  String get sectionMedPreventive;
+
+  /// No description provided for @sectionMedSos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medicação SOS / Crise'**
+  String get sectionMedSos;
 
   /// No description provided for @medsReminderTitle.
   ///

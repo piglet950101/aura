@@ -389,8 +389,14 @@ class AppL10nPt extends AppL10n {
 
   @override
   String reminderAt(String time) {
-    return 'Diário às $time';
+    return 'Diariamente · $time';
   }
+
+  @override
+  String get sectionMedPreventive => 'Medicação Preventiva';
+
+  @override
+  String get sectionMedSos => 'Medicação SOS / Crise';
 
   @override
   String get medsReminderTitle => 'Hora da medicação preventiva';
@@ -1075,8 +1081,14 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String reminderAt(String time) {
-    return 'Diariamente às $time';
+    return 'Diariamente · $time';
   }
+
+  @override
+  String get sectionMedPreventive => 'Medicação Preventiva';
+
+  @override
+  String get sectionMedSos => 'Medicação SOS / Crise';
 
   @override
   String get medsReminderTitle => 'Hora da medicação preventiva';
