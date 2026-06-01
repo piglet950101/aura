@@ -562,10 +562,28 @@ class AppL10nPt extends AppL10n {
   String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
 
   @override
-  String get sectionUpcoming => 'Próximas consultas';
+  String get sectionUpcoming => 'Próxima consulta';
 
   @override
-  String get sectionPast => 'Passadas';
+  String get sectionPast => 'Histórico';
+
+  @override
+  String get sectionReportForDoctor => 'Relatório para o médico';
+
+  @override
+  String get scheduleAppointment => 'Agendar';
+
+  @override
+  String get webAccessCode => 'Código de Acesso Web';
+
+  @override
+  String get webAccessCodeDesc => 'Link para o médico consultar online';
+
+  @override
+  String get webAccessComingSoon => 'Em breve — link partilhável após o lançamento.';
+
+  @override
+  String get viewAll => 'Ver tudo';
 
   @override
   String get noAppointments => 'Sem consultas registadas';
@@ -1220,10 +1238,28 @@ class AppL10nPtBr extends AppL10nPt {
   String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
 
   @override
-  String get sectionUpcoming => 'Próximas consultas';
+  String get sectionUpcoming => 'Próxima consulta';
 
   @override
-  String get sectionPast => 'Passadas';
+  String get sectionPast => 'Histórico';
+
+  @override
+  String get sectionReportForDoctor => 'Relatório para o médico';
+
+  @override
+  String get scheduleAppointment => 'Agendar';
+
+  @override
+  String get webAccessCode => 'Código de Acesso Web';
+
+  @override
+  String get webAccessCodeDesc => 'Link para o médico consultar online';
+
+  @override
+  String get webAccessComingSoon => 'Em breve — link compartilhável após o lançamento.';
+
+  @override
+  String get viewAll => 'Ver tudo';
 
   @override
   String get noAppointments => 'Sem consultas registradas';

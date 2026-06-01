@@ -1114,14 +1114,50 @@ abstract class AppL10n {
   /// No description provided for @sectionUpcoming.
   ///
   /// In pt, this message translates to:
-  /// **'Próximas consultas'**
+  /// **'Próxima consulta'**
   String get sectionUpcoming;
 
   /// No description provided for @sectionPast.
   ///
   /// In pt, this message translates to:
-  /// **'Passadas'**
+  /// **'Histórico'**
   String get sectionPast;
+
+  /// No description provided for @sectionReportForDoctor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório para o médico'**
+  String get sectionReportForDoctor;
+
+  /// No description provided for @scheduleAppointment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendar'**
+  String get scheduleAppointment;
+
+  /// No description provided for @webAccessCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código de Acesso Web'**
+  String get webAccessCode;
+
+  /// No description provided for @webAccessCodeDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Link para o médico consultar online'**
+  String get webAccessCodeDesc;
+
+  /// No description provided for @webAccessComingSoon.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em breve — link partilhável após o lançamento.'**
+  String get webAccessComingSoon;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver tudo'**
+  String get viewAll;
 
   /// No description provided for @noAppointments.
   ///

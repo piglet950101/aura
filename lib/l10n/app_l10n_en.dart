@@ -562,10 +562,28 @@ class AppL10nEn extends AppL10n {
   String get generateReportDesc => 'PDF with crises and medication for the next appointment';
 
   @override
-  String get sectionUpcoming => 'Upcoming appointments';
+  String get sectionUpcoming => 'Next appointment';
 
   @override
-  String get sectionPast => 'Past';
+  String get sectionPast => 'History';
+
+  @override
+  String get sectionReportForDoctor => 'Report for the doctor';
+
+  @override
+  String get scheduleAppointment => 'Schedule';
+
+  @override
+  String get webAccessCode => 'Web access code';
+
+  @override
+  String get webAccessCodeDesc => 'Link for the doctor to view online';
+
+  @override
+  String get webAccessComingSoon => 'Coming soon — shareable link after launch.';
+
+  @override
+  String get viewAll => 'View all';
 
   @override
   String get noAppointments => 'No appointments logged';

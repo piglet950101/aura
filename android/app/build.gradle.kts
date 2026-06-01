@@ -31,6 +31,16 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            // R8 + resource shrinking. The keep rules in proguard-rules.pro
+            // are what stop flutter_local_notifications throwing "Missing type
+            // parameter" at runtime — without them Gson loses its TypeToken
+            // generic signatures and the plugin blows up on cancel/schedule.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

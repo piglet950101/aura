@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-/// Consulta Médica hub. Top card opens the medical-report PDF; below it,
-/// "Próximas consultas" + "Passadas" sections list saved appointments.
+/// Consulta Médica hub. Layout matches Marcelo's mockup:
+///   1. Próxima consulta — upcoming appointment list + inline "+ Agendar"
+///   2. Relatório para o médico — two tiles (PDF report + web access code)
+///   3. Histórico — past appointments
 class AppointmentsScreen extends ConsumerWidget {
   const AppointmentsScreen({super.key});
 
@@ -26,6 +28,13 @@ class AppointmentsScreen extends ConsumerWidget {
         builder: (_) => AppointmentEditScreen(existing: existing),
         fullscreenDialog: existing == null,
       ),
+    );
+  }
+
+  void _showWebAccessComingSoon(BuildContext context) {
+    final l = AppL10n.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l.webAccessComingSoon), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -44,13 +53,6 @@ class AppointmentsScreen extends ConsumerWidget {
         title: Text(l.appointments, style: AuraTextStyles.screenTitle),
         centerTitle: false,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AuraColors.accent,
-        foregroundColor: AuraColors.bgBase,
-        onPressed: () => _openEditor(context),
-        icon: const Icon(Icons.add),
-        label: Text(l.addAppointment),
-      ),
       body: SafeArea(
         top: false,
         child: ListView(
@@ -58,18 +60,16 @@ class AppointmentsScreen extends ConsumerWidget {
             AuraSpacing.xl,
             AuraSpacing.lg,
             AuraSpacing.xl,
-            // Extra bottom padding so the FAB doesn't clip the last item.
-            AuraSpacing.xxxl + AuraSpacing.xxl,
+            AuraSpacing.xxl,
           ),
           children: [
-            Text(l.appointmentsIntro, style: AuraTextStyles.bodySmall),
-            const SizedBox(height: AuraSpacing.lg),
-            _ReportCard(onTap: () => _openReport(context)),
-            const SizedBox(height: AuraSpacing.xl),
             appointmentsAsync.when(
               data: (list) => _AppointmentsBody(
                 appointments: list,
-                onTap: (a) => _openEditor(context, existing: a),
+                onEdit: (a) => _openEditor(context, existing: a),
+                onSchedule: () => _openEditor(context),
+                onReport: () => _openReport(context),
+                onWebAccess: () => _showWebAccessComingSoon(context),
               ),
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: AuraSpacing.xxl),
@@ -91,83 +91,24 @@ class AppointmentsScreen extends ConsumerWidget {
   }
 }
 
-class _ReportCard extends StatelessWidget {
-  const _ReportCard({required this.onTap});
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppL10n.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AuraRadius.lg),
-      child: Container(
-        padding: const EdgeInsets.all(AuraSpacing.lg),
-        decoration: BoxDecoration(
-          color: AuraColors.accentBg,
-          border: Border.all(color: AuraColors.accent),
-          borderRadius: BorderRadius.circular(AuraRadius.lg),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.picture_as_pdf_outlined, color: AuraColors.accent, size: 26),
-            const SizedBox(width: AuraSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.generateReport,
-                    style: AuraTextStyles.body.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AuraColors.accent,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(l.generateReportDesc, style: AuraTextStyles.caption),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: AuraColors.accent),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _AppointmentsBody extends StatelessWidget {
-  const _AppointmentsBody({required this.appointments, required this.onTap});
+  const _AppointmentsBody({
+    required this.appointments,
+    required this.onEdit,
+    required this.onSchedule,
+    required this.onReport,
+    required this.onWebAccess,
+  });
 
   final List<Appointment> appointments;
-  final void Function(Appointment) onTap;
+  final void Function(Appointment) onEdit;
+  final VoidCallback onSchedule;
+  final VoidCallback onReport;
+  final VoidCallback onWebAccess;
 
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-    if (appointments.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AuraSpacing.xxl),
-        child: Column(
-          children: [
-            const Icon(Icons.event_outlined, size: 40, color: AuraColors.textMuted),
-            const SizedBox(height: AuraSpacing.md),
-            Text(
-              l.noAppointments,
-              style: AuraTextStyles.screenTitle.copyWith(fontSize: 17),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AuraSpacing.sm),
-            Text(
-              l.noAppointmentsBody,
-              style: AuraTextStyles.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
 
     final now = DateTime.now();
     final upcoming = <Appointment>[];
@@ -186,21 +127,46 @@ class _AppointmentsBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (upcoming.isNotEmpty) ...[
-          _SectionLabel(l.sectionUpcoming),
+        // 1) Próxima consulta
+        _SectionLabel(l.sectionUpcoming),
+        if (upcoming.isEmpty)
+          _EmptyUpcoming(onSchedule: onSchedule)
+        else ...[
           for (final a in upcoming)
             Padding(
               padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
-              child: _AppointmentTile(appointment: a, onTap: () => onTap(a)),
+              child: _AppointmentTile(appointment: a, onTap: () => onEdit(a)),
             ),
-          const SizedBox(height: AuraSpacing.lg),
+          const SizedBox(height: AuraSpacing.xs),
+          _ScheduleButton(label: l.scheduleAppointment, onTap: onSchedule),
         ],
+        const SizedBox(height: AuraSpacing.xl),
+
+        // 2) Relatório para o médico
+        _SectionLabel(l.sectionReportForDoctor),
+        _ReportTile(
+          icon: Icons.picture_as_pdf_outlined,
+          title: l.reportTitle,
+          subtitle: l.generateReportDesc,
+          onTap: onReport,
+        ),
+        const SizedBox(height: AuraSpacing.sm),
+        _ReportTile(
+          icon: Icons.link_outlined,
+          title: l.webAccessCode,
+          subtitle: l.webAccessCodeDesc,
+          onTap: onWebAccess,
+          dim: true,
+        ),
+        const SizedBox(height: AuraSpacing.xl),
+
+        // 3) Histórico
         if (past.isNotEmpty) ...[
           _SectionLabel(l.sectionPast),
           for (final a in past)
             Padding(
               padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
-              child: _AppointmentTile(appointment: a, onTap: () => onTap(a), dim: true),
+              child: _AppointmentTile(appointment: a, onTap: () => onEdit(a), dim: true),
             ),
         ],
       ],
@@ -217,6 +183,125 @@ class _SectionLabel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: AuraSpacing.md),
       child: Text(text.toUpperCase(), style: AuraTextStyles.sectionLabel),
+    );
+  }
+}
+
+/// "+ Agendar" inline button shown at the end of the próximas list (mockup
+/// style — replaces the FAB which felt disconnected from the section).
+class _ScheduleButton extends StatelessWidget {
+  const _ScheduleButton({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(AuraSpacing.tapTargetMin),
+        side: const BorderSide(color: AuraColors.accent),
+        foregroundColor: AuraColors.accent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AuraRadius.lg)),
+      ),
+      onPressed: onTap,
+      icon: const Icon(Icons.add, size: 20),
+      label: Text(label),
+    );
+  }
+}
+
+/// Empty próxima consulta — collapses into a single "Agendar" button so the
+/// section never looks abandoned.
+class _EmptyUpcoming extends StatelessWidget {
+  const _EmptyUpcoming({required this.onSchedule});
+
+  final VoidCallback onSchedule;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(AuraSpacing.lg),
+          decoration: BoxDecoration(
+            color: AuraColors.bgRaised,
+            border: Border.all(color: AuraColors.border),
+            borderRadius: BorderRadius.circular(AuraRadius.lg),
+          ),
+          child: Text(
+            l.noAppointmentsBody,
+            style: AuraTextStyles.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: AuraSpacing.sm),
+        _ScheduleButton(label: l.scheduleAppointment, onTap: onSchedule),
+      ],
+    );
+  }
+}
+
+class _ReportTile extends StatelessWidget {
+  const _ReportTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.dim = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  /// Faded styling for placeholder/coming-soon tiles (web access code).
+  final bool dim;
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = dim ? AuraColors.bgRaised : AuraColors.accentBg;
+    final border = dim ? AuraColors.border : AuraColors.accent;
+    final iconColor = dim ? AuraColors.textMuted : AuraColors.accent;
+    final titleColor = dim ? AuraColors.textPrimary : AuraColors.accent;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AuraRadius.lg),
+      child: Container(
+        padding: const EdgeInsets.all(AuraSpacing.lg),
+        decoration: BoxDecoration(
+          color: bg,
+          border: Border.all(color: border),
+          borderRadius: BorderRadius.circular(AuraRadius.lg),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 26),
+            const SizedBox(width: AuraSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AuraTextStyles.body.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: titleColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: AuraTextStyles.caption),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: iconColor),
+          ],
+        ),
+      ),
     );
   }
 }
