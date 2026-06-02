@@ -10,6 +10,7 @@ import 'package:aura/data/local/database.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
 import 'package:aura/domain/medication/medication_repository.dart';
+import 'package:aura/domain/medication/preventive_subtype.dart';
 import 'package:aura/features/medications/medications_screen.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:drift/native.dart';
@@ -71,6 +72,9 @@ void main() {
     await repo.save(
       name: 'Topiramato',
       kind: MedicationKind.preventive,
+      // Wave 3: preventive needs an explicit subtype now ('pill' or 'injection')
+      // for the reminder line to render. Pill subtype matches the daily reminder.
+      subtype: PreventiveSubtype.pill,
       isDefault: false,
       doseMg: 50,
       reminderMinutes: 1080, // 18:00 — the inline line must render

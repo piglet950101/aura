@@ -88,7 +88,8 @@ void main() {
     expect(find.widgetWithText(OutlinedButton, 'Agendar'), findsOneWidget);
 
     // Both report-section tiles are present (PDF + Web Access Code).
-    expect(find.text('Relatório médico'), findsOneWidget);
+    // Renamed in the final spec round: "Relatório médico" → "Relatório de Registos (PDF)".
+    expect(find.text('Relatório de Registos (PDF)'), findsOneWidget);
     expect(find.text('Código de Acesso Web'), findsOneWidget);
 
     await teardownTree(tester);

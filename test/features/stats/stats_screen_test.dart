@@ -60,18 +60,25 @@ void main() {
     await tester.pump(); // resolve the FutureProvider
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Dados'), findsOneWidget);
-    expect(find.text('CRISES POR SEMANA'), findsOneWidget);
-    expect(find.text('INTENSIDADE (DIAS)'), findsOneWidget);
-    expect(find.text('30 dias'), findsOneWidget);
+    // Title renamed in the final spec round (Dados → Estatísticas).
+    expect(find.text('Estatísticas'), findsOneWidget);
 
-    // The symptom section is below the fold in the lazy ListView — scroll to it.
+    // The Wave 5 rewrite restructured the page into 5 section headers
+    // (uppercased) with chart cards (sentence-case titles) beneath.
+    expect(find.text('EVOLUÇÃO E IMPACTO'), findsOneWidget);
+    expect(find.text('Crises por semana'), findsOneWidget);
+
+    // Period chip is now compact ("30d" instead of "30 dias").
+    expect(find.text('30d'), findsOneWidget);
+
+    // The symptom card is below the fold in the lazy ListView — scroll until
+    // either the SEVERIDADE header or the symptom card title is visible.
     await tester.scrollUntilVisible(
-      find.text('SINTOMAS MAIS FREQUENTES'),
+      find.text('Sintomas mais frequentes'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('SINTOMAS MAIS FREQUENTES'), findsOneWidget);
+    expect(find.text('Sintomas mais frequentes'), findsOneWidget);
   });
 }
 

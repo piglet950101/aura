@@ -1,6 +1,6 @@
-// Verifies the Drift schema migration v1 -> v4 on a POPULATED database — the
+// Verifies the Drift schema migration v1 -> v5 on a POPULATED database — the
 // path a real existing install (e.g. the client's phone) takes. All other DB
-// tests start fresh at v4 via onCreate and never exercise onUpgrade, so this
+// tests start fresh at v5 via onCreate and never exercise onUpgrade, so this
 // is the test that de-risks losing or corrupting a user's data on update.
 
 import 'dart:io';
@@ -24,7 +24,7 @@ void main() {
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
   });
 
-  test('migrates a populated v1 database to v4 without losing data', () async {
+  test('migrates a populated v1 database to v5 without losing data', () async {
     // Build a v1-shaped database: medications has no `kind`, crisis_medications
     // has no `response`, profiles has no `email`, and there is no `appointments`
     // table yet. Seed enough rows to prove data survives the upgrade.
@@ -64,7 +64,7 @@ void main() {
       ..execute('PRAGMA user_version = 1')
       ..dispose();
 
-    // Open through the app's database — first query triggers onUpgrade(1 -> 4).
+    // Open through the app's database — first query triggers onUpgrade(1 -> 5).
     final db = AuraDatabase.test(NativeDatabase(dbFile));
     addTearDown(db.close);
 
@@ -76,12 +76,22 @@ void main() {
     expect(med.kind, 'sos', reason: 'v2 addColumn backfills the default');
     // v4 addColumn for the new `reminder_minutes` field — nullable, no backfill.
     expect(med.reminderMinutes, isNull, reason: 'v4 addColumn is nullable');
+    // v5 addColumns for the new preventive subtype + treatment-date fields —
+    // every existing row picks up null until the user edits.
+    expect(med.preventiveSubtype, isNull, reason: 'v5 addColumn is nullable');
+    expect(med.injectionPeriodDays, isNull, reason: 'v5 addColumn is nullable');
+    expect(med.startedAt, isNull, reason: 'v5 addColumn is nullable');
+    expect(med.endedAt, isNull, reason: 'v5 addColumn is nullable');
 
     // crisis_medications.response added by the v3 step, nullable (no backfill).
     final cms = await db.crisisMedicationsFor('c1');
     expect(cms, hasLength(1));
     expect(cms.single.medicationNameSnapshot, 'Sumatriptano');
     expect(cms.single.response, isNull, reason: 'v3 addColumn is nullable');
+
+    // v5 adds crises.menstruation — nullable column, existing row reads null.
+    final c1 = await db.findCrisis('c1');
+    expect(c1?.menstruation, isNull, reason: 'v5 addColumn is nullable');
 
     // v4 also adds the new `appointments` table — prove it exists and is
     // readable/writable end-to-end by inserting and reading back one row.
@@ -105,8 +115,24 @@ void main() {
     final profile = await db.getProfile('u-marta');
     expect(profile?.email, 'marta@example.com');
 
-    // The database now reports schema version 4.
+    // v5 adds the hit6_responses table — prove it exists and round-trips.
+    await db
+        .into(db.hit6Responses)
+        .insert(
+          Hit6ResponsesCompanion.insert(
+            id: 'h1',
+            userId: 'u-marta',
+            submittedAt: DateTime.utc(2026, 6, 1, 9, 30),
+            score: 54,
+            responses: '["never","sometimes","sometimes","sometimes","rarely","very_often"]',
+          ),
+        );
+    final hit6 = await db.select(db.hit6Responses).get();
+    expect(hit6, hasLength(1));
+    expect(hit6.single.score, 54);
+
+    // The database now reports schema version 5.
     final row = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(row.read<int>('user_version'), 4);
+    expect(row.read<int>('user_version'), 5);
   });
 }

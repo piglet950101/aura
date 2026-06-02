@@ -1,5 +1,6 @@
 import 'package:aura/domain/calendar/month_overview.dart' show IntensityTier;
 import 'package:aura/domain/crisis/symptom.dart';
+import 'package:aura/domain/hit6/hit6.dart';
 
 /// One crisis row for the clinical report. Times are local.
 class ReportCrisis {
@@ -40,7 +41,13 @@ class ReportData {
     required this.generatedAt,
     required this.crises,
     this.patientName,
+    this.patientEmail,
     this.birthYear,
+    this.sex,
+    this.nextAppointment,
+    this.latestHit6,
+    this.hit6History = const [],
+    this.previousCrises = const [],
   });
 
   /// Inclusive start / exclusive end of the period (local).
@@ -49,7 +56,27 @@ class ReportData {
   final DateTime generatedAt;
   final List<ReportCrisis> crises;
   final String? patientName;
+  final String? patientEmail;
   final int? birthYear;
+
+  /// 'f' / 'm' / 'other' / 'na' / null. Drives the gender-conditional fields
+  /// in the report header (and on screen — see crisis form).
+  final String? sex;
+
+  /// First upcoming appointment after [generatedAt], if any — surfaced in
+  /// the report's "Contexto de consulta" line so the doctor sees when the
+  /// patient is bringing this in.
+  final ReportAppointment? nextAppointment;
+
+  /// Most recent HIT-6 submission, used in the score card on the report.
+  final Hit6Submission? latestHit6;
+
+  /// Full HIT-6 history (oldest → newest) for the evolution sparkline.
+  final List<Hit6Submission> hit6History;
+
+  /// Crises of the immediately preceding window of the same length, used by
+  /// the "vs. anterior" comparative summary. Empty when no prior crises.
+  final List<ReportCrisis> previousCrises;
 
   int get periodDays => end.difference(start).inDays;
 
@@ -184,6 +211,16 @@ class ReportData {
   }
 
   bool get isEmpty => crises.isEmpty;
+}
+
+/// Lightweight appointment snapshot the report carries — kept independent of
+/// the Drift row class so the domain layer doesn't depend on persistence.
+class ReportAppointment {
+  const ReportAppointment({required this.occursAt, this.doctorName, this.location});
+
+  final DateTime occursAt;
+  final String? doctorName;
+  final String? location;
 }
 
 class MedicationUsage {
