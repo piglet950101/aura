@@ -352,6 +352,9 @@ class _AppointmentTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Client asked to drop the truncation on the consultation
+                  // title (no more "Terça-feira, 2 de jun..."). Wraps to a
+                  // second line when needed, the tile grows with it.
                   Text(
                     '$date · $time',
                     style: AuraTextStyles.body.copyWith(
@@ -359,15 +362,14 @@ class _AppointmentTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: foreground,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
                   ),
                   if (doctor != null || location != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       [if (doctor != null) doctor, if (location != null) location].join(' · '),
                       style: AuraTextStyles.caption.copyWith(color: secondary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
                     ),
                   ],
                 ],

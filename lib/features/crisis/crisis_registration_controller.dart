@@ -102,6 +102,7 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
     String? medicationId,
     String? medicationName,
     double? medicationDoseMg,
+    bool? menstruation,
   }) {
     state = CrisisDraft(
       occurredAt: occurredAt,
@@ -111,7 +112,19 @@ class CrisisDraftNotifier extends Notifier<CrisisDraft> {
       takenMedicationId: medicationId,
       takenMedicationName: medicationName,
       takenMedicationDoseMg: medicationDoseMg,
+      menstruation: menstruation,
     );
+  }
+
+  /// Sim/Não toggle for the hormonal-correlation question — only renders on
+  /// the form when the profile says feminino, but stored either way so an
+  /// edit of an old crisis doesn't lose a previously captured value.
+  void setMenstruation({required bool present}) {
+    state = state.copyWith(menstruation: present);
+  }
+
+  void clearMenstruation() {
+    state = state.copyWith(clearMenstruation: true);
   }
 }
 

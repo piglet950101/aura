@@ -80,10 +80,10 @@ class AppL10nEn extends AppL10n {
   String get qaMedication => 'Medication';
 
   @override
-  String get qaAppointment => 'Doctor visit';
+  String get qaAppointment => 'Prepare visit';
 
   @override
-  String get qaData => 'Data';
+  String get qaData => 'Statistics';
 
   @override
   String get settings => 'Settings';
@@ -219,6 +219,9 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get sectionAura => 'Aura';
+
+  @override
+  String get sectionMenstruation => 'Menstruation';
 
   @override
   String get sectionSymptoms => 'Symptoms';
@@ -399,6 +402,23 @@ class AppL10nEn extends AppL10n {
   String get sectionMedSos => 'Acute (SOS) medication';
 
   @override
+  String get testReminderNow => 'Test reminder now';
+
+  @override
+  String get testReminderNowDesc =>
+      'Shows the notification so you can confirm the channel works';
+
+  @override
+  String get testReminderSent => 'Notification sent — check the status bar';
+
+  @override
+  String get exactAlarmFallback =>
+      'Reminder scheduled, but Android may delay it. To fire at the exact time, enable \"Alarms & reminders\" in system settings.';
+
+  @override
+  String get openSystemSettings => 'Open settings';
+
+  @override
   String get medsReminderTitle => 'Time for your preventive medication';
 
   @override
@@ -560,7 +580,7 @@ class AppL10nEn extends AppL10n {
   }
 
   @override
-  String get appointments => 'Doctor visits';
+  String get appointments => 'Prepare visit';
 
   @override
   String get appointmentsIntro =>

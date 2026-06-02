@@ -227,13 +227,13 @@ abstract class AppL10n {
   /// No description provided for @qaAppointment.
   ///
   /// In pt, this message translates to:
-  /// **'Consulta Médica'**
+  /// **'Preparar Consulta'**
   String get qaAppointment;
 
   /// No description provided for @qaData.
   ///
   /// In pt, this message translates to:
-  /// **'Dados'**
+  /// **'Estatísticas'**
   String get qaData;
 
   /// No description provided for @settings.
@@ -463,6 +463,12 @@ abstract class AppL10n {
   /// In pt, this message translates to:
   /// **'Aura'**
   String get sectionAura;
+
+  /// No description provided for @sectionMenstruation.
+  ///
+  /// In pt, this message translates to:
+  /// **'Menstruação'**
+  String get sectionMenstruation;
 
   /// No description provided for @sectionSymptoms.
   ///
@@ -800,6 +806,36 @@ abstract class AppL10n {
   /// **'Medicação SOS / Crise'**
   String get sectionMedSos;
 
+  /// No description provided for @testReminderNow.
+  ///
+  /// In pt, this message translates to:
+  /// **'Testar lembrete agora'**
+  String get testReminderNow;
+
+  /// No description provided for @testReminderNowDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mostra a notificação para confirmares que o canal funciona'**
+  String get testReminderNowDesc;
+
+  /// No description provided for @testReminderSent.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notificação enviada — verifica a barra de estado'**
+  String get testReminderSent;
+
+  /// No description provided for @exactAlarmFallback.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lembrete agendado, mas o Android pode atrasá-lo. Para disparar à hora exata, ativa “Alarmes e lembretes” nas definições do sistema.'**
+  String get exactAlarmFallback;
+
+  /// No description provided for @openSystemSettings.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir definições'**
+  String get openSystemSettings;
+
   /// No description provided for @medsReminderTitle.
   ///
   /// In pt, this message translates to:
@@ -1079,7 +1115,7 @@ abstract class AppL10n {
   /// No description provided for @reportTitle.
   ///
   /// In pt, this message translates to:
-  /// **'Relatório médico'**
+  /// **'Relatório de Registos (PDF)'**
   String get reportTitle;
 
   /// No description provided for @periodLast30.
@@ -1103,7 +1139,7 @@ abstract class AppL10n {
   /// No description provided for @appointments.
   ///
   /// In pt, this message translates to:
-  /// **'Consulta Médica'**
+  /// **'Preparar Consulta'**
   String get appointments;
 
   /// No description provided for @appointmentsIntro.

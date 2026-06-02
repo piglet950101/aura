@@ -210,6 +210,10 @@ class _StatsStrip extends StatelessWidget {
           child: _StatTile(
             value: '${overview.affectedDays}/${overview.daysInMonth}',
             label: l.statAffectedDays,
+            // 15 affected days/month is the chronic-migraine threshold (ICHD
+            // criterion 1.3 for "chronic migraine"). Client asked for a red
+            // flag so the user knows when they cross the line.
+            danger: overview.affectedDays >= 15,
           ),
         ),
       ],
@@ -218,25 +222,35 @@ class _StatsStrip extends StatelessWidget {
 }
 
 class _StatTile extends StatelessWidget {
-  const _StatTile({required this.value, required this.label});
+  const _StatTile({required this.value, required this.label, this.danger = false});
 
   final String value;
   final String label;
+  final bool danger;
 
   @override
   Widget build(BuildContext context) {
+    final color = danger ? AuraColors.error : AuraColors.textPrimary;
+    final borderColor = danger ? AuraColors.error : AuraColors.border;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: AuraSpacing.md, horizontal: AuraSpacing.sm),
       decoration: BoxDecoration(
         color: AuraColors.bgRaised,
-        border: Border.all(color: AuraColors.border),
+        border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(AuraRadius.lg),
       ),
       child: Column(
         children: [
-          Text(value, style: AuraTextStyles.numeric.copyWith(fontSize: 20)),
+          Text(value, style: AuraTextStyles.numeric.copyWith(fontSize: 20, color: color)),
           const SizedBox(height: AuraSpacing.xs),
-          Text(label, textAlign: TextAlign.center, style: AuraTextStyles.caption),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AuraTextStyles.caption.copyWith(
+              color: danger ? AuraColors.error : null,
+              fontWeight: danger ? FontWeight.w700 : null,
+            ),
+          ),
         ],
       ),
     );

@@ -80,10 +80,10 @@ class AppL10nPt extends AppL10n {
   String get qaMedication => 'Medicação';
 
   @override
-  String get qaAppointment => 'Consulta Médica';
+  String get qaAppointment => 'Preparar Consulta';
 
   @override
-  String get qaData => 'Dados';
+  String get qaData => 'Estatísticas';
 
   @override
   String get settings => 'Definições';
@@ -219,6 +219,9 @@ class AppL10nPt extends AppL10n {
 
   @override
   String get sectionAura => 'Aura';
+
+  @override
+  String get sectionMenstruation => 'Menstruação';
 
   @override
   String get sectionSymptoms => 'Sintomas';
@@ -399,6 +402,24 @@ class AppL10nPt extends AppL10n {
   String get sectionMedSos => 'Medicação SOS / Crise';
 
   @override
+  String get testReminderNow => 'Testar lembrete agora';
+
+  @override
+  String get testReminderNowDesc =>
+      'Mostra a notificação para confirmares que o canal funciona';
+
+  @override
+  String get testReminderSent =>
+      'Notificação enviada — verifica a barra de estado';
+
+  @override
+  String get exactAlarmFallback =>
+      'Lembrete agendado, mas o Android pode atrasá-lo. Para disparar à hora exata, ativa “Alarmes e lembretes” nas definições do sistema.';
+
+  @override
+  String get openSystemSettings => 'Abrir definições';
+
+  @override
   String get medsReminderTitle => 'Hora da medicação preventiva';
 
   @override
@@ -547,7 +568,7 @@ class AppL10nPt extends AppL10n {
   String get sexNa => 'Prefiro não dizer';
 
   @override
-  String get reportTitle => 'Relatório médico';
+  String get reportTitle => 'Relatório de Registos (PDF)';
 
   @override
   String get periodLast30 => 'Últimos 30 dias';
@@ -561,7 +582,7 @@ class AppL10nPt extends AppL10n {
   }
 
   @override
-  String get appointments => 'Consulta Médica';
+  String get appointments => 'Preparar Consulta';
 
   @override
   String get appointmentsIntro =>
@@ -772,10 +793,10 @@ class AppL10nPtBr extends AppL10nPt {
   String get qaMedication => 'Medicação';
 
   @override
-  String get qaAppointment => 'Consulta Médica';
+  String get qaAppointment => 'Preparar Consulta';
 
   @override
-  String get qaData => 'Dados';
+  String get qaData => 'Estatísticas';
 
   @override
   String get settings => 'Configurações';
@@ -911,6 +932,9 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get sectionAura => 'Aura';
+
+  @override
+  String get sectionMenstruation => 'Menstruação';
 
   @override
   String get sectionSymptoms => 'Sintomas';
@@ -1091,6 +1115,24 @@ class AppL10nPtBr extends AppL10nPt {
   String get sectionMedSos => 'Medicação SOS / Crise';
 
   @override
+  String get testReminderNow => 'Testar lembrete agora';
+
+  @override
+  String get testReminderNowDesc =>
+      'Mostra a notificação para confirmar que o canal funciona';
+
+  @override
+  String get testReminderSent =>
+      'Notificação enviada — verifique a barra de status';
+
+  @override
+  String get exactAlarmFallback =>
+      'Lembrete agendado, mas o Android pode atrasá-lo. Para disparar no horário exato, ative “Alarmes e lembretes” nas configurações do sistema.';
+
+  @override
+  String get openSystemSettings => 'Abrir configurações';
+
+  @override
   String get medsReminderTitle => 'Hora da medicação preventiva';
 
   @override
@@ -1239,7 +1281,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get sexNa => 'Prefiro não dizer';
 
   @override
-  String get reportTitle => 'Relatório médico';
+  String get reportTitle => 'Relatório de Registros (PDF)';
 
   @override
   String get periodLast30 => 'Últimos 30 dias';
@@ -1253,7 +1295,7 @@ class AppL10nPtBr extends AppL10nPt {
   }
 
   @override
-  String get appointments => 'Consulta Médica';
+  String get appointments => 'Preparar Consulta';
 
   @override
   String get appointmentsIntro =>

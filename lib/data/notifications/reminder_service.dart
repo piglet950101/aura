@@ -67,12 +67,54 @@ class ReminderService {
     return false;
   }
 
+  /// True if exact alarms are available — required for the daily reminder to
+  /// fire at the requested minute. On Android 12+ this is a user-grantable
+  /// permission that defaults to off on many OEM ROMs (notably MIUI). When
+  /// false, [scheduleForMedication] falls back to an inexact alarm so the
+  /// reminder still fires (within a window) instead of silently dying.
+  Future<bool> canScheduleExactAlarms() async {
+    await init();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (android == null) return true;
+    try {
+      return await android.canScheduleExactNotifications() ?? false;
+    } on Object catch (_) {
+      return true;
+    }
+  }
+
+  /// Fires a one-shot notification immediately. Used by the "Testar lembrete
+  /// agora" button in the medication editor so the user can confirm the
+  /// notification channel + permission + sound/vibration work without waiting
+  /// for the scheduled time. If THIS doesn't appear, the path is broken at
+  /// the OS level (channel disabled, app in battery-restricted mode, etc.)
+  /// and no amount of scheduling will help.
+  Future<void> showTestNotification({required String title, required String body}) async {
+    await init();
+    const android = AndroidNotificationDetails(
+      'preventive_meds_v1',
+      'Lembrete de medicação',
+      channelDescription: 'Lembretes diários para medicação preventiva',
+      importance: Importance.high,
+      priority: Priority.high,
+      enableLights: true,
+      category: AndroidNotificationCategory.reminder,
+    );
+    const details = NotificationDetails(android: android, iOS: DarwinNotificationDetails());
+    // Use the same id as the actual scheduled reminder would have so the user
+    // doesn't end up with a duplicate row in the shade after testing.
+    await _plugin.show(_kTestNotificationId, title, body, details);
+  }
+
   /// Schedules (or reschedules) the daily reminder for one medication. Cancels
   /// the existing one first so changing the time replaces — not duplicates.
   ///
   /// Only fires for `kind = preventive` rows with a non-null reminderMinutes;
-  /// otherwise this is a cancel.
-  Future<void> scheduleForMedication(
+  /// otherwise this is a cancel. Returns true when the alarm was scheduled
+  /// exactly; false when it was scheduled inexactly (UI can then prompt the
+  /// user to grant SCHEDULE_EXACT_ALARM in Settings).
+  Future<bool> scheduleForMedication(
     Medication med, {
     required String title,
     required String body,
@@ -83,7 +125,7 @@ class ReminderService {
 
     final isPreventive = med.kind == MedicationKind.preventive.code;
     final mins = med.reminderMinutes;
-    if (!isPreventive || mins == null || med.archived) return;
+    if (!isPreventive || mins == null || med.archived) return true;
 
     final when = _nextDailyInstance(mins);
     const android = AndroidNotificationDetails(
@@ -92,18 +134,34 @@ class ReminderService {
       channelDescription: 'Lembretes diários para medicação preventiva',
       importance: Importance.high,
       priority: Priority.high,
+      enableLights: true,
+      category: AndroidNotificationCategory.reminder,
     );
     const details = NotificationDetails(android: android, iOS: DarwinNotificationDetails());
+
+    // Pick the scheduling mode based on whether exact alarms are granted. On
+    // Android 12+ SCHEDULE_EXACT_ALARM is user-grantable and defaults to off
+    // on many OEM ROMs (notably MIUI / Xiaomi). When denied the plugin
+    // silently fails to deliver an exact alarm; the inexact mode still fires
+    // (within a ~15min window) instead of never firing at all. This was the
+    // root cause behind Marcelo's "alarme nunca dispara" report.
+    final exactGranted = await canScheduleExactAlarms();
+    final mode = exactGranted
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+    debugPrint('[Reminder] schedule id=$id when=$when exactGranted=$exactGranted');
+
     await _plugin.zonedSchedule(
       id,
       title,
       body,
       when,
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: mode,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+    return exactGranted;
   }
 
   Future<void> cancelForMedication(String medId) async {
@@ -119,16 +177,21 @@ class ReminderService {
   /// Reapplies scheduling for the full active catalog. Used at bootstrap to
   /// repopulate the system's alarm queue after install / locale change /
   /// reboot. Cancels everything first so archived or de-scheduled rows clear.
-  Future<void> rescheduleAll(
+  /// Returns true when every reminder was scheduled exactly; false when at
+  /// least one fell back to the inexact mode (caller can surface a hint).
+  Future<bool> rescheduleAll(
     List<Medication> meds, {
     required String title,
     required String Function(Medication) bodyFor,
   }) async {
     await init();
     await _plugin.cancelAll();
+    var allExact = true;
     for (final m in meds) {
-      await scheduleForMedication(m, title: title, body: bodyFor(m));
+      final exact = await scheduleForMedication(m, title: title, body: bodyFor(m));
+      if (!exact) allExact = false;
     }
+    return allExact;
   }
 
   /// Verification hook for the on-device canary — returns the system's view of
@@ -158,4 +221,8 @@ class ReminderService {
   /// overwrite each other; the masked space gives 2^31 ids — effectively
   /// collision-free at the catalog size users actually keep.
   int _notificationIdFor(String medId) => medId.hashCode.abs() & 0x7FFFFFFF;
+
+  /// Stable id for the "Testar lembrete agora" notification. Sits in the
+  /// reserved high end so it can never collide with a real medication id.
+  static const _kTestNotificationId = 0x7FFFFFFE;
 }

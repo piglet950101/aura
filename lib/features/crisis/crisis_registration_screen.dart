@@ -11,6 +11,7 @@ import 'package:aura/features/crisis/widgets/aura_toggle.dart';
 import 'package:aura/features/crisis/widgets/intensity_picker.dart';
 import 'package:aura/features/crisis/widgets/medication_picker.dart';
 import 'package:aura/features/crisis/widgets/symptom_chips.dart';
+import 'package:aura/features/settings/settings_providers.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,6 +91,7 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
           medicationId: med?.medicationId,
           medicationName: med?.medicationNameSnapshot,
           medicationDoseMg: med?.doseMg,
+          menstruation: crisis.menstruation,
         );
     _notesController.text = crisis.notes ?? '';
   }
@@ -158,6 +160,12 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
     final l = AppL10n.of(context);
     final draft = ref.watch(crisisDraftProvider);
     final notifier = ref.read(crisisDraftProvider.notifier);
+    // Conditional render of the Menstruação question, per the client's spec:
+    // only show when the user's profile says feminino. Older crises edited
+    // post-fact stay editable through draft.menstruation regardless, so we
+    // never lose data captured before a profile change.
+    final profile = ref.watch(profileProvider).valueOrNull;
+    final showMenstruation = profile?.sex == 'f' || draft.menstruation != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -205,6 +213,15 @@ class _CrisisRegistrationScreenState extends ConsumerState<CrisisRegistrationScr
                       onChanged: (v) => notifier.setAura(present: v),
                     ),
                     const SizedBox(height: AuraSpacing.xl),
+
+                    if (showMenstruation) ...[
+                      _SectionLabel(l.sectionMenstruation),
+                      AuraToggle(
+                        present: draft.menstruation ?? false,
+                        onChanged: (v) => notifier.setMenstruation(present: v),
+                      ),
+                      const SizedBox(height: AuraSpacing.xl),
+                    ],
 
                     _SectionLabel(l.sectionSymptoms),
                     SymptomChips(

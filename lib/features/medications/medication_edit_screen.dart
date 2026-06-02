@@ -77,6 +77,29 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
 
   void _clearReminder() => setState(() => _reminder = null);
 
+  /// Fires a one-shot notification immediately so the user can confirm the
+  /// channel + permission path works without waiting until the scheduled time.
+  /// This is what unblocks Marcelo's "nunca dispara" report — when the test
+  /// shows up, scheduling works; when it doesn't, the channel or battery
+  /// policy is blocking it.
+  Future<void> _onTestReminder() async {
+    final l = AppL10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final reminderService = ref.read(reminderServiceProvider);
+    final granted = await reminderService.requestPermission();
+    if (!granted) {
+      messenger.showSnackBar(SnackBar(content: Text(l.notificationPermissionDenied)));
+      return;
+    }
+    final name = _name.text.trim().isEmpty ? 'AURA' : _name.text.trim();
+    await reminderService.showTestNotification(
+      title: l.medsReminderTitle,
+      body: l.medsReminderBody(name),
+    );
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(content: Text(l.testReminderSent)));
+  }
+
   Future<void> _onSave() async {
     if (!_canSave) return;
     final l = AppL10n.of(context);
@@ -100,6 +123,7 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
       // If we just set a reminder, ask for permission first so the user sees
       // the prompt at the moment that matches their intent.
       final needsScheduling = _kind == MedicationKind.preventive && _reminderMinutes != null;
+      var exactGranted = true;
       if (needsScheduling) {
         final granted = await reminderService.requestPermission();
         if (!granted) {
@@ -108,10 +132,18 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
       }
       final fresh = await ref.read(auraDatabaseProvider).findMedication(id);
       if (fresh != null) {
-        await reminderService.scheduleForMedication(
+        exactGranted = await reminderService.scheduleForMedication(
           fresh,
           title: l.medsReminderTitle,
           body: l.medsReminderBody(fresh.name),
+        );
+      }
+      // When the alarm landed in inexact mode the OS may push it ±15min from
+      // the requested time — surface that so the user understands why their
+      // 18:00 reminder showed up at 18:12 (this was Marcelo's pain).
+      if (needsScheduling && !exactGranted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.exactAlarmFallback), duration: const Duration(seconds: 5)),
         );
       }
 
@@ -240,6 +272,34 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
                         reminder: _reminder,
                         onPick: _pickReminder,
                         onClear: _clearReminder,
+                      ),
+                      const SizedBox(height: AuraSpacing.sm),
+                      // Smoke-test the notification path. Fires a one-shot
+                      // notification immediately so the user can see whether
+                      // the channel + permission work without waiting until
+                      // the scheduled minute tomorrow.
+                      TextButton.icon(
+                        onPressed: _onTestReminder,
+                        style: TextButton.styleFrom(
+                          foregroundColor: AuraColors.accent,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
+                        ),
+                        icon: const Icon(Icons.notifications_active_outlined, size: 18),
+                        label: Text(
+                          l.testReminderNow,
+                          style: AuraTextStyles.caption.copyWith(
+                            color: AuraColors.accent,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
+                        child: Text(
+                          l.testReminderNowDesc,
+                          style: AuraTextStyles.caption,
+                        ),
                       ),
                     ],
 

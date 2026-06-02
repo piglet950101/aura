@@ -68,13 +68,49 @@ class Medications extends Table {
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
 
   /// Minute-of-day (0..1439) at which to fire a daily reminder for this
-  /// medication. Null = no reminder. Only meaningful for `kind = preventive`;
-  /// the scheduler ignores reminders set on SOS rows. Storing minutes (not
-  /// `TimeOfDay`) keeps the column an integer that Drift can index trivially.
+  /// medication. Null = no reminder. Only meaningful for `kind = preventive`
+  /// + `preventiveSubtype = 'pill'`; the scheduler ignores reminders set on
+  /// SOS rows or on injections (which use their own period scheduling).
   IntColumn get reminderMinutes => integer().nullable()();
+
+  /// 'pill' (Comprimido Diário) or 'injection' (Injeção). Only meaningful
+  /// when `kind = preventive`. Lets the scheduler differentiate a daily
+  /// reminder from a monthly/quarterly one and lets the editor surface the
+  /// right fields.
+  TextColumn get preventiveSubtype => text().nullable()();
+
+  /// Recurrence in days for injection-type preventives. 30 = mensal, 90 =
+  /// trimestral. Null for pill / SOS / unset.
+  IntColumn get injectionPeriodDays => integer().nullable()();
+
+  /// Treatment start date — required for preventives the user is tracking
+  /// long-term. Null on SOS rows or rows created before v5.
+  DateTimeColumn get startedAt => dateTime().nullable()();
+
+  /// Treatment end date. Set when the user taps "Terminar tratamento"; the
+  /// row stays so the history view can still surface it as "terminado em…".
+  DateTimeColumn get endedAt => dateTime().nullable()();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// HIT-6 questionnaire scores. Saved once every 30 days (the cadence the
+/// client specified) so the report + stats can plot the impact-on-quality-of-
+/// life trend over time. `responses` is the JSON-encoded `[q1..q6]` answer
+/// array (each in {6,8,10,11,13}); `score` is the sum (range 36..78).
+@DataClassName('Hit6Response')
+@TableIndex(name: 'hit6_user_recent_idx', columns: {#userId, #submittedAt})
+class Hit6Responses extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text()();
+  DateTimeColumn get submittedAt => dateTime()();
+  IntColumn get score => integer()();
+  TextColumn get responses => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -110,6 +146,11 @@ class Crises extends Table {
   TextColumn get location => text().nullable()();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get resolvedAt => dateTime().nullable()();
+  /// Sim/Não capture of whether the crisis coincided with the menstrual cycle.
+  /// Null = unknown / not asked (the form only renders the question when the
+  /// profile's `sex` field is 'f'). Drives the hormonal-correlation card in
+  /// the medical report.
+  BoolColumn get menstruation => boolean().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -189,6 +230,7 @@ class OutboxEntries extends Table {
     Profiles,
     Medications,
     Appointments,
+    Hit6Responses,
     Crises,
     CrisisSymptoms,
     CrisisTriggers,
@@ -204,7 +246,7 @@ class AuraDatabase extends _$AuraDatabase {
   AuraDatabase.test(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -232,6 +274,20 @@ class AuraDatabase extends _$AuraDatabase {
         await m.addColumn(medications, medications.reminderMinutes);
         await m.createTable(appointments);
         await m.createIndex(appointmentsUserWhenIdx);
+      }
+      // v5 adds clinical fields requested in Marcelo's final spec round:
+      //   • crises.menstruation              — Sim/Não for the hormonal corr
+      //   • medications.preventiveSubtype    — 'pill' / 'injection'
+      //   • medications.injectionPeriodDays  — 30 / 90 for monthly/quarterly
+      //   • medications.startedAt / endedAt  — treatment timeline
+      //   • new `hit6_responses` table       — HIT-6 score history
+      if (from < 5) {
+        await m.addColumn(crises, crises.menstruation);
+        await m.addColumn(medications, medications.preventiveSubtype);
+        await m.addColumn(medications, medications.injectionPeriodDays);
+        await m.addColumn(medications, medications.startedAt);
+        await m.addColumn(medications, medications.endedAt);
+        await m.createTable(hit6Responses);
       }
     },
     beforeOpen: (details) async {
@@ -286,12 +342,14 @@ class AuraDatabase extends _$AuraDatabase {
     required DateTime occurredAt,
     required int intensity,
     String? notes,
+    bool? menstruation,
   }) {
     return (update(crises)..where((c) => c.id.equals(id))).write(
       CrisesCompanion(
         occurredAt: Value(occurredAt),
         intensity: Value(intensity),
         notes: Value(notes),
+        menstruation: Value(menstruation),
         updatedAt: Value(DateTime.now()),
       ),
     );

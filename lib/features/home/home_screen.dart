@@ -340,10 +340,14 @@ class _SummaryDonut extends StatelessWidget {
                 label: l.medicationTaken,
                 count: stats.daysWithMedication,
               ),
+              // SOS days ≥ 10 flips the label + count to red, per the
+              // Cefaleia por Abuso de Medicação threshold the client + the
+              // ICHD criteria use (>10 acute doses/month is the warning line).
               _MedicationRow(
                 color: AuraColors.intensityHigh,
                 label: l.medicationSos,
                 count: stats.daysWithSosMedication,
+                danger: stats.daysWithSosMedication >= 10,
               ),
             ],
           ),
@@ -417,14 +421,26 @@ class _DonutLegend extends StatelessWidget {
 }
 
 class _MedicationRow extends StatelessWidget {
-  const _MedicationRow({required this.color, required this.label, required this.count});
+  const _MedicationRow({
+    required this.color,
+    required this.label,
+    required this.count,
+    this.danger = false,
+  });
 
   final Color color;
   final String label;
   final int count;
 
+  /// When true, the label + day count flip to the error colour. The home uses
+  /// this for SOS days ≥ 10 (Cefaleia por Abuso de Medicação threshold).
+  final bool danger;
+
   @override
   Widget build(BuildContext context) {
+    final dotColor = danger ? AuraColors.error : color;
+    final labelColor = danger ? AuraColors.error : AuraColors.textSecondary;
+    final countColor = danger ? AuraColors.error : AuraColors.textPrimary;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AuraSpacing.sm, horizontal: AuraSpacing.xs),
       child: Row(
@@ -433,9 +449,9 @@ class _MedicationRow extends StatelessWidget {
             width: 10,
             height: 10,
             decoration: BoxDecoration(
-              color: color,
+              color: dotColor,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: dotColor.withValues(alpha: 0.45), blurRadius: 6)],
             ),
           ),
           const SizedBox(width: AuraSpacing.md),
@@ -444,14 +460,14 @@ class _MedicationRow extends StatelessWidget {
               label,
               style: AuraTextStyles.body.copyWith(
                 fontSize: 14,
-                color: AuraColors.textSecondary,
-                fontWeight: FontWeight.w500,
+                color: labelColor,
+                fontWeight: danger ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
           ),
           Text(
             AppL10n.of(context).days(count),
-            style: AuraTextStyles.numeric.copyWith(fontSize: 15),
+            style: AuraTextStyles.numeric.copyWith(fontSize: 15, color: countColor),
           ),
         ],
       ),

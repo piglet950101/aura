@@ -47,6 +47,7 @@ class RegisterCrisisUseCase {
               occurredAt: occurredAt,
               intensity: draft.intensity!,
               notes: Value(draft.notes),
+              menstruation: Value(draft.menstruation),
             ),
           );
 
@@ -96,6 +97,7 @@ class RegisterCrisisUseCase {
         occurredAt: occurredAt,
         intensity: draft.intensity!,
         notes: draft.notes,
+        menstruation: draft.menstruation,
       );
 
       await _db.deleteSymptomsFor(crisisId);

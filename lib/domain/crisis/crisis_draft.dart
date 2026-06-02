@@ -13,6 +13,7 @@ class CrisisDraft {
     this.takenMedicationId,
     this.takenMedicationName,
     this.takenMedicationDoseMg,
+    this.menstruation,
   });
 
   /// When the crisis started. Null means "use NOW when saving" — most users
@@ -41,6 +42,10 @@ class CrisisDraft {
   final String? takenMedicationName;
   final double? takenMedicationDoseMg;
 
+  /// Sim/Não capture of the menstrual-cycle coincidence. Null = not asked
+  /// (the form hides the question unless the profile says feminino).
+  final bool? menstruation;
+
   bool get isSaveable => intensity != null;
 
   bool get hasMedication => takenMedicationId != null || takenMedicationName != null;
@@ -57,6 +62,8 @@ class CrisisDraft {
     String? takenMedicationName,
     double? takenMedicationDoseMg,
     bool clearMedication = false,
+    bool? menstruation,
+    bool clearMenstruation = false,
   }) {
     return CrisisDraft(
       occurredAt: occurredAt ?? this.occurredAt,
@@ -71,6 +78,7 @@ class CrisisDraft {
       takenMedicationDoseMg: clearMedication
           ? null
           : (takenMedicationDoseMg ?? this.takenMedicationDoseMg),
+      menstruation: clearMenstruation ? null : (menstruation ?? this.menstruation),
     );
   }
 }

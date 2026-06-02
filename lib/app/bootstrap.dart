@@ -115,12 +115,14 @@ Future<void> bootstrap() async {
                   m.reminderMinutes != null,
             )
             .toList();
-        await reminderService.rescheduleAll(
+        final allExact = await reminderService.rescheduleAll(
           actionable,
           title: l.medsReminderTitle,
           bodyFor: (m) => l.medsReminderBody(m.name),
         );
-        debugPrint('[AURA] Reminders re-applied: ${actionable.length}');
+        debugPrint(
+          '[AURA] Reminders re-applied: ${actionable.length} (exact=$allExact)',
+        );
       } on Object catch (e, st) {
         // Notifications are non-critical — never block app launch on them.
         debugPrint('[AURA] Reminder reschedule failed (non-fatal): $e\n$st');
