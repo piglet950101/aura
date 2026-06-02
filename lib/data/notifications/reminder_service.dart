@@ -6,6 +6,7 @@
 
 import 'package:aura/data/local/database.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
+import 'package:aura/domain/medication/preventive_subtype.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -124,10 +125,38 @@ class ReminderService {
     await _plugin.cancel(id);
 
     final isPreventive = med.kind == MedicationKind.preventive.code;
-    final mins = med.reminderMinutes;
-    if (!isPreventive || mins == null || med.archived) return true;
+    // Treatment is over → never re-arm a reminder.
+    if (!isPreventive || med.archived || med.endedAt != null) return true;
 
-    final when = _nextDailyInstance(mins);
+    final subtype = PreventiveSubtype.fromCode(med.preventiveSubtype);
+    final tz.TZDateTime when;
+    final DateTimeComponents? matchComponents;
+    switch (subtype) {
+      case PreventiveSubtype.pill:
+        // Daily comprimido — needs the reminder time to fire.
+        final mins = med.reminderMinutes;
+        if (mins == null) return true;
+        when = _nextDailyInstance(mins);
+        matchComponents = DateTimeComponents.time;
+      case PreventiveSubtype.injection:
+        // Monthly / quarterly injection — fire on the next due date the
+        // treatment timeline lands on. `_nextInjectionInstance` walks from
+        // startedAt by [periodDays] until we cross "now".
+        final period = med.injectionPeriodDays;
+        final start = med.startedAt;
+        if (period == null || start == null) return true;
+        when = _nextInjectionInstance(start, period);
+        // No daily/monthly match — the bootstrap re-applies this on every
+        // launch, which advances the alarm to the new "next due" naturally.
+        matchComponents = null;
+      case null:
+        // Subtype not specified (legacy pre-v5 row) — fall back to the old
+        // pure-pill behaviour using the reminder minute if present.
+        final mins = med.reminderMinutes;
+        if (mins == null) return true;
+        when = _nextDailyInstance(mins);
+        matchComponents = DateTimeComponents.time;
+    }
     const android = AndroidNotificationDetails(
       'preventive_meds_v1',
       'Lembrete de medicação',
@@ -159,9 +188,24 @@ class ReminderService {
       details,
       androidScheduleMode: mode,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: matchComponents,
     );
     return exactGranted;
+  }
+
+  /// Walks forward from [startedAt] in [periodDays] increments until the
+  /// resulting instant is strictly after now. Yields the next due injection
+  /// date in the local timezone. Bootstrap calls scheduleForMedication on
+  /// every launch so a one-shot scheduled "this month" advances to the next
+  /// month after firing.
+  tz.TZDateTime _nextInjectionInstance(DateTime startedAt, int periodDays) {
+    final now = tz.TZDateTime.now(tz.local);
+    final start = tz.TZDateTime.from(startedAt, tz.local);
+    var next = start;
+    while (!next.isAfter(now)) {
+      next = next.add(Duration(days: periodDays));
+    }
+    return next;
   }
 
   Future<void> cancelForMedication(String medId) async {

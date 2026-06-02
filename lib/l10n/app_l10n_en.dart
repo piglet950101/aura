@@ -410,6 +410,58 @@ class AppL10nEn extends AppL10n {
   String get sectionMedSos => 'Acute (SOS) medication';
 
   @override
+  String get sectionMedEnded => 'Ended treatments';
+
+  @override
+  String get fieldSubtype => 'Preventive type';
+
+  @override
+  String get subtypePill => 'Daily pill';
+
+  @override
+  String get subtypeInjection => 'Injection';
+
+  @override
+  String get fieldInjectionPeriod => 'Frequency';
+
+  @override
+  String get periodMonthly => 'Monthly';
+
+  @override
+  String get periodQuarterly => 'Quarterly';
+
+  @override
+  String get fieldStartDate => 'Start date';
+
+  @override
+  String get startDateNotSet => 'Pick a start date';
+
+  @override
+  String get endTreatmentTitle => 'End treatment';
+
+  @override
+  String get endTreatmentBody =>
+      'The medication leaves the active list, but the history is kept for reference.';
+
+  @override
+  String get endTreatmentCta => 'End';
+
+  @override
+  String treatmentEndedOn(String date) {
+    return 'Ended on $date';
+  }
+
+  @override
+  String treatmentStartedOn(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String injectionScheduleLabel(String period, String date) {
+    return '$period · next $date';
+  }
+
+  @override
   String get testReminderNow => 'Test reminder now';
 
   @override

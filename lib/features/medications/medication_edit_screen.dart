@@ -6,12 +6,14 @@ import 'package:aura/data/local/database.dart';
 import 'package:aura/data/local/database_provider.dart';
 import 'package:aura/data/notifications/reminder_service_provider.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
+import 'package:aura/domain/medication/preventive_subtype.dart';
 import 'package:aura/features/medications/medications_providers.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:aura/l10n/l10n_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 /// Add or edit a medication. Reached from the medication list. The kind is a
 /// closed two-option selector (SOS / Preventiva) per the client's request —
@@ -31,6 +33,9 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
   late MedicationKind _kind;
   late bool _isDefault;
   TimeOfDay? _reminder;
+  PreventiveSubtype? _subtype;
+  InjectionPeriod? _injectionPeriod;
+  DateTime? _startedAt;
   bool _saving = false;
 
   bool get _isEdit => widget.existing != null;
@@ -45,6 +50,12 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
     _isDefault = e?.isDefault ?? false;
     final mins = e?.reminderMinutes;
     _reminder = mins == null ? null : TimeOfDay(hour: mins ~/ 60, minute: mins % 60);
+    _subtype = e == null
+        ? null
+        : (PreventiveSubtype.fromCode(e.preventiveSubtype) ??
+              (_kind == MedicationKind.preventive ? PreventiveSubtype.pill : null));
+    _injectionPeriod = InjectionPeriod.fromDays(e?.injectionPeriodDays);
+    _startedAt = e?.startedAt;
     _name.addListener(() => setState(() {}));
   }
 
@@ -76,6 +87,45 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
   }
 
   void _clearReminder() => setState(() => _reminder = null);
+
+  Future<void> _pickStartDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _startedAt ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() => _startedAt = DateTime(picked.year, picked.month, picked.day));
+    }
+  }
+
+  Future<void> _onEndTreatment() async {
+    final med = widget.existing;
+    if (med == null) return;
+    final l = AppL10n.of(context);
+    final reminderService = ref.read(reminderServiceProvider);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuraColors.bgElevated,
+        title: Text(l.endTreatmentTitle, style: AuraTextStyles.screenTitle),
+        content: Text(l.endTreatmentBody, style: AuraTextStyles.bodySmall),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(l.cancel)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.endTreatmentCta, style: const TextStyle(color: AuraColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref.read(medicationRepositoryProvider).endTreatment(med.id);
+    await reminderService.cancelForMedication(med.id);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
 
   /// Fires a one-shot notification immediately so the user can confirm the
   /// channel + permission path works without waiting until the scheduled time.
@@ -117,6 +167,9 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
             kind: _kind,
             isDefault: _isDefault,
             reminderMinutes: _reminderMinutes,
+            subtype: _kind == MedicationKind.preventive ? (_subtype ?? PreventiveSubtype.pill) : null,
+            injectionPeriod: _injectionPeriod,
+            startedAt: _startedAt,
           );
 
       // After the row is persisted, reflect the change in the OS scheduler.
@@ -267,40 +320,92 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
                     // would ignore anyway.
                     if (_kind == MedicationKind.preventive) ...[
                       const SizedBox(height: AuraSpacing.xl),
-                      _SectionLabel(l.fieldReminder),
-                      _ReminderTile(
-                        reminder: _reminder,
-                        onPick: _pickReminder,
-                        onClear: _clearReminder,
+                      _SectionLabel(l.fieldSubtype),
+                      _SubtypeSelector(
+                        value: _subtype ?? PreventiveSubtype.pill,
+                        onChanged: (s) => setState(() {
+                          _subtype = s;
+                          if (s == PreventiveSubtype.pill) {
+                            _injectionPeriod = null;
+                          } else {
+                            _reminder = null;
+                            _injectionPeriod ??= InjectionPeriod.monthly;
+                          }
+                        }),
                       ),
-                      const SizedBox(height: AuraSpacing.sm),
-                      // Smoke-test the notification path. Fires a one-shot
-                      // notification immediately so the user can see whether
-                      // the channel + permission work without waiting until
-                      // the scheduled minute tomorrow.
-                      TextButton.icon(
-                        onPressed: _onTestReminder,
-                        style: TextButton.styleFrom(
-                          foregroundColor: AuraColors.accent,
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
+                      const SizedBox(height: AuraSpacing.xl),
+
+                      _SectionLabel(l.fieldStartDate),
+                      _StartedAtTile(
+                        startedAt: _startedAt,
+                        onPick: _pickStartDate,
+                      ),
+
+                      if ((_subtype ?? PreventiveSubtype.pill) == PreventiveSubtype.pill) ...[
+                        const SizedBox(height: AuraSpacing.xl),
+                        _SectionLabel(l.fieldReminder),
+                        _ReminderTile(
+                          reminder: _reminder,
+                          onPick: _pickReminder,
+                          onClear: _clearReminder,
                         ),
-                        icon: const Icon(Icons.notifications_active_outlined, size: 18),
-                        label: Text(
-                          l.testReminderNow,
-                          style: AuraTextStyles.caption.copyWith(
-                            color: AuraColors.accent,
-                            fontWeight: FontWeight.w700,
+                        const SizedBox(height: AuraSpacing.sm),
+                        // Smoke-test the notification path. Fires a one-shot
+                        // notification immediately so the user can see whether
+                        // the channel + permission work without waiting until
+                        // the scheduled minute tomorrow.
+                        TextButton.icon(
+                          onPressed: _onTestReminder,
+                          style: TextButton.styleFrom(
+                            foregroundColor: AuraColors.accent,
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
+                          ),
+                          icon: const Icon(Icons.notifications_active_outlined, size: 18),
+                          label: Text(
+                            l.testReminderNow,
+                            style: AuraTextStyles.caption.copyWith(
+                              color: AuraColors.accent,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
-                        child: Text(
-                          l.testReminderNowDesc,
-                          style: AuraTextStyles.caption,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
+                          child: Text(
+                            l.testReminderNowDesc,
+                            style: AuraTextStyles.caption,
+                          ),
                         ),
-                      ),
+                      ] else ...[
+                        const SizedBox(height: AuraSpacing.xl),
+                        _SectionLabel(l.fieldInjectionPeriod),
+                        _PeriodSelector(
+                          value: _injectionPeriod ?? InjectionPeriod.monthly,
+                          onChanged: (p) => setState(() => _injectionPeriod = p),
+                        ),
+                      ],
+
+                      // "Terminar tratamento" button — only when editing an
+                      // existing preventive that isn't already ended.
+                      if (_isEdit && (widget.existing?.endedAt == null)) ...[
+                        const SizedBox(height: AuraSpacing.xl),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: _onEndTreatment,
+                            icon: const Icon(
+                              Icons.event_busy_outlined,
+                              color: AuraColors.error,
+                              size: 20,
+                            ),
+                            label: Text(
+                              l.endTreatmentCta,
+                              style: const TextStyle(color: AuraColors.error),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
 
                     if (_isEdit) ...[
@@ -427,6 +532,185 @@ class _KindOption extends StatelessWidget {
               Text(medicationKindDesc(l, kind), style: AuraTextStyles.caption),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pill vs Injection — preventive subtype selector. Two pills, side by side,
+/// mirroring the _KindSelector visual language.
+class _SubtypeSelector extends StatelessWidget {
+  const _SubtypeSelector({required this.value, required this.onChanged});
+
+  final PreventiveSubtype value;
+  final ValueChanged<PreventiveSubtype> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _SubtypeOption(
+            label: l.subtypePill,
+            icon: Icons.medication_outlined,
+            selected: value == PreventiveSubtype.pill,
+            onTap: () => onChanged(PreventiveSubtype.pill),
+          ),
+        ),
+        const SizedBox(width: AuraSpacing.sm),
+        Expanded(
+          child: _SubtypeOption(
+            label: l.subtypeInjection,
+            icon: Icons.colorize_outlined,
+            selected: value == PreventiveSubtype.injection,
+            onTap: () => onChanged(PreventiveSubtype.injection),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SubtypeOption extends StatelessWidget {
+  const _SubtypeOption({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AuraRadius.lg),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: AuraSpacing.tapTargetMin),
+        padding: const EdgeInsets.symmetric(vertical: AuraSpacing.md, horizontal: AuraSpacing.md),
+        decoration: BoxDecoration(
+          color: selected ? AuraColors.accentBg : AuraColors.bgRaised,
+          border: Border.all(
+            color: selected ? AuraColors.accent : AuraColors.border,
+            width: selected ? 1.5 : 1,
+          ),
+          borderRadius: BorderRadius.circular(AuraRadius.lg),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: selected ? AuraColors.accent : AuraColors.textMuted,
+            ),
+            const SizedBox(width: AuraSpacing.sm),
+            Text(
+              label,
+              style: AuraTextStyles.body.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: selected ? AuraColors.textPrimary : AuraColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Mensal vs Trimestral — injection-period chooser.
+class _PeriodSelector extends StatelessWidget {
+  const _PeriodSelector({required this.value, required this.onChanged});
+
+  final InjectionPeriod value;
+  final ValueChanged<InjectionPeriod> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _SubtypeOption(
+            label: l.periodMonthly,
+            icon: Icons.event_repeat,
+            selected: value == InjectionPeriod.monthly,
+            onTap: () => onChanged(InjectionPeriod.monthly),
+          ),
+        ),
+        const SizedBox(width: AuraSpacing.sm),
+        Expanded(
+          child: _SubtypeOption(
+            label: l.periodQuarterly,
+            icon: Icons.calendar_today_outlined,
+            selected: value == InjectionPeriod.quarterly,
+            onTap: () => onChanged(InjectionPeriod.quarterly),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Required "Data de Início" picker tile for preventive treatments.
+class _StartedAtTile extends StatelessWidget {
+  const _StartedAtTile({required this.startedAt, required this.onPick});
+
+  final DateTime? startedAt;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final label = startedAt == null
+        ? l.startDateNotSet
+        : DateFormat.yMMMMd(localeName).format(startedAt!);
+    final has = startedAt != null;
+    return InkWell(
+      onTap: onPick,
+      borderRadius: BorderRadius.circular(AuraRadius.md),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: AuraSpacing.tapTargetMin),
+        padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.lg, vertical: AuraSpacing.md),
+        decoration: BoxDecoration(
+          color: AuraColors.bgRaised,
+          border: Border.all(color: has ? AuraColors.accent : AuraColors.border),
+          borderRadius: BorderRadius.circular(AuraRadius.md),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 20,
+              color: has ? AuraColors.accent : AuraColors.textMuted,
+            ),
+            const SizedBox(width: AuraSpacing.md),
+            Expanded(
+              child: Text(
+                label,
+                style: AuraTextStyles.body.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: has ? AuraColors.textPrimary : AuraColors.textSecondary,
+                ),
+              ),
+            ),
+            Text(
+              l.selectDate,
+              style: AuraTextStyles.caption.copyWith(
+                color: AuraColors.accent,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -107,12 +107,17 @@ Future<void> bootstrap() async {
         final reminderService = container.read(reminderServiceProvider);
         final l = lookupAppL10n(activeLocale);
         final meds = await container.read(auraDatabaseProvider).allMedications(user.id);
+        // Anything actively scheduled — daily-pill rows with a reminder time
+        // AND injection rows with a period + started date. ReminderService
+        // figures out the right wall-clock from there.
         final actionable = meds
             .where(
               (m) =>
                   !m.archived &&
+                  m.endedAt == null &&
                   m.kind == MedicationKind.preventive.code &&
-                  m.reminderMinutes != null,
+                  (m.reminderMinutes != null ||
+                      (m.injectionPeriodDays != null && m.startedAt != null)),
             )
             .toList();
         final allExact = await reminderService.rescheduleAll(

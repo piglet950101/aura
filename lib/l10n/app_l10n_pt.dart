@@ -410,6 +410,58 @@ class AppL10nPt extends AppL10n {
   String get sectionMedSos => 'Medicação SOS / Crise';
 
   @override
+  String get sectionMedEnded => 'Tratamentos terminados';
+
+  @override
+  String get fieldSubtype => 'Tipo de preventiva';
+
+  @override
+  String get subtypePill => 'Comprimido Diário';
+
+  @override
+  String get subtypeInjection => 'Injeção';
+
+  @override
+  String get fieldInjectionPeriod => 'Periodicidade';
+
+  @override
+  String get periodMonthly => 'Mensal';
+
+  @override
+  String get periodQuarterly => 'Trimestral';
+
+  @override
+  String get fieldStartDate => 'Data de início';
+
+  @override
+  String get startDateNotSet => 'Escolher data de início';
+
+  @override
+  String get endTreatmentTitle => 'Terminar tratamento';
+
+  @override
+  String get endTreatmentBody =>
+      'A medicação deixa de aparecer na lista ativa, mas o histórico mantém-se para consulta.';
+
+  @override
+  String get endTreatmentCta => 'Terminar';
+
+  @override
+  String treatmentEndedOn(String date) {
+    return 'Terminado em $date';
+  }
+
+  @override
+  String treatmentStartedOn(String date) {
+    return 'Desde $date';
+  }
+
+  @override
+  String injectionScheduleLabel(String period, String date) {
+    return '$period · próx. $date';
+  }
+
+  @override
   String get testReminderNow => 'Testar lembrete agora';
 
   @override
@@ -1129,6 +1181,58 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get sectionMedSos => 'Medicação SOS / Crise';
+
+  @override
+  String get sectionMedEnded => 'Tratamentos encerrados';
+
+  @override
+  String get fieldSubtype => 'Tipo de preventiva';
+
+  @override
+  String get subtypePill => 'Comprimido Diário';
+
+  @override
+  String get subtypeInjection => 'Injeção';
+
+  @override
+  String get fieldInjectionPeriod => 'Periodicidade';
+
+  @override
+  String get periodMonthly => 'Mensal';
+
+  @override
+  String get periodQuarterly => 'Trimestral';
+
+  @override
+  String get fieldStartDate => 'Data de início';
+
+  @override
+  String get startDateNotSet => 'Escolher data de início';
+
+  @override
+  String get endTreatmentTitle => 'Encerrar tratamento';
+
+  @override
+  String get endTreatmentBody =>
+      'A medicação deixa de aparecer na lista ativa, mas o histórico é mantido.';
+
+  @override
+  String get endTreatmentCta => 'Encerrar';
+
+  @override
+  String treatmentEndedOn(String date) {
+    return 'Encerrado em $date';
+  }
+
+  @override
+  String treatmentStartedOn(String date) {
+    return 'Desde $date';
+  }
+
+  @override
+  String injectionScheduleLabel(String period, String date) {
+    return '$period · próx. $date';
+  }
 
   @override
   String get testReminderNow => 'Testar lembrete agora';

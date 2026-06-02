@@ -4,11 +4,13 @@ import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/data/local/database.dart';
 import 'package:aura/domain/medication/medication_kind.dart';
+import 'package:aura/domain/medication/preventive_subtype.dart';
 import 'package:aura/features/medications/medication_edit_screen.dart';
 import 'package:aura/features/medications/medications_providers.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 /// Medication catalog list. Reached from the home "Medicação" quick action.
 /// Default medication first, then alphabetical. Tap a row to edit; the bottom
@@ -83,13 +85,19 @@ class _MedicationsList extends StatelessWidget {
     final l = AppL10n.of(context);
     final preventive = <Medication>[];
     final sos = <Medication>[];
+    final ended = <Medication>[];
     for (final m in meds) {
-      if (m.kind == MedicationKind.preventive.code) {
+      if (m.endedAt != null) {
+        ended.add(m);
+      } else if (m.kind == MedicationKind.preventive.code) {
         preventive.add(m);
       } else {
         sos.add(m);
       }
     }
+    // History: most-recently-ended first.
+    ended.sort((a, b) => (b.endedAt ?? b.updatedAt).compareTo(a.endedAt ?? a.updatedAt));
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AuraSpacing.xl,
@@ -114,6 +122,15 @@ class _MedicationsList extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
               child: _MedicationTile(med: m, onTap: () => onEdit(m)),
             ),
+          const SizedBox(height: AuraSpacing.lg),
+        ],
+        if (ended.isNotEmpty) ...[
+          _SectionLabel(l.sectionMedEnded),
+          for (final m in ended)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AuraSpacing.sm),
+              child: _MedicationTile(med: m, onTap: () => onEdit(m), dim: true),
+            ),
         ],
       ],
     );
@@ -134,31 +151,63 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _MedicationTile extends StatelessWidget {
-  const _MedicationTile({required this.med, required this.onTap});
+  const _MedicationTile({required this.med, required this.onTap, this.dim = false});
 
   final Medication med;
   final VoidCallback onTap;
+  /// Faded styling for ended-treatment history rows.
+  final bool dim;
 
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final shortDateFmt = DateFormat.yMMMd(localeName);
     final dose = med.doseMg != null
         ? ' · ${med.doseMg == med.doseMg!.roundToDouble() ? med.doseMg!.toStringAsFixed(0) : med.doseMg}'
               ' mg'
         : '';
-    // Preventive meds with a reminder set get a second line "Diariamente ·
-    // 18:00" — matches the mockup so the user can see the alarm time without
-    // opening the editor.
     final isPreventive = med.kind == MedicationKind.preventive.code;
-    final mins = med.reminderMinutes;
-    final showReminder = isPreventive && mins != null;
-    final reminderText = showReminder
-        ? l.reminderAt(
-            MaterialLocalizations.of(
-              context,
-            ).formatTimeOfDay(TimeOfDay(hour: mins ~/ 60, minute: mins % 60)),
-          )
+    final subtype = isPreventive
+        ? (PreventiveSubtype.fromCode(med.preventiveSubtype) ?? PreventiveSubtype.pill)
         : null;
+    final mins = med.reminderMinutes;
+
+    // Build the small second-line "Diariamente · 18:00" or
+    // "Mensal · próx. 7 jun" or "Desde 2 jan" / "Terminado em 3 mar".
+    String? scheduleText;
+    IconData? scheduleIcon;
+    if (med.endedAt != null) {
+      scheduleText = l.treatmentEndedOn(shortDateFmt.format(med.endedAt!));
+      scheduleIcon = Icons.event_busy_outlined;
+    } else if (subtype == PreventiveSubtype.pill && mins != null) {
+      scheduleText = l.reminderAt(
+        MaterialLocalizations.of(
+          context,
+        ).formatTimeOfDay(TimeOfDay(hour: mins ~/ 60, minute: mins % 60)),
+      );
+      scheduleIcon = Icons.alarm;
+    } else if (subtype == PreventiveSubtype.injection &&
+        med.injectionPeriodDays != null &&
+        med.startedAt != null) {
+      final period = InjectionPeriod.fromDays(med.injectionPeriodDays);
+      final periodLabel = period == InjectionPeriod.monthly ? l.periodMonthly : l.periodQuarterly;
+      // Next injection = start + n*period after now.
+      final start = med.startedAt!;
+      final periodDays = med.injectionPeriodDays!;
+      var next = start;
+      final now = DateTime.now();
+      while (!next.isAfter(now)) {
+        next = next.add(Duration(days: periodDays));
+      }
+      scheduleText = l.injectionScheduleLabel(periodLabel, shortDateFmt.format(next));
+      scheduleIcon = Icons.event_repeat;
+    } else if (med.startedAt != null) {
+      scheduleText = l.treatmentStartedOn(shortDateFmt.format(med.startedAt!));
+      scheduleIcon = Icons.flag_outlined;
+    }
+    final titleColor = dim ? AuraColors.textMuted : AuraColors.textPrimary;
+    final scheduleColor = dim ? AuraColors.textMuted : AuraColors.accent;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AuraRadius.lg),
@@ -179,10 +228,10 @@ class _MedicationTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AuraRadius.sm),
               ),
               alignment: Alignment.center,
-              child: const Text(
+              child: Text(
                 '℞',
                 style: TextStyle(
-                  color: AuraColors.accent,
+                  color: dim ? AuraColors.textMuted : AuraColors.accent,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
@@ -202,27 +251,32 @@ class _MedicationTile extends StatelessWidget {
                           style: AuraTextStyles.body.copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
+                            color: titleColor,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (med.isDefault) ...[
                         const SizedBox(width: AuraSpacing.sm),
-                        const Icon(Icons.star, size: 15, color: AuraColors.accent),
+                        Icon(Icons.star, size: 15, color: scheduleColor),
                       ],
                     ],
                   ),
-                  if (reminderText != null) ...[
+                  if (scheduleText != null) ...[
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.alarm, size: 13, color: AuraColors.accent),
+                        Icon(scheduleIcon, size: 13, color: scheduleColor),
                         const SizedBox(width: 4),
-                        Text(
-                          reminderText,
-                          style: AuraTextStyles.caption.copyWith(
-                            color: AuraColors.accent,
-                            fontWeight: FontWeight.w600,
+                        Flexible(
+                          child: Text(
+                            scheduleText,
+                            style: AuraTextStyles.caption.copyWith(
+                              color: scheduleColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

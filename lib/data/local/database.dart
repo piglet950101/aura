@@ -651,6 +651,9 @@ WHERE user_id = ? AND occurred_at >= ?
     required bool isDefault,
     double? doseMg,
     int? reminderMinutes,
+    String? preventiveSubtype,
+    int? injectionPeriodDays,
+    DateTime? startedAt,
   }) {
     return (update(medications)..where((m) => m.id.equals(id))).write(
       MedicationsCompanion(
@@ -659,6 +662,21 @@ WHERE user_id = ? AND occurred_at >= ?
         kind: Value(kind),
         isDefault: Value(isDefault),
         reminderMinutes: Value(reminderMinutes),
+        preventiveSubtype: Value(preventiveSubtype),
+        injectionPeriodDays: Value(injectionPeriodDays),
+        startedAt: Value(startedAt),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Marks a preventive treatment as ended. The row stays so the history
+  /// view can still surface it as "terminado em…". Reminder is cleared so
+  /// the scheduler stops firing it on the next reboot.
+  Future<void> endTreatment(String id) {
+    return (update(medications)..where((m) => m.id.equals(id))).write(
+      MedicationsCompanion(
+        endedAt: Value(DateTime.now()),
         updatedAt: Value(DateTime.now()),
       ),
     );

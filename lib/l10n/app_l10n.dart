@@ -818,6 +818,96 @@ abstract class AppL10n {
   /// **'Medicação SOS / Crise'**
   String get sectionMedSos;
 
+  /// No description provided for @sectionMedEnded.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tratamentos terminados'**
+  String get sectionMedEnded;
+
+  /// No description provided for @fieldSubtype.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de preventiva'**
+  String get fieldSubtype;
+
+  /// No description provided for @subtypePill.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comprimido Diário'**
+  String get subtypePill;
+
+  /// No description provided for @subtypeInjection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Injeção'**
+  String get subtypeInjection;
+
+  /// No description provided for @fieldInjectionPeriod.
+  ///
+  /// In pt, this message translates to:
+  /// **'Periodicidade'**
+  String get fieldInjectionPeriod;
+
+  /// No description provided for @periodMonthly.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mensal'**
+  String get periodMonthly;
+
+  /// No description provided for @periodQuarterly.
+  ///
+  /// In pt, this message translates to:
+  /// **'Trimestral'**
+  String get periodQuarterly;
+
+  /// No description provided for @fieldStartDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data de início'**
+  String get fieldStartDate;
+
+  /// No description provided for @startDateNotSet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher data de início'**
+  String get startDateNotSet;
+
+  /// No description provided for @endTreatmentTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Terminar tratamento'**
+  String get endTreatmentTitle;
+
+  /// No description provided for @endTreatmentBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'A medicação deixa de aparecer na lista ativa, mas o histórico mantém-se para consulta.'**
+  String get endTreatmentBody;
+
+  /// No description provided for @endTreatmentCta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Terminar'**
+  String get endTreatmentCta;
+
+  /// No description provided for @treatmentEndedOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Terminado em {date}'**
+  String treatmentEndedOn(String date);
+
+  /// No description provided for @treatmentStartedOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desde {date}'**
+  String treatmentStartedOn(String date);
+
+  /// No description provided for @injectionScheduleLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'{period} · próx. {date}'**
+  String injectionScheduleLabel(String period, String date);
+
   /// No description provided for @testReminderNow.
   ///
   /// In pt, this message translates to:
