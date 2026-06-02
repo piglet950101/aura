@@ -38,6 +38,9 @@ class DayLoad {
 
   /// True when any crisis on this day recorded an aura.
   bool get hasAura => crises.any((c) => c.hasAura);
+
+  /// True when any crisis on this day logged SOS medication.
+  bool get hasSosMedication => crises.any((c) => c.hasSosMedication);
 }
 
 /// Aggregated view of one month: per-day loads plus the header stat strip.
@@ -96,4 +99,9 @@ class MonthOverview {
   }
 
   bool get isEmpty => totalCrises == 0;
+
+  /// Number of days this month with at least one SOS-medication entry.
+  /// Compared against the >10 threshold for the CAM (Cefaleia por Abuso
+  /// de Medicação) clinical alert on the calendar.
+  int get sosDays => _days.values.where((d) => d.hasSosMedication).length;
 }

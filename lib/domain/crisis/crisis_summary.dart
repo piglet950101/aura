@@ -13,6 +13,7 @@ class CrisisSummary {
     required this.intensity,
     this.notes,
     this.hasAura = false,
+    this.hasSosMedication = false,
   });
 
   final String id;
@@ -22,4 +23,10 @@ class CrisisSummary {
 
   /// True when this crisis recorded an aura — surfaced as a ✨ on the calendar.
   final bool hasAura;
+
+  /// True when this crisis logged a medication whose kind is SOS (or had a
+  /// medication snapshot but no catalog row — assumed acute since it was
+  /// taken during a crisis). Surfaced as a pill icon on the calendar cell
+  /// and counted by the per-month CAM (>10 SOS days) alert.
+  final bool hasSosMedication;
 }

@@ -375,7 +375,13 @@ class AuraDatabase extends _$AuraDatabase {
       '''
 SELECT c.id AS id, c.occurred_at AS occurred_at, c.intensity AS intensity, c.notes AS notes,
   EXISTS(SELECT 1 FROM crisis_symptoms cs WHERE cs.crisis_id = c.id AND cs.symptom = 'aura')
-    AS has_aura
+    AS has_aura,
+  EXISTS(
+    SELECT 1 FROM crisis_medications cm
+    LEFT JOIN medications m ON m.id = cm.medication_id
+    WHERE cm.crisis_id = c.id
+      AND (m.kind = 'sos' OR m.id IS NULL)
+  ) AS has_sos_medication
 FROM crises c
 WHERE c.user_id = ? AND c.occurred_at >= ? AND c.occurred_at < ?
 ORDER BY c.occurred_at ASC
@@ -385,7 +391,7 @@ ORDER BY c.occurred_at ASC
         Variable.withDateTime(start),
         Variable.withDateTime(end),
       ],
-      readsFrom: {crises, crisisSymptoms},
+      readsFrom: {crises, crisisSymptoms, crisisMedications, medications},
     ).watch().map((rows) {
       return rows.map((row) {
         final secs = row.read<int>('occurred_at');
@@ -395,6 +401,7 @@ ORDER BY c.occurred_at ASC
           intensity: row.read<int>('intensity'),
           notes: row.read<String?>('notes'),
           hasAura: row.read<int>('has_aura') == 1,
+          hasSosMedication: row.read<int>('has_sos_medication') == 1,
         );
       }).toList();
     });

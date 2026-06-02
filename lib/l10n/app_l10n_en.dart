@@ -160,6 +160,14 @@ class AppL10nEn extends AppL10n {
   String get auraTag => 'aura';
 
   @override
+  String get camAlertTitle => 'Alert: MOH (medication-overuse headache) risk';
+
+  @override
+  String camAlertBody(int days) {
+    return 'You logged acute (SOS) medication on $days days this month. Overuse can cause medication-overuse headache. Consider sharing this with your neurologist.';
+  }
+
+  @override
   String calendarLoadError(Object error) {
     return 'Couldn\'t load the calendar: $error';
   }

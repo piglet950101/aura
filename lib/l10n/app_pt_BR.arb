@@ -50,6 +50,8 @@
   "registerForThisDay": "Registrar para este dia",
   "intensityValue": "Intensidade {n}",
   "auraTag": "aura",
+  "camAlertTitle": "Alerta: Risco de CAM",
+  "camAlertBody": "Registrou tomas de medicação SOS em {days} dias este mês. O uso excessivo pode causar Cefaleia por Abuso de Medicação. Recomenda-se compartilhar este dado com o seu neurologista.",
   "calendarLoadError": "Não foi possível carregar o calendário: {error}",
   "daySemantic": "Dia {n}",
   "crisesCount": "{count, plural, =1{1 crise} other{{count} crises}}",

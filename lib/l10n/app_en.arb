@@ -50,6 +50,8 @@
   "registerForThisDay": "Log for this day",
   "intensityValue": "Intensity {n}",
   "auraTag": "aura",
+  "camAlertTitle": "Alert: MOH (medication-overuse headache) risk",
+  "camAlertBody": "You logged acute (SOS) medication on {days} days this month. Overuse can cause medication-overuse headache. Consider sharing this with your neurologist.",
   "calendarLoadError": "Couldn't load the calendar: {error}",
   "daySemantic": "Day {n}",
   "crisesCount": "{count, plural, =1{1 crisis} other{{count} crises}}",

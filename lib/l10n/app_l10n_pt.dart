@@ -160,6 +160,14 @@ class AppL10nPt extends AppL10n {
   String get auraTag => 'aura';
 
   @override
+  String get camAlertTitle => 'Alerta: Risco de CAM';
+
+  @override
+  String camAlertBody(int days) {
+    return 'Registou tomas de medicação SOS em $days dias este mês. O uso excessivo pode causar Cefaleia por Abuso de Medicação. Recomenda-se partilhar este dado com o seu neurologista.';
+  }
+
+  @override
   String calendarLoadError(Object error) {
     return 'Não foi possível carregar o calendário: $error';
   }
@@ -871,6 +879,14 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get auraTag => 'aura';
+
+  @override
+  String get camAlertTitle => 'Alerta: Risco de CAM';
+
+  @override
+  String camAlertBody(int days) {
+    return 'Registrou tomas de medicação SOS em $days dias este mês. O uso excessivo pode causar Cefaleia por Abuso de Medicação. Recomenda-se compartilhar este dado com o seu neurologista.';
+  }
 
   @override
   String calendarLoadError(Object error) {

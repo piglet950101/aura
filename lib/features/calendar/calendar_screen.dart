@@ -89,6 +89,14 @@ class CalendarScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AuraSpacing.xl),
                     const _Legend(),
+                    // CAM (Cefaleia por Abuso de Medicação) alert — fires
+                    // when more than 10 SOS days are logged in the visible
+                    // month. The threshold mirrors the clinical convention
+                    // and the home-summary's red flag.
+                    if (overview.sosDays > 10) ...[
+                      const SizedBox(height: AuraSpacing.xl),
+                      _CamAlertCard(sosDays: overview.sosDays),
+                    ],
                   ],
                 ),
                 loading: () => const Padding(
@@ -325,6 +333,7 @@ class _MonthGrid extends StatelessWidget {
           tier: load?.tier ?? IntensityTier.none,
           count: load?.count ?? 0,
           hasAura: load?.hasAura ?? false,
+          hasSos: load?.hasSosMedication ?? false,
           isToday: date == today,
           onTap: () => onDayTap(date, load),
         ),
@@ -348,6 +357,7 @@ class _DayCell extends StatelessWidget {
     required this.tier,
     required this.count,
     required this.hasAura,
+    required this.hasSos,
     required this.isToday,
     required this.onTap,
   });
@@ -356,6 +366,7 @@ class _DayCell extends StatelessWidget {
   final IntensityTier tier;
   final int count;
   final bool hasAura;
+  final bool hasSos;
   final bool isToday;
   final VoidCallback onTap;
 
@@ -411,8 +422,71 @@ class _DayCell extends StatelessWidget {
             ),
             if (hasAura)
               const Positioned(top: 2, right: 3, child: Text('✨', style: TextStyle(fontSize: 9))),
+            // Pill icon at the bottom-left when the day logged any SOS-kind
+            // medication. Per the client mockup, the icon stays small enough
+            // to leave room for the dayNum + ×count text.
+            if (hasSos)
+              const Positioned(
+                bottom: 2,
+                left: 3,
+                child: Icon(
+                  Icons.medication_outlined,
+                  size: 11,
+                  color: AuraColors.intensityHigh,
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CAM (Cefaleia por Abuso de Medicação) alert
+// ---------------------------------------------------------------------------
+
+class _CamAlertCard extends StatelessWidget {
+  const _CamAlertCard({required this.sosDays});
+
+  final int sosDays;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return Container(
+      padding: const EdgeInsets.all(AuraSpacing.lg),
+      decoration: BoxDecoration(
+        color: AuraColors.error.withValues(alpha: 0.08),
+        border: Border.all(color: AuraColors.error),
+        borderRadius: BorderRadius.circular(AuraRadius.lg),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: AuraColors.error, size: 22),
+          const SizedBox(width: AuraSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.camAlertTitle,
+                  style: AuraTextStyles.body.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AuraColors.error,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l.camAlertBody(sosDays),
+                  style: AuraTextStyles.caption.copyWith(height: 1.4),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -374,6 +374,18 @@ abstract class AppL10n {
   /// **'aura'**
   String get auraTag;
 
+  /// No description provided for @camAlertTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alerta: Risco de CAM'**
+  String get camAlertTitle;
+
+  /// No description provided for @camAlertBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registou tomas de medicação SOS em {days} dias este mês. O uso excessivo pode causar Cefaleia por Abuso de Medicação. Recomenda-se partilhar este dado com o seu neurologista.'**
+  String camAlertBody(int days);
+
   /// No description provided for @calendarLoadError.
   ///
   /// In pt, this message translates to:
