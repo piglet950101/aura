@@ -3,8 +3,11 @@ import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
 import 'package:aura/data/local/database.dart';
+import 'package:aura/domain/hit6/hit6.dart';
 import 'package:aura/features/appointments/appointment_edit_screen.dart';
 import 'package:aura/features/appointments/appointments_providers.dart';
+import 'package:aura/features/hit6/hit6_providers.dart';
+import 'package:aura/features/hit6/hit6_screen.dart';
 import 'package:aura/features/report/report_screen.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +41,17 @@ class AppointmentsScreen extends ConsumerWidget {
     );
   }
 
+  void _openHit6(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const Hit6Screen(), fullscreenDialog: true));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final appointmentsAsync = ref.watch(appointmentsProvider);
+    final hit6Async = ref.watch(latestHit6Provider);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +73,14 @@ class AppointmentsScreen extends ConsumerWidget {
             AuraSpacing.xxl,
           ),
           children: [
+            // HIT-6 nudge card — only visible when the previous submission is
+            // ≥30 days old (or never). Once the user finishes the
+            // questionnaire, latestHit6Provider invalidates and the card
+            // hides itself until the next due date.
+            if (hit6IsDue(hit6Async.valueOrNull?.submittedAt, DateTime.now())) ...[
+              _Hit6Card(onTap: () => _openHit6(context)),
+              const SizedBox(height: AuraSpacing.xl),
+            ],
             appointmentsAsync.when(
               data: (list) => _AppointmentsBody(
                 appointments: list,
@@ -83,6 +101,73 @@ class AppointmentsScreen extends ConsumerWidget {
               ),
               error: (e, _) =>
                   Text('$e', style: AuraTextStyles.bodySmall.copyWith(color: AuraColors.error)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Nudge card that lives at the top of Preparar Consulta until the user has
+/// filled in a HIT-6 in the last 30 days. The score it produces ends up in
+/// the medical report and the Estatísticas evolution chart.
+class _Hit6Card extends StatelessWidget {
+  const _Hit6Card({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AuraRadius.lg),
+      child: Container(
+        padding: const EdgeInsets.all(AuraSpacing.lg),
+        decoration: BoxDecoration(
+          color: AuraColors.accentBg,
+          border: Border.all(color: AuraColors.accent),
+          borderRadius: BorderRadius.circular(AuraRadius.lg),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.assignment_outlined, color: AuraColors.accent, size: 26),
+            const SizedBox(width: AuraSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.hit6CardTitle,
+                    style: AuraTextStyles.body.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AuraColors.accent,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(l.hit6CardBody, style: AuraTextStyles.caption.copyWith(height: 1.4)),
+                  const SizedBox(height: AuraSpacing.sm),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AuraSpacing.md,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AuraColors.accent,
+                      borderRadius: BorderRadius.circular(AuraRadius.pill),
+                    ),
+                    child: Text(
+                      l.hit6CardCta,
+                      style: AuraTextStyles.caption.copyWith(
+                        color: AuraColors.bgBase,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

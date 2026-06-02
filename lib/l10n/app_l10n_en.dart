@@ -643,6 +643,89 @@ class AppL10nEn extends AppL10n {
   String get appointments => 'Prepare visit';
 
   @override
+  String get hit6Title => 'Quality-of-life impact (HIT-6)';
+
+  @override
+  String get hit6Intro =>
+      'Answer 6 questions (~1 minute). The result is added to the medical report and refreshes every 30 days.';
+
+  @override
+  String get hit6CardTitle => 'Quality-of-life impact (HIT-6)';
+
+  @override
+  String get hit6CardBody =>
+      'Take the standard 6-question questionnaire to assess your migraine impact over the past 4 weeks and refresh your medical report.';
+
+  @override
+  String get hit6CardCta => 'Answer (1 min)';
+
+  @override
+  String get hit6Submit => 'Submit answers';
+
+  @override
+  String get hit6Submitted => 'HIT-6 score saved';
+
+  @override
+  String hit6QuestionLabel(int n) {
+    return 'Question $n of 6';
+  }
+
+  @override
+  String get hit6Q1 => 'When you have headaches, how often is the pain severe?';
+
+  @override
+  String get hit6Q2 =>
+      'How often do headaches limit your ability to do usual daily activities including household work, work, school, or social activities?';
+
+  @override
+  String get hit6Q3 =>
+      'When you have a headache, how often do you wish you could lie down?';
+
+  @override
+  String get hit6Q4 =>
+      'In the past 4 weeks, how often have you felt too tired to do work or daily activities because of your headaches?';
+
+  @override
+  String get hit6Q5 =>
+      'In the past 4 weeks, how often have you felt fed up or irritated because of your headaches?';
+
+  @override
+  String get hit6Q6 =>
+      'In the past 4 weeks, how often did headaches limit your ability to concentrate on work or daily activities?';
+
+  @override
+  String get hit6Never => 'Never';
+
+  @override
+  String get hit6Rarely => 'Rarely';
+
+  @override
+  String get hit6Sometimes => 'Sometimes';
+
+  @override
+  String get hit6VeryOften => 'Very often';
+
+  @override
+  String get hit6Always => 'Always';
+
+  @override
+  String get hit6CategoryLittle => 'Little or no impact';
+
+  @override
+  String get hit6CategorySome => 'Some impact';
+
+  @override
+  String get hit6CategorySubstantial => 'Substantial impact';
+
+  @override
+  String get hit6CategorySevere => 'Severe impact';
+
+  @override
+  String hit6ScoreLabel(int score) {
+    return 'Current score: $score';
+  }
+
+  @override
   String get appointmentsIntro =>
       'History, upcoming appointments and the report for the doctor.';
 

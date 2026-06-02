@@ -645,6 +645,90 @@ class AppL10nPt extends AppL10n {
   String get appointments => 'Preparar Consulta';
 
   @override
+  String get hit6Title => 'Impacto na Qualidade de Vida (HIT-6)';
+
+  @override
+  String get hit6Intro =>
+      'Responde a 6 perguntas (≈1 minuto). O resultado fica no relatório médico e atualiza-se a cada 30 dias.';
+
+  @override
+  String get hit6CardTitle => 'Impacto na Qualidade de Vida (HIT-6)';
+
+  @override
+  String get hit6CardBody =>
+      'Responde ao questionário standard (6 perguntas) para avaliar o impacto da enxaqueca nas últimas 4 semanas e atualizar o teu relatório médico.';
+
+  @override
+  String get hit6CardCta => 'Responder (1 min)';
+
+  @override
+  String get hit6Submit => 'Submeter respostas';
+
+  @override
+  String get hit6Submitted => 'Resultado HIT-6 guardado';
+
+  @override
+  String hit6QuestionLabel(int n) {
+    return 'Pergunta $n de 6';
+  }
+
+  @override
+  String get hit6Q1 =>
+      'Quando tens dores de cabeça, com que frequência são severas?';
+
+  @override
+  String get hit6Q2 =>
+      'Com que frequência as dores de cabeça limitam a tua capacidade de fazer atividades diárias (trabalho doméstico, trabalho, escola ou atividades sociais)?';
+
+  @override
+  String get hit6Q3 =>
+      'Quando tens dor de cabeça, com que frequência desejas poder deitar-te?';
+
+  @override
+  String get hit6Q4 =>
+      'Nas últimas 4 semanas, com que frequência te sentiste cansado para trabalhar ou fazer atividades diárias por causa das dores de cabeça?';
+
+  @override
+  String get hit6Q5 =>
+      'Nas últimas 4 semanas, com que frequência te sentiste farto ou irritado por causa das dores de cabeça?';
+
+  @override
+  String get hit6Q6 =>
+      'Nas últimas 4 semanas, com que frequência as dores de cabeça limitaram a tua capacidade de concentração no trabalho ou atividades diárias?';
+
+  @override
+  String get hit6Never => 'Nunca';
+
+  @override
+  String get hit6Rarely => 'Raramente';
+
+  @override
+  String get hit6Sometimes => 'Às vezes';
+
+  @override
+  String get hit6VeryOften => 'Muito frequentemente';
+
+  @override
+  String get hit6Always => 'Sempre';
+
+  @override
+  String get hit6CategoryLittle => 'Pouco/Sem impacto';
+
+  @override
+  String get hit6CategorySome => 'Algum impacto';
+
+  @override
+  String get hit6CategorySubstantial => 'Impacto substancial';
+
+  @override
+  String get hit6CategorySevere => 'Impacto severo';
+
+  @override
+  String hit6ScoreLabel(int score) {
+    return 'Score atual: $score';
+  }
+
+  @override
   String get appointmentsIntro =>
       'Histórico, próximas consultas e relatório para o médico.';
 
@@ -1416,6 +1500,90 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get appointments => 'Preparar Consulta';
+
+  @override
+  String get hit6Title => 'Impacto na Qualidade de Vida (HIT-6)';
+
+  @override
+  String get hit6Intro =>
+      'Responda a 6 perguntas (≈1 minuto). O resultado vai para o relatório médico e atualiza a cada 30 dias.';
+
+  @override
+  String get hit6CardTitle => 'Impacto na Qualidade de Vida (HIT-6)';
+
+  @override
+  String get hit6CardBody =>
+      'Responda ao questionário padrão (6 perguntas) para avaliar o impacto da enxaqueca nas últimas 4 semanas e atualizar seu relatório médico.';
+
+  @override
+  String get hit6CardCta => 'Responder (1 min)';
+
+  @override
+  String get hit6Submit => 'Enviar respostas';
+
+  @override
+  String get hit6Submitted => 'Resultado HIT-6 salvo';
+
+  @override
+  String hit6QuestionLabel(int n) {
+    return 'Pergunta $n de 6';
+  }
+
+  @override
+  String get hit6Q1 =>
+      'Quando você tem dores de cabeça, com que frequência são severas?';
+
+  @override
+  String get hit6Q2 =>
+      'Com que frequência as dores de cabeça limitam sua capacidade de fazer atividades diárias (trabalho doméstico, trabalho, escola ou atividades sociais)?';
+
+  @override
+  String get hit6Q3 =>
+      'Quando você tem dor de cabeça, com que frequência deseja poder deitar?';
+
+  @override
+  String get hit6Q4 =>
+      'Nas últimas 4 semanas, com que frequência se sentiu cansado para trabalhar ou fazer atividades diárias por causa das dores de cabeça?';
+
+  @override
+  String get hit6Q5 =>
+      'Nas últimas 4 semanas, com que frequência se sentiu cheio ou irritado por causa das dores de cabeça?';
+
+  @override
+  String get hit6Q6 =>
+      'Nas últimas 4 semanas, com que frequência as dores de cabeça limitaram sua capacidade de concentração no trabalho ou atividades diárias?';
+
+  @override
+  String get hit6Never => 'Nunca';
+
+  @override
+  String get hit6Rarely => 'Raramente';
+
+  @override
+  String get hit6Sometimes => 'Às vezes';
+
+  @override
+  String get hit6VeryOften => 'Muito frequentemente';
+
+  @override
+  String get hit6Always => 'Sempre';
+
+  @override
+  String get hit6CategoryLittle => 'Pouco/Sem impacto';
+
+  @override
+  String get hit6CategorySome => 'Algum impacto';
+
+  @override
+  String get hit6CategorySubstantial => 'Impacto substancial';
+
+  @override
+  String get hit6CategorySevere => 'Impacto severo';
+
+  @override
+  String hit6ScoreLabel(int score) {
+    return 'Score atual: $score';
+  }
 
   @override
   String get appointmentsIntro =>

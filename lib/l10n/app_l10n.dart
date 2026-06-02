@@ -1244,6 +1244,150 @@ abstract class AppL10n {
   /// **'Preparar Consulta'**
   String get appointments;
 
+  /// No description provided for @hit6Title.
+  ///
+  /// In pt, this message translates to:
+  /// **'Impacto na Qualidade de Vida (HIT-6)'**
+  String get hit6Title;
+
+  /// No description provided for @hit6Intro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responde a 6 perguntas (≈1 minuto). O resultado fica no relatório médico e atualiza-se a cada 30 dias.'**
+  String get hit6Intro;
+
+  /// No description provided for @hit6CardTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Impacto na Qualidade de Vida (HIT-6)'**
+  String get hit6CardTitle;
+
+  /// No description provided for @hit6CardBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responde ao questionário standard (6 perguntas) para avaliar o impacto da enxaqueca nas últimas 4 semanas e atualizar o teu relatório médico.'**
+  String get hit6CardBody;
+
+  /// No description provided for @hit6CardCta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responder (1 min)'**
+  String get hit6CardCta;
+
+  /// No description provided for @hit6Submit.
+  ///
+  /// In pt, this message translates to:
+  /// **'Submeter respostas'**
+  String get hit6Submit;
+
+  /// No description provided for @hit6Submitted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resultado HIT-6 guardado'**
+  String get hit6Submitted;
+
+  /// No description provided for @hit6QuestionLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pergunta {n} de 6'**
+  String hit6QuestionLabel(int n);
+
+  /// No description provided for @hit6Q1.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quando tens dores de cabeça, com que frequência são severas?'**
+  String get hit6Q1;
+
+  /// No description provided for @hit6Q2.
+  ///
+  /// In pt, this message translates to:
+  /// **'Com que frequência as dores de cabeça limitam a tua capacidade de fazer atividades diárias (trabalho doméstico, trabalho, escola ou atividades sociais)?'**
+  String get hit6Q2;
+
+  /// No description provided for @hit6Q3.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quando tens dor de cabeça, com que frequência desejas poder deitar-te?'**
+  String get hit6Q3;
+
+  /// No description provided for @hit6Q4.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nas últimas 4 semanas, com que frequência te sentiste cansado para trabalhar ou fazer atividades diárias por causa das dores de cabeça?'**
+  String get hit6Q4;
+
+  /// No description provided for @hit6Q5.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nas últimas 4 semanas, com que frequência te sentiste farto ou irritado por causa das dores de cabeça?'**
+  String get hit6Q5;
+
+  /// No description provided for @hit6Q6.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nas últimas 4 semanas, com que frequência as dores de cabeça limitaram a tua capacidade de concentração no trabalho ou atividades diárias?'**
+  String get hit6Q6;
+
+  /// No description provided for @hit6Never.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nunca'**
+  String get hit6Never;
+
+  /// No description provided for @hit6Rarely.
+  ///
+  /// In pt, this message translates to:
+  /// **'Raramente'**
+  String get hit6Rarely;
+
+  /// No description provided for @hit6Sometimes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Às vezes'**
+  String get hit6Sometimes;
+
+  /// No description provided for @hit6VeryOften.
+  ///
+  /// In pt, this message translates to:
+  /// **'Muito frequentemente'**
+  String get hit6VeryOften;
+
+  /// No description provided for @hit6Always.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sempre'**
+  String get hit6Always;
+
+  /// No description provided for @hit6CategoryLittle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pouco/Sem impacto'**
+  String get hit6CategoryLittle;
+
+  /// No description provided for @hit6CategorySome.
+  ///
+  /// In pt, this message translates to:
+  /// **'Algum impacto'**
+  String get hit6CategorySome;
+
+  /// No description provided for @hit6CategorySubstantial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Impacto substancial'**
+  String get hit6CategorySubstantial;
+
+  /// No description provided for @hit6CategorySevere.
+  ///
+  /// In pt, this message translates to:
+  /// **'Impacto severo'**
+  String get hit6CategorySevere;
+
+  /// No description provided for @hit6ScoreLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Score atual: {score}'**
+  String hit6ScoreLabel(int score);
+
   /// No description provided for @appointmentsIntro.
   ///
   /// In pt, this message translates to:
