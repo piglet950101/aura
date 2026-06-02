@@ -167,7 +167,9 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
             kind: _kind,
             isDefault: _isDefault,
             reminderMinutes: _reminderMinutes,
-            subtype: _kind == MedicationKind.preventive ? (_subtype ?? PreventiveSubtype.pill) : null,
+            subtype: _kind == MedicationKind.preventive
+                ? (_subtype ?? PreventiveSubtype.pill)
+                : null,
             injectionPeriod: _injectionPeriod,
             startedAt: _startedAt,
           );
@@ -336,10 +338,7 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
                       const SizedBox(height: AuraSpacing.xl),
 
                       _SectionLabel(l.fieldStartDate),
-                      _StartedAtTile(
-                        startedAt: _startedAt,
-                        onPick: _pickStartDate,
-                      ),
+                      _StartedAtTile(startedAt: _startedAt, onPick: _pickStartDate),
 
                       if ((_subtype ?? PreventiveSubtype.pill) == PreventiveSubtype.pill) ...[
                         const SizedBox(height: AuraSpacing.xl),
@@ -372,10 +371,7 @@ class _MedicationEditScreenState extends ConsumerState<MedicationEditScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.sm),
-                          child: Text(
-                            l.testReminderNowDesc,
-                            style: AuraTextStyles.caption,
-                          ),
+                          child: Text(l.testReminderNowDesc, style: AuraTextStyles.caption),
                         ),
                       ] else ...[
                         const SizedBox(height: AuraSpacing.xl),
@@ -604,11 +600,7 @@ class _SubtypeOption extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 20,
-              color: selected ? AuraColors.accent : AuraColors.textMuted,
-            ),
+            Icon(icon, size: 20, color: selected ? AuraColors.accent : AuraColors.textMuted),
             const SizedBox(width: AuraSpacing.sm),
             Text(
               label,

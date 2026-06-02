@@ -47,6 +47,7 @@ class ReportRepository {
           intensity: c.intensity,
           symptomCodes: symptoms,
           medications: meds,
+          menstruation: c.menstruation,
         ),
       );
     }

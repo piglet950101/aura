@@ -8,15 +8,18 @@ class ReportCrisis {
     required this.intensity,
     required this.symptomCodes,
     required this.medications,
+    this.menstruation,
   });
 
   final DateTime occurredAt;
   final int intensity;
   final List<String> symptomCodes;
   final List<ReportMedication> medications;
+  final bool? menstruation;
 
   IntensityTier get tier => IntensityTier.fromIntensity(intensity);
   bool get tookSos => medications.any((m) => m.kind == 'sos');
+  bool get hasAura => symptomCodes.contains('aura');
 }
 
 /// A medication logged on a crisis, with its kind and the user's response.
@@ -137,6 +140,47 @@ class ReportData {
       counts[(dayIndex ~/ 7).clamp(0, weeks - 1)]++;
     }
     return counts;
+  }
+
+  /// Day-of-week → mean intensity of crises that occurred on that weekday.
+  /// Mon=1..Sun=7 to match `DateTime.weekday`. NaN-safe: a weekday with no
+  /// crises maps to 0 (the heat map renders these as empty cells).
+  Map<int, double> get intensityByWeekday {
+    final sums = <int, int>{};
+    final counts = <int, int>{};
+    for (final c in crises) {
+      final w = c.occurredAt.weekday;
+      sums[w] = (sums[w] ?? 0) + c.intensity;
+      counts[w] = (counts[w] ?? 0) + 1;
+    }
+    final out = <int, double>{};
+    for (var w = 1; w <= 7; w++) {
+      final n = counts[w] ?? 0;
+      out[w] = n == 0 ? 0 : (sums[w]! / n);
+    }
+    return out;
+  }
+
+  /// Distinct days with at least one crisis that recorded `menstruation = true`.
+  int get daysWithMenstruation {
+    final days = <DateTime>{};
+    for (final c in crises) {
+      if (c.menstruation ?? false) {
+        days.add(DateTime(c.occurredAt.year, c.occurredAt.month, c.occurredAt.day));
+      }
+    }
+    return days.length;
+  }
+
+  /// Distinct days with at least one aura crisis.
+  int get auraDays {
+    final days = <DateTime>{};
+    for (final c in crises) {
+      if (c.hasAura) {
+        days.add(DateTime(c.occurredAt.year, c.occurredAt.month, c.occurredAt.day));
+      }
+    }
+    return days.length;
   }
 
   bool get isEmpty => crises.isEmpty;

@@ -62,8 +62,7 @@ import 'app_l10n_pt.dart';
 /// be consistent with the languages listed in the AppL10n.supportedLocales
 /// property.
 abstract class AppL10n {
-  AppL10n(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppL10n(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -1577,20 +1576,38 @@ abstract class AppL10n {
   /// No description provided for @statsTitle.
   ///
   /// In pt, this message translates to:
-  /// **'Dados'**
+  /// **'Estatísticas'**
   String get statsTitle;
 
   /// No description provided for @period30.
   ///
   /// In pt, this message translates to:
-  /// **'30 dias'**
+  /// **'30d'**
   String get period30;
+
+  /// No description provided for @period60.
+  ///
+  /// In pt, this message translates to:
+  /// **'60d'**
+  String get period60;
 
   /// No description provided for @period90.
   ///
   /// In pt, this message translates to:
-  /// **'90 dias'**
+  /// **'90d'**
   String get period90;
+
+  /// No description provided for @period6m.
+  ///
+  /// In pt, this message translates to:
+  /// **'6m'**
+  String get period6m;
+
+  /// No description provided for @period1y.
+  ///
+  /// In pt, this message translates to:
+  /// **'1a'**
+  String get period1y;
 
   /// No description provided for @statIntensity.
   ///
@@ -1622,6 +1639,102 @@ abstract class AppL10n {
   /// **'Sintomas mais frequentes'**
   String get sectionFrequentSymptoms;
 
+  /// No description provided for @sectionEvolutionImpact.
+  ///
+  /// In pt, this message translates to:
+  /// **'Evolução e impacto'**
+  String get sectionEvolutionImpact;
+
+  /// No description provided for @sectionPatterns.
+  ///
+  /// In pt, this message translates to:
+  /// **'Padrões'**
+  String get sectionPatterns;
+
+  /// No description provided for @sectionTreatment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tratamento e eficácia'**
+  String get sectionTreatment;
+
+  /// No description provided for @sectionSeverity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Severidade'**
+  String get sectionSeverity;
+
+  /// No description provided for @sectionEvents.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos específicos'**
+  String get sectionEvents;
+
+  /// No description provided for @statHit6.
+  ///
+  /// In pt, this message translates to:
+  /// **'HIT-6'**
+  String get statHit6;
+
+  /// No description provided for @statHit6None.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem registo'**
+  String get statHit6None;
+
+  /// No description provided for @weekdayHeatTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Intensidade por dia da semana'**
+  String get weekdayHeatTitle;
+
+  /// No description provided for @weekdayHeatNoData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem crises neste período'**
+  String get weekdayHeatNoData;
+
+  /// No description provided for @sosEfficacyTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eficácia da medicação SOS'**
+  String get sosEfficacyTitle;
+
+  /// No description provided for @auraTimelineTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Linha temporal da aura'**
+  String get auraTimelineTitle;
+
+  /// No description provided for @auraTimelineNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem registos de aura no período'**
+  String get auraTimelineNone;
+
+  /// No description provided for @menstruationCorrelation.
+  ///
+  /// In pt, this message translates to:
+  /// **'{percent}% das crises coincidem com o período menstrual'**
+  String menstruationCorrelation(int percent);
+
+  /// No description provided for @respTotalShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Total'**
+  String get respTotalShort;
+
+  /// No description provided for @respPartialShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcial'**
+  String get respPartialShort;
+
+  /// No description provided for @respNoneShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma'**
+  String get respNoneShort;
+
   /// No description provided for @weekShort.
   ///
   /// In pt, this message translates to:
@@ -1644,8 +1757,7 @@ class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'pt'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppL10nDelegate old) => false;

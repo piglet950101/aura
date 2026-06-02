@@ -57,14 +57,7 @@ class _Hit6ScreenState extends ConsumerState<Hit6Screen> {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-    final questions = [
-      l.hit6Q1,
-      l.hit6Q2,
-      l.hit6Q3,
-      l.hit6Q4,
-      l.hit6Q5,
-      l.hit6Q6,
-    ];
+    final questions = [l.hit6Q1, l.hit6Q2, l.hit6Q3, l.hit6Q4, l.hit6Q5, l.hit6Q6];
     final answerLabels = {
       Hit6Answer.never: l.hit6Never,
       Hit6Answer.rarely: l.hit6Rarely,

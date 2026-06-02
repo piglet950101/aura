@@ -146,6 +146,7 @@ class Crises extends Table {
   TextColumn get location => text().nullable()();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get resolvedAt => dateTime().nullable()();
+
   /// Sim/Não capture of whether the crisis coincided with the menstrual cycle.
   /// Null = unknown / not asked (the form only renders the question when the
   /// profile's `sex` field is 'f'). Drives the hormonal-correlation card in
@@ -675,10 +676,7 @@ WHERE user_id = ? AND occurred_at >= ?
   /// the scheduler stops firing it on the next reboot.
   Future<void> endTreatment(String id) {
     return (update(medications)..where((m) => m.id.equals(id))).write(
-      MedicationsCompanion(
-        endedAt: Value(DateTime.now()),
-        updatedAt: Value(DateTime.now()),
-      ),
+      MedicationsCompanion(endedAt: Value(DateTime.now()), updatedAt: Value(DateTime.now())),
     );
   }
 

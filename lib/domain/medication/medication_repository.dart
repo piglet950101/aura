@@ -81,7 +81,8 @@ class MedicationRepository {
       final effectiveReminder = isPreventivePill ? reminderMinutes : null;
       // Subtype / injection period only persist for preventive rows.
       final effectiveSubtype = kind == MedicationKind.preventive ? subtype?.code : null;
-      final effectivePeriod = (kind == MedicationKind.preventive && subtype == PreventiveSubtype.injection)
+      final effectivePeriod =
+          (kind == MedicationKind.preventive && subtype == PreventiveSubtype.injection)
           ? injectionPeriod?.days
           : null;
       // Started date is required for preventives; ignored on SOS rows.

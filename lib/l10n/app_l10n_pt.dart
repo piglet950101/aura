@@ -312,8 +312,7 @@ class AppL10nPt extends AppL10n {
   String get addAction => 'Adicionar';
 
   @override
-  String get noMedsHint =>
-      'Ainda não tens medicações. Adiciona-as no menu Medicação.';
+  String get noMedsHint => 'Ainda não tens medicações. Adiciona-as no menu Medicação.';
 
   @override
   String get medication => 'Medicação';
@@ -395,8 +394,7 @@ class AppL10nPt extends AppL10n {
   String get reminderClear => 'Limpar';
 
   @override
-  String get reminderOnlyPreventive =>
-      'Disponível apenas para medicação preventiva.';
+  String get reminderOnlyPreventive => 'Disponível apenas para medicação preventiva.';
 
   @override
   String reminderAt(String time) {
@@ -465,12 +463,10 @@ class AppL10nPt extends AppL10n {
   String get testReminderNow => 'Testar lembrete agora';
 
   @override
-  String get testReminderNowDesc =>
-      'Mostra a notificação para confirmares que o canal funciona';
+  String get testReminderNowDesc => 'Mostra a notificação para confirmares que o canal funciona';
 
   @override
-  String get testReminderSent =>
-      'Notificação enviada — verifica a barra de estado';
+  String get testReminderSent => 'Notificação enviada — verifica a barra de estado';
 
   @override
   String get exactAlarmFallback =>
@@ -580,15 +576,13 @@ class AppL10nPt extends AppL10n {
   String get unlockProDesc => 'Funcionalidades premium em breve';
 
   @override
-  String get shareAppText =>
-      'Acompanha as tuas enxaquecas com a AURA · Diário da Enxaqueca.';
+  String get shareAppText => 'Acompanha as tuas enxaquecas com a AURA · Diário da Enxaqueca.';
 
   @override
   String get supportEmailSubject => 'AURA · Suporte';
 
   @override
-  String get proComingSoon =>
-      'Em breve — a versão Pro chega após o lançamento na loja.';
+  String get proComingSoon => 'Em breve — a versão Pro chega após o lançamento na loja.';
 
   @override
   String get fieldEmail => 'Email';
@@ -600,8 +594,7 @@ class AppL10nPt extends AppL10n {
   String get profileTitle => 'Perfil';
 
   @override
-  String get profileIntro =>
-      'Opcional — aparece no cabeçalho do relatório para o médico.';
+  String get profileIntro => 'Opcional — aparece no cabeçalho do relatório para o médico.';
 
   @override
   String get profileNameHint => 'O teu nome';
@@ -673,16 +666,14 @@ class AppL10nPt extends AppL10n {
   }
 
   @override
-  String get hit6Q1 =>
-      'Quando tens dores de cabeça, com que frequência são severas?';
+  String get hit6Q1 => 'Quando tens dores de cabeça, com que frequência são severas?';
 
   @override
   String get hit6Q2 =>
       'Com que frequência as dores de cabeça limitam a tua capacidade de fazer atividades diárias (trabalho doméstico, trabalho, escola ou atividades sociais)?';
 
   @override
-  String get hit6Q3 =>
-      'Quando tens dor de cabeça, com que frequência desejas poder deitar-te?';
+  String get hit6Q3 => 'Quando tens dor de cabeça, com que frequência desejas poder deitar-te?';
 
   @override
   String get hit6Q4 =>
@@ -729,15 +720,13 @@ class AppL10nPt extends AppL10n {
   }
 
   @override
-  String get appointmentsIntro =>
-      'Histórico, próximas consultas e relatório para o médico.';
+  String get appointmentsIntro => 'Histórico, próximas consultas e relatório para o médico.';
 
   @override
   String get generateReport => 'Gerar relatório médico';
 
   @override
-  String get generateReportDesc =>
-      'PDF com as crises e medicação para a próxima consulta';
+  String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
 
   @override
   String get sectionUpcoming => 'Próxima consulta';
@@ -758,8 +747,7 @@ class AppL10nPt extends AppL10n {
   String get webAccessCodeDesc => 'Link para o médico consultar online';
 
   @override
-  String get webAccessComingSoon =>
-      'Em breve — link partilhável após o lançamento.';
+  String get webAccessComingSoon => 'Em breve — link partilhável após o lançamento.';
 
   @override
   String get viewAll => 'Ver tudo';
@@ -768,8 +756,7 @@ class AppL10nPt extends AppL10n {
   String get noAppointments => 'Sem consultas registadas';
 
   @override
-  String get noAppointmentsBody =>
-      'Adiciona a próxima consulta para a teres à mão.';
+  String get noAppointmentsBody => 'Adiciona a próxima consulta para a teres à mão.';
 
   @override
   String get addAppointment => 'Adicionar consulta';
@@ -793,8 +780,7 @@ class AppL10nPt extends AppL10n {
   String get deleteAppointmentTitle => 'Apagar consulta';
 
   @override
-  String get deleteAppointmentBody =>
-      'A consulta será removida permanentemente.';
+  String get deleteAppointmentBody => 'A consulta será removida permanentemente.';
 
   @override
   String get fieldDate => 'Data';
@@ -827,13 +813,22 @@ class AppL10nPt extends AppL10n {
   String get selectTime => 'Escolher hora';
 
   @override
-  String get statsTitle => 'Dados';
+  String get statsTitle => 'Estatísticas';
 
   @override
-  String get period30 => '30 dias';
+  String get period30 => '30d';
 
   @override
-  String get period90 => '90 dias';
+  String get period60 => '60d';
+
+  @override
+  String get period90 => '90d';
+
+  @override
+  String get period6m => '6m';
+
+  @override
+  String get period1y => '1a';
 
   @override
   String get statIntensity => 'Intensidade';
@@ -849,6 +844,56 @@ class AppL10nPt extends AppL10n {
 
   @override
   String get sectionFrequentSymptoms => 'Sintomas mais frequentes';
+
+  @override
+  String get sectionEvolutionImpact => 'Evolução e impacto';
+
+  @override
+  String get sectionPatterns => 'Padrões';
+
+  @override
+  String get sectionTreatment => 'Tratamento e eficácia';
+
+  @override
+  String get sectionSeverity => 'Severidade';
+
+  @override
+  String get sectionEvents => 'Eventos específicos';
+
+  @override
+  String get statHit6 => 'HIT-6';
+
+  @override
+  String get statHit6None => 'Sem registo';
+
+  @override
+  String get weekdayHeatTitle => 'Intensidade por dia da semana';
+
+  @override
+  String get weekdayHeatNoData => 'Sem crises neste período';
+
+  @override
+  String get sosEfficacyTitle => 'Eficácia da medicação SOS';
+
+  @override
+  String get auraTimelineTitle => 'Linha temporal da aura';
+
+  @override
+  String get auraTimelineNone => 'Sem registos de aura no período';
+
+  @override
+  String menstruationCorrelation(int percent) {
+    return '$percent% das crises coincidem com o período menstrual';
+  }
+
+  @override
+  String get respTotalShort => 'Total';
+
+  @override
+  String get respPartialShort => 'Parcial';
+
+  @override
+  String get respNoneShort => 'Nenhuma';
 
   @override
   String weekShort(int n) {
@@ -1169,8 +1214,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get addAction => 'Adicionar';
 
   @override
-  String get noMedsHint =>
-      'Você ainda não tem medicações. Adicione-as no menu Medicação.';
+  String get noMedsHint => 'Você ainda não tem medicações. Adicione-as no menu Medicação.';
 
   @override
   String get medication => 'Medicação';
@@ -1252,8 +1296,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get reminderClear => 'Limpar';
 
   @override
-  String get reminderOnlyPreventive =>
-      'Disponível apenas para medicação preventiva.';
+  String get reminderOnlyPreventive => 'Disponível apenas para medicação preventiva.';
 
   @override
   String reminderAt(String time) {
@@ -1322,12 +1365,10 @@ class AppL10nPtBr extends AppL10nPt {
   String get testReminderNow => 'Testar lembrete agora';
 
   @override
-  String get testReminderNowDesc =>
-      'Mostra a notificação para confirmar que o canal funciona';
+  String get testReminderNowDesc => 'Mostra a notificação para confirmar que o canal funciona';
 
   @override
-  String get testReminderSent =>
-      'Notificação enviada — verifique a barra de status';
+  String get testReminderSent => 'Notificação enviada — verifique a barra de status';
 
   @override
   String get exactAlarmFallback =>
@@ -1437,15 +1478,13 @@ class AppL10nPtBr extends AppL10nPt {
   String get unlockProDesc => 'Funcionalidades premium em breve';
 
   @override
-  String get shareAppText =>
-      'Acompanhe suas enxaquecas com a AURA · Diário da Enxaqueca.';
+  String get shareAppText => 'Acompanhe suas enxaquecas com a AURA · Diário da Enxaqueca.';
 
   @override
   String get supportEmailSubject => 'AURA · Suporte';
 
   @override
-  String get proComingSoon =>
-      'Em breve — a versão Pro chega após o lançamento na loja.';
+  String get proComingSoon => 'Em breve — a versão Pro chega após o lançamento na loja.';
 
   @override
   String get fieldEmail => 'Email';
@@ -1457,8 +1496,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get profileTitle => 'Perfil';
 
   @override
-  String get profileIntro =>
-      'Opcional — aparece no cabeçalho do relatório para o médico.';
+  String get profileIntro => 'Opcional — aparece no cabeçalho do relatório para o médico.';
 
   @override
   String get profileNameHint => 'Seu nome';
@@ -1530,16 +1568,14 @@ class AppL10nPtBr extends AppL10nPt {
   }
 
   @override
-  String get hit6Q1 =>
-      'Quando você tem dores de cabeça, com que frequência são severas?';
+  String get hit6Q1 => 'Quando você tem dores de cabeça, com que frequência são severas?';
 
   @override
   String get hit6Q2 =>
       'Com que frequência as dores de cabeça limitam sua capacidade de fazer atividades diárias (trabalho doméstico, trabalho, escola ou atividades sociais)?';
 
   @override
-  String get hit6Q3 =>
-      'Quando você tem dor de cabeça, com que frequência deseja poder deitar?';
+  String get hit6Q3 => 'Quando você tem dor de cabeça, com que frequência deseja poder deitar?';
 
   @override
   String get hit6Q4 =>
@@ -1586,15 +1622,13 @@ class AppL10nPtBr extends AppL10nPt {
   }
 
   @override
-  String get appointmentsIntro =>
-      'Histórico, próximas consultas e relatório para o médico.';
+  String get appointmentsIntro => 'Histórico, próximas consultas e relatório para o médico.';
 
   @override
   String get generateReport => 'Gerar relatório médico';
 
   @override
-  String get generateReportDesc =>
-      'PDF com as crises e medicação para a próxima consulta';
+  String get generateReportDesc => 'PDF com as crises e medicação para a próxima consulta';
 
   @override
   String get sectionUpcoming => 'Próxima consulta';
@@ -1615,8 +1649,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get webAccessCodeDesc => 'Link para o médico consultar online';
 
   @override
-  String get webAccessComingSoon =>
-      'Em breve — link compartilhável após o lançamento.';
+  String get webAccessComingSoon => 'Em breve — link compartilhável após o lançamento.';
 
   @override
   String get viewAll => 'Ver tudo';
@@ -1625,8 +1658,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get noAppointments => 'Sem consultas registradas';
 
   @override
-  String get noAppointmentsBody =>
-      'Adicione a próxima consulta para tê-la à mão.';
+  String get noAppointmentsBody => 'Adicione a próxima consulta para tê-la à mão.';
 
   @override
   String get addAppointment => 'Adicionar consulta';
@@ -1650,8 +1682,7 @@ class AppL10nPtBr extends AppL10nPt {
   String get deleteAppointmentTitle => 'Excluir consulta';
 
   @override
-  String get deleteAppointmentBody =>
-      'A consulta será removida permanentemente.';
+  String get deleteAppointmentBody => 'A consulta será removida permanentemente.';
 
   @override
   String get fieldDate => 'Data';
@@ -1684,13 +1715,22 @@ class AppL10nPtBr extends AppL10nPt {
   String get selectTime => 'Escolher hora';
 
   @override
-  String get statsTitle => 'Dados';
+  String get statsTitle => 'Estatísticas';
 
   @override
-  String get period30 => '30 dias';
+  String get period30 => '30d';
 
   @override
-  String get period90 => '90 dias';
+  String get period60 => '60d';
+
+  @override
+  String get period90 => '90d';
+
+  @override
+  String get period6m => '6m';
+
+  @override
+  String get period1y => '1a';
 
   @override
   String get statIntensity => 'Intensidade';
@@ -1706,6 +1746,56 @@ class AppL10nPtBr extends AppL10nPt {
 
   @override
   String get sectionFrequentSymptoms => 'Sintomas mais frequentes';
+
+  @override
+  String get sectionEvolutionImpact => 'Evolução e impacto';
+
+  @override
+  String get sectionPatterns => 'Padrões';
+
+  @override
+  String get sectionTreatment => 'Tratamento e eficácia';
+
+  @override
+  String get sectionSeverity => 'Severidade';
+
+  @override
+  String get sectionEvents => 'Eventos específicos';
+
+  @override
+  String get statHit6 => 'HIT-6';
+
+  @override
+  String get statHit6None => 'Sem registro';
+
+  @override
+  String get weekdayHeatTitle => 'Intensidade por dia da semana';
+
+  @override
+  String get weekdayHeatNoData => 'Sem crises neste período';
+
+  @override
+  String get sosEfficacyTitle => 'Eficácia da medicação SOS';
+
+  @override
+  String get auraTimelineTitle => 'Linha temporal da aura';
+
+  @override
+  String get auraTimelineNone => 'Sem registros de aura no período';
+
+  @override
+  String menstruationCorrelation(int percent) {
+    return '$percent% das crises coincidem com o período menstrual';
+  }
+
+  @override
+  String get respTotalShort => 'Total';
+
+  @override
+  String get respPartialShort => 'Parcial';
+
+  @override
+  String get respNoneShort => 'Nenhuma';
 
   @override
   String weekShort(int n) {

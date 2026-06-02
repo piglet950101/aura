@@ -17,9 +17,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _displayNameMeta = const VerificationMeta(
-    'displayName',
-  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta('displayName');
   @override
   late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
     'display_name',
@@ -37,9 +35,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _birthYearMeta = const VerificationMeta(
-    'birthYear',
-  );
+  static const VerificationMeta _birthYearMeta = const VerificationMeta('birthYear');
   @override
   late final GeneratedColumn<int> birthYear = GeneratedColumn<int>(
     'birth_year',
@@ -67,9 +63,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     requiredDuringInsert: false,
     defaultValue: const Constant('pt-PT'),
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -79,9 +73,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -108,10 +100,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
   String get actualTableName => $name;
   static const String $name = 'profiles';
   @override
-  VerificationContext validateIntegrity(
-    Insertable<Profile> instance, {
-    bool isInserting = false,
-  }) {
+  VerificationContext validateIntegrity(Insertable<Profile> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -122,17 +111,11 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     if (data.containsKey('display_name')) {
       context.handle(
         _displayNameMeta,
-        displayName.isAcceptableOrUnknown(
-          data['display_name']!,
-          _displayNameMeta,
-        ),
+        displayName.isAcceptableOrUnknown(data['display_name']!, _displayNameMeta),
       );
     }
     if (data.containsKey('email')) {
-      context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
-      );
+      context.handle(_emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
     }
     if (data.containsKey('birth_year')) {
       context.handle(
@@ -141,16 +124,10 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
       );
     }
     if (data.containsKey('sex')) {
-      context.handle(
-        _sexMeta,
-        sex.isAcceptableOrUnknown(data['sex']!, _sexMeta),
-      );
+      context.handle(_sexMeta, sex.isAcceptableOrUnknown(data['sex']!, _sexMeta));
     }
     if (data.containsKey('locale')) {
-      context.handle(
-        _localeMeta,
-        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
-      );
+      context.handle(_localeMeta, locale.isAcceptableOrUnknown(data['locale']!, _localeMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -173,10 +150,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
   Profile map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Profile(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       displayName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}display_name'],
@@ -189,10 +163,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.int,
         data['${effectivePrefix}birth_year'],
       ),
-      sex: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sex'],
-      ),
+      sex: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}sex']),
       locale: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}locale'],
@@ -258,15 +229,9 @@ class Profile extends DataClass implements Insertable<Profile> {
   ProfilesCompanion toCompanion(bool nullToAbsent) {
     return ProfilesCompanion(
       id: Value(id),
-      displayName: displayName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(displayName),
-      email: email == null && nullToAbsent
-          ? const Value.absent()
-          : Value(email),
-      birthYear: birthYear == null && nullToAbsent
-          ? const Value.absent()
-          : Value(birthYear),
+      displayName: displayName == null && nullToAbsent ? const Value.absent() : Value(displayName),
+      email: email == null && nullToAbsent ? const Value.absent() : Value(email),
+      birthYear: birthYear == null && nullToAbsent ? const Value.absent() : Value(birthYear),
       sex: sex == null && nullToAbsent ? const Value.absent() : Value(sex),
       locale: Value(locale),
       createdAt: Value(createdAt),
@@ -274,10 +239,7 @@ class Profile extends DataClass implements Insertable<Profile> {
     );
   }
 
-  factory Profile.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory Profile.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Profile(
       id: serializer.fromJson<String>(json['id']),
@@ -327,9 +289,7 @@ class Profile extends DataClass implements Insertable<Profile> {
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
       id: data.id.present ? data.id.value : this.id,
-      displayName: data.displayName.present
-          ? data.displayName.value
-          : this.displayName,
+      displayName: data.displayName.present ? data.displayName.value : this.displayName,
       email: data.email.present ? data.email.value : this.email,
       birthYear: data.birthYear.present ? data.birthYear.value : this.birthYear,
       sex: data.sex.present ? data.sex.value : this.sex,
@@ -355,16 +315,8 @@ class Profile extends DataClass implements Insertable<Profile> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    displayName,
-    email,
-    birthYear,
-    sex,
-    locale,
-    createdAt,
-    updatedAt,
-  );
+  int get hashCode =>
+      Object.hash(id, displayName, email, birthYear, sex, locale, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -509,8 +461,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   }
 }
 
-class $MedicationsTable extends Medications
-    with TableInfo<$MedicationsTable, Medication> {
+class $MedicationsTable extends Medications with TableInfo<$MedicationsTable, Medication> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -539,10 +490,7 @@ class $MedicationsTable extends Medications
     'name',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 80,
-    ),
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 80),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -565,9 +513,7 @@ class $MedicationsTable extends Medications
     requiredDuringInsert: false,
     defaultValue: const Constant('sos'),
   );
-  static const VerificationMeta _isDefaultMeta = const VerificationMeta(
-    'isDefault',
-  );
+  static const VerificationMeta _isDefaultMeta = const VerificationMeta('isDefault');
   @override
   late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
     'is_default',
@@ -575,14 +521,10 @@ class $MedicationsTable extends Medications
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_default" IN (0, 1))',
-    ),
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("is_default" IN (0, 1))'),
     defaultValue: const Constant(false),
   );
-  static const VerificationMeta _archivedMeta = const VerificationMeta(
-    'archived',
-  );
+  static const VerificationMeta _archivedMeta = const VerificationMeta('archived');
   @override
   late final GeneratedColumn<bool> archived = GeneratedColumn<bool>(
     'archived',
@@ -590,14 +532,10 @@ class $MedicationsTable extends Medications
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("archived" IN (0, 1))',
-    ),
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("archived" IN (0, 1))'),
     defaultValue: const Constant(false),
   );
-  static const VerificationMeta _reminderMinutesMeta = const VerificationMeta(
-    'reminderMinutes',
-  );
+  static const VerificationMeta _reminderMinutesMeta = const VerificationMeta('reminderMinutes');
   @override
   late final GeneratedColumn<int> reminderMinutes = GeneratedColumn<int>(
     'reminder_minutes',
@@ -610,16 +548,16 @@ class $MedicationsTable extends Medications
     'preventiveSubtype',
   );
   @override
-  late final GeneratedColumn<String> preventiveSubtype =
-      GeneratedColumn<String>(
-        'preventive_subtype',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _injectionPeriodDaysMeta =
-      const VerificationMeta('injectionPeriodDays');
+  late final GeneratedColumn<String> preventiveSubtype = GeneratedColumn<String>(
+    'preventive_subtype',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _injectionPeriodDaysMeta = const VerificationMeta(
+    'injectionPeriodDays',
+  );
   @override
   late final GeneratedColumn<int> injectionPeriodDays = GeneratedColumn<int>(
     'injection_period_days',
@@ -628,9 +566,7 @@ class $MedicationsTable extends Medications
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _startedAtMeta = const VerificationMeta(
-    'startedAt',
-  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta('startedAt');
   @override
   late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
     'started_at',
@@ -639,9 +575,7 @@ class $MedicationsTable extends Medications
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _endedAtMeta = const VerificationMeta(
-    'endedAt',
-  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta('endedAt');
   @override
   late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
     'ended_at',
@@ -650,9 +584,7 @@ class $MedicationsTable extends Medications
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -662,9 +594,7 @@ class $MedicationsTable extends Medications
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -709,32 +639,20 @@ class $MedicationsTable extends Medications
       context.missing(_idMeta);
     }
     if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
+      context.handle(_userIdMeta, userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
     if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('dose_mg')) {
-      context.handle(
-        _doseMgMeta,
-        doseMg.isAcceptableOrUnknown(data['dose_mg']!, _doseMgMeta),
-      );
+      context.handle(_doseMgMeta, doseMg.isAcceptableOrUnknown(data['dose_mg']!, _doseMgMeta));
     }
     if (data.containsKey('kind')) {
-      context.handle(
-        _kindMeta,
-        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
-      );
+      context.handle(_kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
     }
     if (data.containsKey('is_default')) {
       context.handle(
@@ -751,10 +669,7 @@ class $MedicationsTable extends Medications
     if (data.containsKey('reminder_minutes')) {
       context.handle(
         _reminderMinutesMeta,
-        reminderMinutes.isAcceptableOrUnknown(
-          data['reminder_minutes']!,
-          _reminderMinutesMeta,
-        ),
+        reminderMinutes.isAcceptableOrUnknown(data['reminder_minutes']!, _reminderMinutesMeta),
       );
     }
     if (data.containsKey('preventive_subtype')) {
@@ -782,10 +697,7 @@ class $MedicationsTable extends Medications
       );
     }
     if (data.containsKey('ended_at')) {
-      context.handle(
-        _endedAtMeta,
-        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
-      );
+      context.handle(_endedAtMeta, endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -808,26 +720,17 @@ class $MedicationsTable extends Medications
   Medication map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Medication(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       doseMg: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}dose_mg'],
       ),
-      kind: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}kind'],
-      )!,
+      kind: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
       isDefault: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_default'],
@@ -965,9 +868,7 @@ class Medication extends DataClass implements Insertable<Medication> {
       id: Value(id),
       userId: Value(userId),
       name: Value(name),
-      doseMg: doseMg == null && nullToAbsent
-          ? const Value.absent()
-          : Value(doseMg),
+      doseMg: doseMg == null && nullToAbsent ? const Value.absent() : Value(doseMg),
       kind: Value(kind),
       isDefault: Value(isDefault),
       archived: Value(archived),
@@ -980,21 +881,14 @@ class Medication extends DataClass implements Insertable<Medication> {
       injectionPeriodDays: injectionPeriodDays == null && nullToAbsent
           ? const Value.absent()
           : Value(injectionPeriodDays),
-      startedAt: startedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(startedAt),
-      endedAt: endedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(endedAt),
+      startedAt: startedAt == null && nullToAbsent ? const Value.absent() : Value(startedAt),
+      endedAt: endedAt == null && nullToAbsent ? const Value.absent() : Value(endedAt),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
   }
 
-  factory Medication.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory Medication.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Medication(
       id: serializer.fromJson<String>(json['id']),
@@ -1005,12 +899,8 @@ class Medication extends DataClass implements Insertable<Medication> {
       isDefault: serializer.fromJson<bool>(json['isDefault']),
       archived: serializer.fromJson<bool>(json['archived']),
       reminderMinutes: serializer.fromJson<int?>(json['reminderMinutes']),
-      preventiveSubtype: serializer.fromJson<String?>(
-        json['preventiveSubtype'],
-      ),
-      injectionPeriodDays: serializer.fromJson<int?>(
-        json['injectionPeriodDays'],
-      ),
+      preventiveSubtype: serializer.fromJson<String?>(json['preventiveSubtype']),
+      injectionPeriodDays: serializer.fromJson<int?>(json['injectionPeriodDays']),
       startedAt: serializer.fromJson<DateTime?>(json['startedAt']),
       endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -1061,12 +951,8 @@ class Medication extends DataClass implements Insertable<Medication> {
     kind: kind ?? this.kind,
     isDefault: isDefault ?? this.isDefault,
     archived: archived ?? this.archived,
-    reminderMinutes: reminderMinutes.present
-        ? reminderMinutes.value
-        : this.reminderMinutes,
-    preventiveSubtype: preventiveSubtype.present
-        ? preventiveSubtype.value
-        : this.preventiveSubtype,
+    reminderMinutes: reminderMinutes.present ? reminderMinutes.value : this.reminderMinutes,
+    preventiveSubtype: preventiveSubtype.present ? preventiveSubtype.value : this.preventiveSubtype,
     injectionPeriodDays: injectionPeriodDays.present
         ? injectionPeriodDays.value
         : this.injectionPeriodDays,
@@ -1237,8 +1123,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
       if (archived != null) 'archived': archived,
       if (reminderMinutes != null) 'reminder_minutes': reminderMinutes,
       if (preventiveSubtype != null) 'preventive_subtype': preventiveSubtype,
-      if (injectionPeriodDays != null)
-        'injection_period_days': injectionPeriodDays,
+      if (injectionPeriodDays != null) 'injection_period_days': injectionPeriodDays,
       if (startedAt != null) 'started_at': startedAt,
       if (endedAt != null) 'ended_at': endedAt,
       if (createdAt != null) 'created_at': createdAt,
@@ -1357,8 +1242,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   }
 }
 
-class $AppointmentsTable extends Appointments
-    with TableInfo<$AppointmentsTable, Appointment> {
+class $AppointmentsTable extends Appointments with TableInfo<$AppointmentsTable, Appointment> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1381,9 +1265,7 @@ class $AppointmentsTable extends Appointments
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _occursAtMeta = const VerificationMeta(
-    'occursAt',
-  );
+  static const VerificationMeta _occursAtMeta = const VerificationMeta('occursAt');
   @override
   late final GeneratedColumn<DateTime> occursAt = GeneratedColumn<DateTime>(
     'occurs_at',
@@ -1392,9 +1274,7 @@ class $AppointmentsTable extends Appointments
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _doctorNameMeta = const VerificationMeta(
-    'doctorName',
-  );
+  static const VerificationMeta _doctorNameMeta = const VerificationMeta('doctorName');
   @override
   late final GeneratedColumn<String> doctorName = GeneratedColumn<String>(
     'doctor_name',
@@ -1403,9 +1283,7 @@ class $AppointmentsTable extends Appointments
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _locationMeta = const VerificationMeta(
-    'location',
-  );
+  static const VerificationMeta _locationMeta = const VerificationMeta('location');
   @override
   late final GeneratedColumn<String> location = GeneratedColumn<String>(
     'location',
@@ -1423,9 +1301,7 @@ class $AppointmentsTable extends Appointments
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -1435,9 +1311,7 @@ class $AppointmentsTable extends Appointments
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -1476,10 +1350,7 @@ class $AppointmentsTable extends Appointments
       context.missing(_idMeta);
     }
     if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
+      context.handle(_userIdMeta, userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
@@ -1504,10 +1375,7 @@ class $AppointmentsTable extends Appointments
       );
     }
     if (data.containsKey('notes')) {
-      context.handle(
-        _notesMeta,
-        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
-      );
+      context.handle(_notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -1530,10 +1398,7 @@ class $AppointmentsTable extends Appointments
   Appointment map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Appointment(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -1615,24 +1480,15 @@ class Appointment extends DataClass implements Insertable<Appointment> {
       id: Value(id),
       userId: Value(userId),
       occursAt: Value(occursAt),
-      doctorName: doctorName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(doctorName),
-      location: location == null && nullToAbsent
-          ? const Value.absent()
-          : Value(location),
-      notes: notes == null && nullToAbsent
-          ? const Value.absent()
-          : Value(notes),
+      doctorName: doctorName == null && nullToAbsent ? const Value.absent() : Value(doctorName),
+      location: location == null && nullToAbsent ? const Value.absent() : Value(location),
+      notes: notes == null && nullToAbsent ? const Value.absent() : Value(notes),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
   }
 
-  factory Appointment.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory Appointment.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Appointment(
       id: serializer.fromJson<String>(json['id']),
@@ -1684,9 +1540,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
       occursAt: data.occursAt.present ? data.occursAt.value : this.occursAt,
-      doctorName: data.doctorName.present
-          ? data.doctorName.value
-          : this.doctorName,
+      doctorName: data.doctorName.present ? data.doctorName.value : this.doctorName,
       location: data.location.present ? data.location.value : this.location,
       notes: data.notes.present ? data.notes.value : this.notes,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -1710,16 +1564,8 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    userId,
-    occursAt,
-    doctorName,
-    location,
-    notes,
-    createdAt,
-    updatedAt,
-  );
+  int get hashCode =>
+      Object.hash(id, userId, occursAt, doctorName, location, notes, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1866,8 +1712,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   }
 }
 
-class $Hit6ResponsesTable extends Hit6Responses
-    with TableInfo<$Hit6ResponsesTable, Hit6Response> {
+class $Hit6ResponsesTable extends Hit6Responses with TableInfo<$Hit6ResponsesTable, Hit6Response> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1890,9 +1735,7 @@ class $Hit6ResponsesTable extends Hit6Responses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _submittedAtMeta = const VerificationMeta(
-    'submittedAt',
-  );
+  static const VerificationMeta _submittedAtMeta = const VerificationMeta('submittedAt');
   @override
   late final GeneratedColumn<DateTime> submittedAt = GeneratedColumn<DateTime>(
     'submitted_at',
@@ -1910,9 +1753,7 @@ class $Hit6ResponsesTable extends Hit6Responses
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _responsesMeta = const VerificationMeta(
-    'responses',
-  );
+  static const VerificationMeta _responsesMeta = const VerificationMeta('responses');
   @override
   late final GeneratedColumn<String> responses = GeneratedColumn<String>(
     'responses',
@@ -1921,9 +1762,7 @@ class $Hit6ResponsesTable extends Hit6Responses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -1934,14 +1773,7 @@ class $Hit6ResponsesTable extends Hit6Responses
     defaultValue: currentDateAndTime,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    userId,
-    submittedAt,
-    score,
-    responses,
-    createdAt,
-  ];
+  List<GeneratedColumn> get $columns => [id, userId, submittedAt, score, responses, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1960,29 +1792,20 @@ class $Hit6ResponsesTable extends Hit6Responses
       context.missing(_idMeta);
     }
     if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
+      context.handle(_userIdMeta, userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
     if (data.containsKey('submitted_at')) {
       context.handle(
         _submittedAtMeta,
-        submittedAt.isAcceptableOrUnknown(
-          data['submitted_at']!,
-          _submittedAtMeta,
-        ),
+        submittedAt.isAcceptableOrUnknown(data['submitted_at']!, _submittedAtMeta),
       );
     } else if (isInserting) {
       context.missing(_submittedAtMeta);
     }
     if (data.containsKey('score')) {
-      context.handle(
-        _scoreMeta,
-        score.isAcceptableOrUnknown(data['score']!, _scoreMeta),
-      );
+      context.handle(_scoreMeta, score.isAcceptableOrUnknown(data['score']!, _scoreMeta));
     } else if (isInserting) {
       context.missing(_scoreMeta);
     }
@@ -2009,10 +1832,7 @@ class $Hit6ResponsesTable extends Hit6Responses
   Hit6Response map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Hit6Response(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -2021,10 +1841,7 @@ class $Hit6ResponsesTable extends Hit6Responses
         DriftSqlType.dateTime,
         data['${effectivePrefix}submitted_at'],
       )!,
-      score: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}score'],
-      )!,
+      score: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}score'])!,
       responses: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}responses'],
@@ -2080,10 +1897,7 @@ class Hit6Response extends DataClass implements Insertable<Hit6Response> {
     );
   }
 
-  factory Hit6Response.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory Hit6Response.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Hit6Response(
       id: serializer.fromJson<String>(json['id']),
@@ -2126,9 +1940,7 @@ class Hit6Response extends DataClass implements Insertable<Hit6Response> {
     return Hit6Response(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
-      submittedAt: data.submittedAt.present
-          ? data.submittedAt.value
-          : this.submittedAt,
+      submittedAt: data.submittedAt.present ? data.submittedAt.value : this.submittedAt,
       score: data.score.present ? data.score.value : this.score,
       responses: data.responses.present ? data.responses.value : this.responses,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -2149,8 +1961,7 @@ class Hit6Response extends DataClass implements Insertable<Hit6Response> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, userId, submittedAt, score, responses, createdAt);
+  int get hashCode => Object.hash(id, userId, submittedAt, score, responses, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2298,9 +2109,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
-    'occurredAt',
-  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta('occurredAt');
   @override
   late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
     'occurred_at',
@@ -2309,9 +2118,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _intensityMeta = const VerificationMeta(
-    'intensity',
-  );
+  static const VerificationMeta _intensityMeta = const VerificationMeta('intensity');
   @override
   late final GeneratedColumn<int> intensity = GeneratedColumn<int>(
     'intensity',
@@ -2320,9 +2127,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _locationMeta = const VerificationMeta(
-    'location',
-  );
+  static const VerificationMeta _locationMeta = const VerificationMeta('location');
   @override
   late final GeneratedColumn<String> location = GeneratedColumn<String>(
     'location',
@@ -2340,9 +2145,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _resolvedAtMeta = const VerificationMeta(
-    'resolvedAt',
-  );
+  static const VerificationMeta _resolvedAtMeta = const VerificationMeta('resolvedAt');
   @override
   late final GeneratedColumn<DateTime> resolvedAt = GeneratedColumn<DateTime>(
     'resolved_at',
@@ -2351,9 +2154,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _menstruationMeta = const VerificationMeta(
-    'menstruation',
-  );
+  static const VerificationMeta _menstruationMeta = const VerificationMeta('menstruation');
   @override
   late final GeneratedColumn<bool> menstruation = GeneratedColumn<bool>(
     'menstruation',
@@ -2361,13 +2162,9 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("menstruation" IN (0, 1))',
-    ),
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("menstruation" IN (0, 1))'),
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -2377,9 +2174,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -2408,10 +2203,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
   String get actualTableName => $name;
   static const String $name = 'crises';
   @override
-  VerificationContext validateIntegrity(
-    Insertable<Crisis> instance, {
-    bool isInserting = false,
-  }) {
+  VerificationContext validateIntegrity(Insertable<Crisis> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -2420,10 +2212,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
       context.missing(_idMeta);
     }
     if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
+      context.handle(_userIdMeta, userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
@@ -2450,10 +2239,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
       );
     }
     if (data.containsKey('notes')) {
-      context.handle(
-        _notesMeta,
-        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
-      );
+      context.handle(_notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
     if (data.containsKey('resolved_at')) {
       context.handle(
@@ -2464,10 +2250,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
     if (data.containsKey('menstruation')) {
       context.handle(
         _menstruationMeta,
-        menstruation.isAcceptableOrUnknown(
-          data['menstruation']!,
-          _menstruationMeta,
-        ),
+        menstruation.isAcceptableOrUnknown(data['menstruation']!, _menstruationMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -2491,10 +2274,7 @@ class $CrisesTable extends Crises with TableInfo<$CrisesTable, Crisis> {
   Crisis map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Crisis(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -2598,15 +2378,9 @@ class Crisis extends DataClass implements Insertable<Crisis> {
       userId: Value(userId),
       occurredAt: Value(occurredAt),
       intensity: Value(intensity),
-      location: location == null && nullToAbsent
-          ? const Value.absent()
-          : Value(location),
-      notes: notes == null && nullToAbsent
-          ? const Value.absent()
-          : Value(notes),
-      resolvedAt: resolvedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(resolvedAt),
+      location: location == null && nullToAbsent ? const Value.absent() : Value(location),
+      notes: notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      resolvedAt: resolvedAt == null && nullToAbsent ? const Value.absent() : Value(resolvedAt),
       menstruation: menstruation == null && nullToAbsent
           ? const Value.absent()
           : Value(menstruation),
@@ -2615,10 +2389,7 @@ class Crisis extends DataClass implements Insertable<Crisis> {
     );
   }
 
-  factory Crisis.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory Crisis.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Crisis(
       id: serializer.fromJson<String>(json['id']),
@@ -2677,18 +2448,12 @@ class Crisis extends DataClass implements Insertable<Crisis> {
     return Crisis(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
-      occurredAt: data.occurredAt.present
-          ? data.occurredAt.value
-          : this.occurredAt,
+      occurredAt: data.occurredAt.present ? data.occurredAt.value : this.occurredAt,
       intensity: data.intensity.present ? data.intensity.value : this.intensity,
       location: data.location.present ? data.location.value : this.location,
       notes: data.notes.present ? data.notes.value : this.notes,
-      resolvedAt: data.resolvedAt.present
-          ? data.resolvedAt.value
-          : this.resolvedAt,
-      menstruation: data.menstruation.present
-          ? data.menstruation.value
-          : this.menstruation,
+      resolvedAt: data.resolvedAt.present ? data.resolvedAt.value : this.resolvedAt,
+      menstruation: data.menstruation.present ? data.menstruation.value : this.menstruation,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2901,9 +2666,7 @@ class $CrisisSymptomsTable extends CrisisSymptoms
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $CrisisSymptomsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _crisisIdMeta = const VerificationMeta(
-    'crisisId',
-  );
+  static const VerificationMeta _crisisIdMeta = const VerificationMeta('crisisId');
   @override
   late final GeneratedColumn<String> crisisId = GeneratedColumn<String>(
     'crisis_id',
@@ -2915,9 +2678,7 @@ class $CrisisSymptomsTable extends CrisisSymptoms
       'REFERENCES crises (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _symptomMeta = const VerificationMeta(
-    'symptom',
-  );
+  static const VerificationMeta _symptomMeta = const VerificationMeta('symptom');
   @override
   late final GeneratedColumn<String> symptom = GeneratedColumn<String>(
     'symptom',
@@ -2949,10 +2710,7 @@ class $CrisisSymptomsTable extends CrisisSymptoms
       context.missing(_crisisIdMeta);
     }
     if (data.containsKey('symptom')) {
-      context.handle(
-        _symptomMeta,
-        symptom.isAcceptableOrUnknown(data['symptom']!, _symptomMeta),
-      );
+      context.handle(_symptomMeta, symptom.isAcceptableOrUnknown(data['symptom']!, _symptomMeta));
     } else if (isInserting) {
       context.missing(_symptomMeta);
     }
@@ -2995,16 +2753,10 @@ class CrisisSymptom extends DataClass implements Insertable<CrisisSymptom> {
   }
 
   CrisisSymptomsCompanion toCompanion(bool nullToAbsent) {
-    return CrisisSymptomsCompanion(
-      crisisId: Value(crisisId),
-      symptom: Value(symptom),
-    );
+    return CrisisSymptomsCompanion(crisisId: Value(crisisId), symptom: Value(symptom));
   }
 
-  factory CrisisSymptom.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory CrisisSymptom.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CrisisSymptom(
       crisisId: serializer.fromJson<String>(json['crisisId']),
@@ -3020,10 +2772,8 @@ class CrisisSymptom extends DataClass implements Insertable<CrisisSymptom> {
     };
   }
 
-  CrisisSymptom copyWith({String? crisisId, String? symptom}) => CrisisSymptom(
-    crisisId: crisisId ?? this.crisisId,
-    symptom: symptom ?? this.symptom,
-  );
+  CrisisSymptom copyWith({String? crisisId, String? symptom}) =>
+      CrisisSymptom(crisisId: crisisId ?? this.crisisId, symptom: symptom ?? this.symptom);
   CrisisSymptom copyWithCompanion(CrisisSymptomsCompanion data) {
     return CrisisSymptom(
       crisisId: data.crisisId.present ? data.crisisId.value : this.crisisId,
@@ -3045,9 +2795,7 @@ class CrisisSymptom extends DataClass implements Insertable<CrisisSymptom> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CrisisSymptom &&
-          other.crisisId == this.crisisId &&
-          other.symptom == this.symptom);
+      (other is CrisisSymptom && other.crisisId == this.crisisId && other.symptom == this.symptom);
 }
 
 class CrisisSymptomsCompanion extends UpdateCompanion<CrisisSymptom> {
@@ -3121,9 +2869,7 @@ class $CrisisTriggersTable extends CrisisTriggers
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $CrisisTriggersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _crisisIdMeta = const VerificationMeta(
-    'crisisId',
-  );
+  static const VerificationMeta _crisisIdMeta = const VerificationMeta('crisisId');
   @override
   late final GeneratedColumn<String> crisisId = GeneratedColumn<String>(
     'crisis_id',
@@ -3135,9 +2881,7 @@ class $CrisisTriggersTable extends CrisisTriggers
       'REFERENCES crises (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _triggerMeta = const VerificationMeta(
-    'trigger',
-  );
+  static const VerificationMeta _triggerMeta = const VerificationMeta('trigger');
   @override
   late final GeneratedColumn<String> trigger = GeneratedColumn<String>(
     'trigger',
@@ -3169,10 +2913,7 @@ class $CrisisTriggersTable extends CrisisTriggers
       context.missing(_crisisIdMeta);
     }
     if (data.containsKey('trigger')) {
-      context.handle(
-        _triggerMeta,
-        trigger.isAcceptableOrUnknown(data['trigger']!, _triggerMeta),
-      );
+      context.handle(_triggerMeta, trigger.isAcceptableOrUnknown(data['trigger']!, _triggerMeta));
     } else if (isInserting) {
       context.missing(_triggerMeta);
     }
@@ -3202,8 +2943,7 @@ class $CrisisTriggersTable extends CrisisTriggers
   }
 }
 
-class CrisisTriggerRow extends DataClass
-    implements Insertable<CrisisTriggerRow> {
+class CrisisTriggerRow extends DataClass implements Insertable<CrisisTriggerRow> {
   final String crisisId;
   final String trigger;
   const CrisisTriggerRow({required this.crisisId, required this.trigger});
@@ -3216,16 +2956,10 @@ class CrisisTriggerRow extends DataClass
   }
 
   CrisisTriggersCompanion toCompanion(bool nullToAbsent) {
-    return CrisisTriggersCompanion(
-      crisisId: Value(crisisId),
-      trigger: Value(trigger),
-    );
+    return CrisisTriggersCompanion(crisisId: Value(crisisId), trigger: Value(trigger));
   }
 
-  factory CrisisTriggerRow.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory CrisisTriggerRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CrisisTriggerRow(
       crisisId: serializer.fromJson<String>(json['crisisId']),
@@ -3242,10 +2976,7 @@ class CrisisTriggerRow extends DataClass
   }
 
   CrisisTriggerRow copyWith({String? crisisId, String? trigger}) =>
-      CrisisTriggerRow(
-        crisisId: crisisId ?? this.crisisId,
-        trigger: trigger ?? this.trigger,
-      );
+      CrisisTriggerRow(crisisId: crisisId ?? this.crisisId, trigger: trigger ?? this.trigger);
   CrisisTriggerRow copyWithCompanion(CrisisTriggersCompanion data) {
     return CrisisTriggerRow(
       crisisId: data.crisisId.present ? data.crisisId.value : this.crisisId,
@@ -3352,9 +3083,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _crisisIdMeta = const VerificationMeta(
-    'crisisId',
-  );
+  static const VerificationMeta _crisisIdMeta = const VerificationMeta('crisisId');
   @override
   late final GeneratedColumn<String> crisisId = GeneratedColumn<String>(
     'crisis_id',
@@ -3366,9 +3095,7 @@ class $CrisisMedicationsTable extends CrisisMedications
       'REFERENCES crises (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _medicationIdMeta = const VerificationMeta(
-    'medicationId',
-  );
+  static const VerificationMeta _medicationIdMeta = const VerificationMeta('medicationId');
   @override
   late final GeneratedColumn<String> medicationId = GeneratedColumn<String>(
     'medication_id',
@@ -3380,17 +3107,17 @@ class $CrisisMedicationsTable extends CrisisMedications
       'REFERENCES medications (id) ON DELETE SET NULL',
     ),
   );
-  static const VerificationMeta _medicationNameSnapshotMeta =
-      const VerificationMeta('medicationNameSnapshot');
+  static const VerificationMeta _medicationNameSnapshotMeta = const VerificationMeta(
+    'medicationNameSnapshot',
+  );
   @override
-  late final GeneratedColumn<String> medicationNameSnapshot =
-      GeneratedColumn<String>(
-        'medication_name_snapshot',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      );
+  late final GeneratedColumn<String> medicationNameSnapshot = GeneratedColumn<String>(
+    'medication_name_snapshot',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _doseMgMeta = const VerificationMeta('doseMg');
   @override
   late final GeneratedColumn<double> doseMg = GeneratedColumn<double>(
@@ -3400,9 +3127,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _takenAtMeta = const VerificationMeta(
-    'takenAt',
-  );
+  static const VerificationMeta _takenAtMeta = const VerificationMeta('takenAt');
   @override
   late final GeneratedColumn<DateTime> takenAt = GeneratedColumn<DateTime>(
     'taken_at',
@@ -3411,9 +3136,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _reliefAtMeta = const VerificationMeta(
-    'reliefAt',
-  );
+  static const VerificationMeta _reliefAtMeta = const VerificationMeta('reliefAt');
   @override
   late final GeneratedColumn<DateTime> reliefAt = GeneratedColumn<DateTime>(
     'relief_at',
@@ -3422,9 +3145,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _effectiveMeta = const VerificationMeta(
-    'effective',
-  );
+  static const VerificationMeta _effectiveMeta = const VerificationMeta('effective');
   @override
   late final GeneratedColumn<bool> effective = GeneratedColumn<bool>(
     'effective',
@@ -3432,13 +3153,9 @@ class $CrisisMedicationsTable extends CrisisMedications
     true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("effective" IN (0, 1))',
-    ),
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("effective" IN (0, 1))'),
   );
-  static const VerificationMeta _responseMeta = const VerificationMeta(
-    'response',
-  );
+  static const VerificationMeta _responseMeta = const VerificationMeta('response');
   @override
   late final GeneratedColumn<String> response = GeneratedColumn<String>(
     'response',
@@ -3487,10 +3204,7 @@ class $CrisisMedicationsTable extends CrisisMedications
     if (data.containsKey('medication_id')) {
       context.handle(
         _medicationIdMeta,
-        medicationId.isAcceptableOrUnknown(
-          data['medication_id']!,
-          _medicationIdMeta,
-        ),
+        medicationId.isAcceptableOrUnknown(data['medication_id']!, _medicationIdMeta),
       );
     }
     if (data.containsKey('medication_name_snapshot')) {
@@ -3505,16 +3219,10 @@ class $CrisisMedicationsTable extends CrisisMedications
       context.missing(_medicationNameSnapshotMeta);
     }
     if (data.containsKey('dose_mg')) {
-      context.handle(
-        _doseMgMeta,
-        doseMg.isAcceptableOrUnknown(data['dose_mg']!, _doseMgMeta),
-      );
+      context.handle(_doseMgMeta, doseMg.isAcceptableOrUnknown(data['dose_mg']!, _doseMgMeta));
     }
     if (data.containsKey('taken_at')) {
-      context.handle(
-        _takenAtMeta,
-        takenAt.isAcceptableOrUnknown(data['taken_at']!, _takenAtMeta),
-      );
+      context.handle(_takenAtMeta, takenAt.isAcceptableOrUnknown(data['taken_at']!, _takenAtMeta));
     } else if (isInserting) {
       context.missing(_takenAtMeta);
     }
@@ -3545,10 +3253,7 @@ class $CrisisMedicationsTable extends CrisisMedications
   CrisisMedication map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CrisisMedication(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       crisisId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}crisis_id'],
@@ -3590,8 +3295,7 @@ class $CrisisMedicationsTable extends CrisisMedications
   }
 }
 
-class CrisisMedication extends DataClass
-    implements Insertable<CrisisMedication> {
+class CrisisMedication extends DataClass implements Insertable<CrisisMedication> {
   final String id;
   final String crisisId;
   final String? medicationId;
@@ -3648,34 +3352,21 @@ class CrisisMedication extends DataClass
           ? const Value.absent()
           : Value(medicationId),
       medicationNameSnapshot: Value(medicationNameSnapshot),
-      doseMg: doseMg == null && nullToAbsent
-          ? const Value.absent()
-          : Value(doseMg),
+      doseMg: doseMg == null && nullToAbsent ? const Value.absent() : Value(doseMg),
       takenAt: Value(takenAt),
-      reliefAt: reliefAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(reliefAt),
-      effective: effective == null && nullToAbsent
-          ? const Value.absent()
-          : Value(effective),
-      response: response == null && nullToAbsent
-          ? const Value.absent()
-          : Value(response),
+      reliefAt: reliefAt == null && nullToAbsent ? const Value.absent() : Value(reliefAt),
+      effective: effective == null && nullToAbsent ? const Value.absent() : Value(effective),
+      response: response == null && nullToAbsent ? const Value.absent() : Value(response),
     );
   }
 
-  factory CrisisMedication.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory CrisisMedication.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CrisisMedication(
       id: serializer.fromJson<String>(json['id']),
       crisisId: serializer.fromJson<String>(json['crisisId']),
       medicationId: serializer.fromJson<String?>(json['medicationId']),
-      medicationNameSnapshot: serializer.fromJson<String>(
-        json['medicationNameSnapshot'],
-      ),
+      medicationNameSnapshot: serializer.fromJson<String>(json['medicationNameSnapshot']),
       doseMg: serializer.fromJson<double?>(json['doseMg']),
       takenAt: serializer.fromJson<DateTime>(json['takenAt']),
       reliefAt: serializer.fromJson<DateTime?>(json['reliefAt']),
@@ -3690,9 +3381,7 @@ class CrisisMedication extends DataClass
       'id': serializer.toJson<String>(id),
       'crisisId': serializer.toJson<String>(crisisId),
       'medicationId': serializer.toJson<String?>(medicationId),
-      'medicationNameSnapshot': serializer.toJson<String>(
-        medicationNameSnapshot,
-      ),
+      'medicationNameSnapshot': serializer.toJson<String>(medicationNameSnapshot),
       'doseMg': serializer.toJson<double?>(doseMg),
       'takenAt': serializer.toJson<DateTime>(takenAt),
       'reliefAt': serializer.toJson<DateTime?>(reliefAt),
@@ -3715,8 +3404,7 @@ class CrisisMedication extends DataClass
     id: id ?? this.id,
     crisisId: crisisId ?? this.crisisId,
     medicationId: medicationId.present ? medicationId.value : this.medicationId,
-    medicationNameSnapshot:
-        medicationNameSnapshot ?? this.medicationNameSnapshot,
+    medicationNameSnapshot: medicationNameSnapshot ?? this.medicationNameSnapshot,
     doseMg: doseMg.present ? doseMg.value : this.doseMg,
     takenAt: takenAt ?? this.takenAt,
     reliefAt: reliefAt.present ? reliefAt.value : this.reliefAt,
@@ -3727,9 +3415,7 @@ class CrisisMedication extends DataClass
     return CrisisMedication(
       id: data.id.present ? data.id.value : this.id,
       crisisId: data.crisisId.present ? data.crisisId.value : this.crisisId,
-      medicationId: data.medicationId.present
-          ? data.medicationId.value
-          : this.medicationId,
+      medicationId: data.medicationId.present ? data.medicationId.value : this.medicationId,
       medicationNameSnapshot: data.medicationNameSnapshot.present
           ? data.medicationNameSnapshot.value
           : this.medicationNameSnapshot,
@@ -3838,8 +3524,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
       if (id != null) 'id': id,
       if (crisisId != null) 'crisis_id': crisisId,
       if (medicationId != null) 'medication_id': medicationId,
-      if (medicationNameSnapshot != null)
-        'medication_name_snapshot': medicationNameSnapshot,
+      if (medicationNameSnapshot != null) 'medication_name_snapshot': medicationNameSnapshot,
       if (doseMg != null) 'dose_mg': doseMg,
       if (takenAt != null) 'taken_at': takenAt,
       if (reliefAt != null) 'relief_at': reliefAt,
@@ -3865,8 +3550,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
       id: id ?? this.id,
       crisisId: crisisId ?? this.crisisId,
       medicationId: medicationId ?? this.medicationId,
-      medicationNameSnapshot:
-          medicationNameSnapshot ?? this.medicationNameSnapshot,
+      medicationNameSnapshot: medicationNameSnapshot ?? this.medicationNameSnapshot,
       doseMg: doseMg ?? this.doseMg,
       takenAt: takenAt ?? this.takenAt,
       reliefAt: reliefAt ?? this.reliefAt,
@@ -3889,9 +3573,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
       map['medication_id'] = Variable<String>(medicationId.value);
     }
     if (medicationNameSnapshot.present) {
-      map['medication_name_snapshot'] = Variable<String>(
-        medicationNameSnapshot.value,
-      );
+      map['medication_name_snapshot'] = Variable<String>(medicationNameSnapshot.value);
     }
     if (doseMg.present) {
       map['dose_mg'] = Variable<double>(doseMg.value);
@@ -3932,8 +3614,7 @@ class CrisisMedicationsCompanion extends UpdateCompanion<CrisisMedication> {
   }
 }
 
-class $OutboxEntriesTable extends OutboxEntries
-    with TableInfo<$OutboxEntriesTable, OutboxEntry> {
+class $OutboxEntriesTable extends OutboxEntries with TableInfo<$OutboxEntriesTable, OutboxEntry> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -3947,13 +3628,9 @@ class $OutboxEntriesTable extends OutboxEntries
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
   );
-  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
-    'entityType',
-  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta('entityType');
   @override
   late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
     'entity_type',
@@ -3962,9 +3639,7 @@ class $OutboxEntriesTable extends OutboxEntries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _entityIdMeta = const VerificationMeta(
-    'entityId',
-  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta('entityId');
   @override
   late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
     'entity_id',
@@ -3973,9 +3648,7 @@ class $OutboxEntriesTable extends OutboxEntries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _operationMeta = const VerificationMeta(
-    'operation',
-  );
+  static const VerificationMeta _operationMeta = const VerificationMeta('operation');
   @override
   late final GeneratedColumn<String> operation = GeneratedColumn<String>(
     'operation',
@@ -3984,9 +3657,7 @@ class $OutboxEntriesTable extends OutboxEntries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _attemptsMeta = const VerificationMeta(
-    'attempts',
-  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta('attempts');
   @override
   late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
     'attempts',
@@ -3996,9 +3667,7 @@ class $OutboxEntriesTable extends OutboxEntries
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
-  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
-    'lastError',
-  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta('lastError');
   @override
   late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
     'last_error',
@@ -4007,9 +3676,7 @@ class $OutboxEntriesTable extends OutboxEntries
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
-    'nextRetryAt',
-  );
+  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta('nextRetryAt');
   @override
   late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
     'next_retry_at',
@@ -4019,9 +3686,7 @@ class $OutboxEntriesTable extends OutboxEntries
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -4096,10 +3761,7 @@ class $OutboxEntriesTable extends OutboxEntries
     if (data.containsKey('next_retry_at')) {
       context.handle(
         _nextRetryAtMeta,
-        nextRetryAt.isAcceptableOrUnknown(
-          data['next_retry_at']!,
-          _nextRetryAtMeta,
-        ),
+        nextRetryAt.isAcceptableOrUnknown(data['next_retry_at']!, _nextRetryAtMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -4117,10 +3779,7 @@ class $OutboxEntriesTable extends OutboxEntries
   OutboxEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return OutboxEntry(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       entityType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}entity_type'],
@@ -4200,18 +3859,13 @@ class OutboxEntry extends DataClass implements Insertable<OutboxEntry> {
       entityId: Value(entityId),
       operation: Value(operation),
       attempts: Value(attempts),
-      lastError: lastError == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastError),
+      lastError: lastError == null && nullToAbsent ? const Value.absent() : Value(lastError),
       nextRetryAt: Value(nextRetryAt),
       createdAt: Value(createdAt),
     );
   }
 
-  factory OutboxEntry.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory OutboxEntry.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return OutboxEntry(
       id: serializer.fromJson<int>(json['id']),
@@ -4261,16 +3915,12 @@ class OutboxEntry extends DataClass implements Insertable<OutboxEntry> {
   OutboxEntry copyWithCompanion(OutboxEntriesCompanion data) {
     return OutboxEntry(
       id: data.id.present ? data.id.value : this.id,
-      entityType: data.entityType.present
-          ? data.entityType.value
-          : this.entityType,
+      entityType: data.entityType.present ? data.entityType.value : this.entityType,
       entityId: data.entityId.present ? data.entityId.value : this.entityId,
       operation: data.operation.present ? data.operation.value : this.operation,
       attempts: data.attempts.present ? data.attempts.value : this.attempts,
       lastError: data.lastError.present ? data.lastError.value : this.lastError,
-      nextRetryAt: data.nextRetryAt.present
-          ? data.nextRetryAt.value
-          : this.nextRetryAt,
+      nextRetryAt: data.nextRetryAt.present ? data.nextRetryAt.value : this.nextRetryAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -4291,16 +3941,8 @@ class OutboxEntry extends DataClass implements Insertable<OutboxEntry> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    entityType,
-    entityId,
-    operation,
-    attempts,
-    lastError,
-    nextRetryAt,
-    createdAt,
-  );
+  int get hashCode =>
+      Object.hash(id, entityType, entityId, operation, attempts, lastError, nextRetryAt, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4446,8 +4088,7 @@ abstract class _$AuraDatabase extends GeneratedDatabase {
   late final $CrisesTable crises = $CrisesTable(this);
   late final $CrisisSymptomsTable crisisSymptoms = $CrisisSymptomsTable(this);
   late final $CrisisTriggersTable crisisTriggers = $CrisisTriggersTable(this);
-  late final $CrisisMedicationsTable crisisMedications =
-      $CrisisMedicationsTable(this);
+  late final $CrisisMedicationsTable crisisMedications = $CrisisMedicationsTable(this);
   late final $OutboxEntriesTable outboxEntries = $OutboxEntriesTable(this);
   late final Index appointmentsUserWhenIdx = Index(
     'appointments_user_when_idx',
@@ -4487,31 +4128,19 @@ abstract class _$AuraDatabase extends GeneratedDatabase {
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'crises',
-        limitUpdateKind: UpdateKind.delete,
-      ),
+      on: TableUpdateQuery.onTableName('crises', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('crisis_symptoms', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'crises',
-        limitUpdateKind: UpdateKind.delete,
-      ),
+      on: TableUpdateQuery.onTableName('crises', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('crisis_triggers', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'crises',
-        limitUpdateKind: UpdateKind.delete,
-      ),
+      on: TableUpdateQuery.onTableName('crises', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('crisis_medications', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'medications',
-        limitUpdateKind: UpdateKind.delete,
-      ),
+      on: TableUpdateQuery.onTableName('medications', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('crisis_medications', kind: UpdateKind.update)],
     ),
   ]);
@@ -4542,8 +4171,7 @@ typedef $$ProfilesTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$ProfilesTableFilterComposer
-    extends Composer<_$AuraDatabase, $ProfilesTable> {
+class $$ProfilesTableFilterComposer extends Composer<_$AuraDatabase, $ProfilesTable> {
   $$ProfilesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -4551,49 +4179,32 @@ class $$ProfilesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get displayName =>
+      $composableBuilder(column: $table.displayName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get birthYear => $composableBuilder(
-    column: $table.birthYear,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get birthYear =>
+      $composableBuilder(column: $table.birthYear, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get sex => $composableBuilder(
-    column: $table.sex,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get sex =>
+      $composableBuilder(column: $table.sex, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get locale => $composableBuilder(
-    column: $table.locale,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$ProfilesTableOrderingComposer
-    extends Composer<_$AuraDatabase, $ProfilesTable> {
+class $$ProfilesTableOrderingComposer extends Composer<_$AuraDatabase, $ProfilesTable> {
   $$ProfilesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -4601,49 +4212,32 @@ class $$ProfilesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get displayName =>
+      $composableBuilder(column: $table.displayName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get birthYear => $composableBuilder(
-    column: $table.birthYear,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get birthYear =>
+      $composableBuilder(column: $table.birthYear, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get sex => $composableBuilder(
-    column: $table.sex,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get sex =>
+      $composableBuilder(column: $table.sex, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get locale => $composableBuilder(
-    column: $table.locale,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$ProfilesTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $ProfilesTable> {
+class $$ProfilesTableAnnotationComposer extends Composer<_$AuraDatabase, $ProfilesTable> {
   $$ProfilesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -4654,10 +4248,8 @@ class $$ProfilesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get displayName =>
+      $composableBuilder(column: $table.displayName, builder: (column) => column);
 
   GeneratedColumn<String> get email =>
       $composableBuilder(column: $table.email, builder: (column) => column);
@@ -4698,10 +4290,8 @@ class $$ProfilesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$ProfilesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ProfilesTableOrderingComposer($db: db, $table: table),
+          createFilteringComposer: () => $$ProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$ProfilesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$ProfilesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
@@ -4748,9 +4338,8 @@ class $$ProfilesTableTableManager
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -4812,14 +4401,10 @@ final class $$MedicationsTableReferences
   $$MedicationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$CrisisMedicationsTable, List<CrisisMedication>>
-  _crisisMedicationsRefsTable(_$AuraDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.crisisMedications,
-        aliasName: $_aliasNameGenerator(
-          db.medications.id,
-          db.crisisMedications.medicationId,
-        ),
-      );
+  _crisisMedicationsRefsTable(_$AuraDatabase db) => MultiTypedResultKey.fromTable(
+    db.crisisMedications,
+    aliasName: $_aliasNameGenerator(db.medications.id, db.crisisMedications.medicationId),
+  );
 
   $$CrisisMedicationsTableProcessedTableManager get crisisMedicationsRefs {
     final manager = $$CrisisMedicationsTableTableManager(
@@ -4827,17 +4412,12 @@ final class $$MedicationsTableReferences
       $_db.crisisMedications,
     ).filter((f) => f.medicationId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(
-      _crisisMedicationsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
+    final cache = $_typedResult.readTableOrNull(_crisisMedicationsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
 
-class $$MedicationsTableFilterComposer
-    extends Composer<_$AuraDatabase, $MedicationsTable> {
+class $$MedicationsTableFilterComposer extends Composer<_$AuraDatabase, $MedicationsTable> {
   $$MedicationsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -4845,40 +4425,26 @@ class $$MedicationsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<double> get doseMg => $composableBuilder(
-    column: $table.doseMg,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<double> get doseMg =>
+      $composableBuilder(column: $table.doseMg, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get kind => $composableBuilder(
-    column: $table.kind,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get isDefault => $composableBuilder(
-    column: $table.isDefault,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get archived => $composableBuilder(
-    column: $table.archived,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<bool> get archived =>
+      $composableBuilder(column: $table.archived, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get reminderMinutes => $composableBuilder(
     column: $table.reminderMinutes,
@@ -4895,25 +4461,17 @@ class $$MedicationsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get startedAt => $composableBuilder(
-    column: $table.startedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get endedAt => $composableBuilder(
-    column: $table.endedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 
   Expression<bool> crisisMedicationsRefs(
     Expression<bool> Function($$CrisisMedicationsTableFilterComposer f) f,
@@ -4923,26 +4481,20 @@ class $$MedicationsTableFilterComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisMedications,
       getReferencedColumn: (t) => t.medicationId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisMedicationsTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisMedicationsTableFilterComposer(
             $db: $db,
             $table: $db.crisisMedications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
   }
 }
 
-class $$MedicationsTableOrderingComposer
-    extends Composer<_$AuraDatabase, $MedicationsTable> {
+class $$MedicationsTableOrderingComposer extends Composer<_$AuraDatabase, $MedicationsTable> {
   $$MedicationsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -4950,40 +4502,26 @@ class $$MedicationsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<double> get doseMg => $composableBuilder(
-    column: $table.doseMg,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<double> get doseMg =>
+      $composableBuilder(column: $table.doseMg, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get kind => $composableBuilder(
-    column: $table.kind,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get isDefault => $composableBuilder(
-    column: $table.isDefault,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<bool> get isDefault =>
+      $composableBuilder(column: $table.isDefault, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get archived => $composableBuilder(
-    column: $table.archived,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<bool> get archived =>
+      $composableBuilder(column: $table.archived, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get reminderMinutes => $composableBuilder(
     column: $table.reminderMinutes,
@@ -5000,29 +4538,20 @@ class $$MedicationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
-    column: $table.startedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
-    column: $table.endedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$MedicationsTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $MedicationsTable> {
+class $$MedicationsTableAnnotationComposer extends Composer<_$AuraDatabase, $MedicationsTable> {
   $$MedicationsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -5051,20 +4580,14 @@ class $$MedicationsTableAnnotationComposer
   GeneratedColumn<bool> get archived =>
       $composableBuilder(column: $table.archived, builder: (column) => column);
 
-  GeneratedColumn<int> get reminderMinutes => $composableBuilder(
-    column: $table.reminderMinutes,
-    builder: (column) => column,
-  );
+  GeneratedColumn<int> get reminderMinutes =>
+      $composableBuilder(column: $table.reminderMinutes, builder: (column) => column);
 
-  GeneratedColumn<String> get preventiveSubtype => $composableBuilder(
-    column: $table.preventiveSubtype,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get preventiveSubtype =>
+      $composableBuilder(column: $table.preventiveSubtype, builder: (column) => column);
 
-  GeneratedColumn<int> get injectionPeriodDays => $composableBuilder(
-    column: $table.injectionPeriodDays,
-    builder: (column) => column,
-  );
+  GeneratedColumn<int> get injectionPeriodDays =>
+      $composableBuilder(column: $table.injectionPeriodDays, builder: (column) => column);
 
   GeneratedColumn<DateTime> get startedAt =>
       $composableBuilder(column: $table.startedAt, builder: (column) => column);
@@ -5081,26 +4604,20 @@ class $$MedicationsTableAnnotationComposer
   Expression<T> crisisMedicationsRefs<T extends Object>(
     Expression<T> Function($$CrisisMedicationsTableAnnotationComposer a) f,
   ) {
-    final $$CrisisMedicationsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.crisisMedications,
-          getReferencedColumn: (t) => t.medicationId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CrisisMedicationsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.crisisMedications,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
+    final $$CrisisMedicationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.crisisMedications,
+      getReferencedColumn: (t) => t.medicationId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisMedicationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.crisisMedications,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -5125,10 +4642,8 @@ class $$MedicationsTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$MedicationsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$MedicationsTableOrderingComposer($db: db, $table: table),
+          createFilteringComposer: () => $$MedicationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$MedicationsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$MedicationsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
@@ -5200,41 +4715,23 @@ class $$MedicationsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$MedicationsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), $$MedicationsTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({crisisMedicationsRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [
-                if (crisisMedicationsRefs) db.crisisMedications,
-              ],
+              explicitlyWatchedTables: [if (crisisMedicationsRefs) db.crisisMedications],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (crisisMedicationsRefs)
-                    await $_getPrefetchedData<
-                      Medication,
-                      $MedicationsTable,
-                      CrisisMedication
-                    >(
+                    await $_getPrefetchedData<Medication, $MedicationsTable, CrisisMedication>(
                       currentTable: table,
-                      referencedTable: $$MedicationsTableReferences
-                          ._crisisMedicationsRefsTable(db),
+                      referencedTable: $$MedicationsTableReferences._crisisMedicationsRefsTable(db),
                       managerFromTypedResult: (p0) =>
-                          $$MedicationsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).crisisMedicationsRefs,
+                          $$MedicationsTableReferences(db, table, p0).crisisMedicationsRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where(
-                            (e) => e.medicationId == item.id,
-                          ),
+                          referencedItems.where((e) => e.medicationId == item.id),
                       typedResults: items,
                     ),
                 ];
@@ -5284,8 +4781,7 @@ typedef $$AppointmentsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$AppointmentsTableFilterComposer
-    extends Composer<_$AuraDatabase, $AppointmentsTable> {
+class $$AppointmentsTableFilterComposer extends Composer<_$AuraDatabase, $AppointmentsTable> {
   $$AppointmentsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -5293,49 +4789,32 @@ class $$AppointmentsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get occursAt => $composableBuilder(
-    column: $table.occursAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get occursAt =>
+      $composableBuilder(column: $table.occursAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get doctorName => $composableBuilder(
-    column: $table.doctorName,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get doctorName =>
+      $composableBuilder(column: $table.doctorName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get location => $composableBuilder(
-    column: $table.location,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get notes => $composableBuilder(
-    column: $table.notes,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$AppointmentsTableOrderingComposer
-    extends Composer<_$AuraDatabase, $AppointmentsTable> {
+class $$AppointmentsTableOrderingComposer extends Composer<_$AuraDatabase, $AppointmentsTable> {
   $$AppointmentsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -5343,49 +4822,32 @@ class $$AppointmentsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get occursAt => $composableBuilder(
-    column: $table.occursAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get occursAt =>
+      $composableBuilder(column: $table.occursAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get doctorName => $composableBuilder(
-    column: $table.doctorName,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get doctorName =>
+      $composableBuilder(column: $table.doctorName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get location => $composableBuilder(
-    column: $table.location,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get notes => $composableBuilder(
-    column: $table.notes,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$AppointmentsTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $AppointmentsTable> {
+class $$AppointmentsTableAnnotationComposer extends Composer<_$AuraDatabase, $AppointmentsTable> {
   $$AppointmentsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -5402,10 +4864,8 @@ class $$AppointmentsTableAnnotationComposer
   GeneratedColumn<DateTime> get occursAt =>
       $composableBuilder(column: $table.occursAt, builder: (column) => column);
 
-  GeneratedColumn<String> get doctorName => $composableBuilder(
-    column: $table.doctorName,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get doctorName =>
+      $composableBuilder(column: $table.doctorName, builder: (column) => column);
 
   GeneratedColumn<String> get location =>
       $composableBuilder(column: $table.location, builder: (column) => column);
@@ -5431,10 +4891,7 @@ class $$AppointmentsTableTableManager
           $$AppointmentsTableAnnotationComposer,
           $$AppointmentsTableCreateCompanionBuilder,
           $$AppointmentsTableUpdateCompanionBuilder,
-          (
-            Appointment,
-            BaseReferences<_$AuraDatabase, $AppointmentsTable, Appointment>,
-          ),
+          (Appointment, BaseReferences<_$AuraDatabase, $AppointmentsTable, Appointment>),
           Appointment,
           PrefetchHooks Function()
         > {
@@ -5443,10 +4900,8 @@ class $$AppointmentsTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$AppointmentsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$AppointmentsTableOrderingComposer($db: db, $table: table),
+          createFilteringComposer: () => $$AppointmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$AppointmentsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$AppointmentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
@@ -5493,9 +4948,8 @@ class $$AppointmentsTableTableManager
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -5511,10 +4965,7 @@ typedef $$AppointmentsTableProcessedTableManager =
       $$AppointmentsTableAnnotationComposer,
       $$AppointmentsTableCreateCompanionBuilder,
       $$AppointmentsTableUpdateCompanionBuilder,
-      (
-        Appointment,
-        BaseReferences<_$AuraDatabase, $AppointmentsTable, Appointment>,
-      ),
+      (Appointment, BaseReferences<_$AuraDatabase, $AppointmentsTable, Appointment>),
       Appointment,
       PrefetchHooks Function()
     >;
@@ -5539,8 +4990,7 @@ typedef $$Hit6ResponsesTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$Hit6ResponsesTableFilterComposer
-    extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
+class $$Hit6ResponsesTableFilterComposer extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
   $$Hit6ResponsesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -5548,39 +4998,26 @@ class $$Hit6ResponsesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get submittedAt => $composableBuilder(
-    column: $table.submittedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get submittedAt =>
+      $composableBuilder(column: $table.submittedAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get score => $composableBuilder(
-    column: $table.score,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get responses => $composableBuilder(
-    column: $table.responses,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get responses =>
+      $composableBuilder(column: $table.responses, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$Hit6ResponsesTableOrderingComposer
-    extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
+class $$Hit6ResponsesTableOrderingComposer extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
   $$Hit6ResponsesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -5588,39 +5025,26 @@ class $$Hit6ResponsesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get submittedAt => $composableBuilder(
-    column: $table.submittedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get submittedAt =>
+      $composableBuilder(column: $table.submittedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get score => $composableBuilder(
-    column: $table.score,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get score =>
+      $composableBuilder(column: $table.score, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get responses => $composableBuilder(
-    column: $table.responses,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get responses =>
+      $composableBuilder(column: $table.responses, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$Hit6ResponsesTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
+class $$Hit6ResponsesTableAnnotationComposer extends Composer<_$AuraDatabase, $Hit6ResponsesTable> {
   $$Hit6ResponsesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -5634,10 +5058,8 @@ class $$Hit6ResponsesTableAnnotationComposer
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get submittedAt => $composableBuilder(
-    column: $table.submittedAt,
-    builder: (column) => column,
-  );
+  GeneratedColumn<DateTime> get submittedAt =>
+      $composableBuilder(column: $table.submittedAt, builder: (column) => column);
 
   GeneratedColumn<int> get score =>
       $composableBuilder(column: $table.score, builder: (column) => column);
@@ -5660,10 +5082,7 @@ class $$Hit6ResponsesTableTableManager
           $$Hit6ResponsesTableAnnotationComposer,
           $$Hit6ResponsesTableCreateCompanionBuilder,
           $$Hit6ResponsesTableUpdateCompanionBuilder,
-          (
-            Hit6Response,
-            BaseReferences<_$AuraDatabase, $Hit6ResponsesTable, Hit6Response>,
-          ),
+          (Hit6Response, BaseReferences<_$AuraDatabase, $Hit6ResponsesTable, Hit6Response>),
           Hit6Response,
           PrefetchHooks Function()
         > {
@@ -5672,8 +5091,7 @@ class $$Hit6ResponsesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$Hit6ResponsesTableFilterComposer($db: db, $table: table),
+          createFilteringComposer: () => $$Hit6ResponsesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
               $$Hit6ResponsesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
@@ -5714,9 +5132,8 @@ class $$Hit6ResponsesTableTableManager
                 createdAt: createdAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -5732,10 +5149,7 @@ typedef $$Hit6ResponsesTableProcessedTableManager =
       $$Hit6ResponsesTableAnnotationComposer,
       $$Hit6ResponsesTableCreateCompanionBuilder,
       $$Hit6ResponsesTableUpdateCompanionBuilder,
-      (
-        Hit6Response,
-        BaseReferences<_$AuraDatabase, $Hit6ResponsesTable, Hit6Response>,
-      ),
+      (Hit6Response, BaseReferences<_$AuraDatabase, $Hit6ResponsesTable, Hit6Response>),
       Hit6Response,
       PrefetchHooks Function()
     >;
@@ -5768,12 +5182,12 @@ typedef $$CrisesTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$CrisesTableReferences
-    extends BaseReferences<_$AuraDatabase, $CrisesTable, Crisis> {
+final class $$CrisesTableReferences extends BaseReferences<_$AuraDatabase, $CrisesTable, Crisis> {
   $$CrisesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$CrisisSymptomsTable, List<CrisisSymptom>>
-  _crisisSymptomsRefsTable(_$AuraDatabase db) => MultiTypedResultKey.fromTable(
+  static MultiTypedResultKey<$CrisisSymptomsTable, List<CrisisSymptom>> _crisisSymptomsRefsTable(
+    _$AuraDatabase db,
+  ) => MultiTypedResultKey.fromTable(
     db.crisisSymptoms,
     aliasName: $_aliasNameGenerator(db.crises.id, db.crisisSymptoms.crisisId),
   );
@@ -5785,13 +5199,12 @@ final class $$CrisesTableReferences
     ).filter((f) => f.crisisId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_crisisSymptomsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
-  static MultiTypedResultKey<$CrisisTriggersTable, List<CrisisTriggerRow>>
-  _crisisTriggersRefsTable(_$AuraDatabase db) => MultiTypedResultKey.fromTable(
+  static MultiTypedResultKey<$CrisisTriggersTable, List<CrisisTriggerRow>> _crisisTriggersRefsTable(
+    _$AuraDatabase db,
+  ) => MultiTypedResultKey.fromTable(
     db.crisisTriggers,
     aliasName: $_aliasNameGenerator(db.crises.id, db.crisisTriggers.crisisId),
   );
@@ -5803,20 +5216,14 @@ final class $$CrisesTableReferences
     ).filter((f) => f.crisisId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_crisisTriggersRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 
   static MultiTypedResultKey<$CrisisMedicationsTable, List<CrisisMedication>>
-  _crisisMedicationsRefsTable(_$AuraDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.crisisMedications,
-        aliasName: $_aliasNameGenerator(
-          db.crises.id,
-          db.crisisMedications.crisisId,
-        ),
-      );
+  _crisisMedicationsRefsTable(_$AuraDatabase db) => MultiTypedResultKey.fromTable(
+    db.crisisMedications,
+    aliasName: $_aliasNameGenerator(db.crises.id, db.crisisMedications.crisisId),
+  );
 
   $$CrisisMedicationsTableProcessedTableManager get crisisMedicationsRefs {
     final manager = $$CrisisMedicationsTableTableManager(
@@ -5824,17 +5231,12 @@ final class $$CrisesTableReferences
       $_db.crisisMedications,
     ).filter((f) => f.crisisId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(
-      _crisisMedicationsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
+    final cache = $_typedResult.readTableOrNull(_crisisMedicationsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
   }
 }
 
-class $$CrisesTableFilterComposer
-    extends Composer<_$AuraDatabase, $CrisesTable> {
+class $$CrisesTableFilterComposer extends Composer<_$AuraDatabase, $CrisesTable> {
   $$CrisesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -5842,55 +5244,35 @@ class $$CrisesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get intensity => $composableBuilder(
-    column: $table.intensity,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get intensity =>
+      $composableBuilder(column: $table.intensity, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get location => $composableBuilder(
-    column: $table.location,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get notes => $composableBuilder(
-    column: $table.notes,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get resolvedAt => $composableBuilder(
-    column: $table.resolvedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get resolvedAt =>
+      $composableBuilder(column: $table.resolvedAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get menstruation => $composableBuilder(
-    column: $table.menstruation,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<bool> get menstruation =>
+      $composableBuilder(column: $table.menstruation, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 
   Expression<bool> crisisSymptomsRefs(
     Expression<bool> Function($$CrisisSymptomsTableFilterComposer f) f,
@@ -5900,18 +5282,13 @@ class $$CrisesTableFilterComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisSymptoms,
       getReferencedColumn: (t) => t.crisisId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisSymptomsTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisSymptomsTableFilterComposer(
             $db: $db,
             $table: $db.crisisSymptoms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -5925,18 +5302,13 @@ class $$CrisesTableFilterComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisTriggers,
       getReferencedColumn: (t) => t.crisisId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisTriggersTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisTriggersTableFilterComposer(
             $db: $db,
             $table: $db.crisisTriggers,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -5950,26 +5322,20 @@ class $$CrisesTableFilterComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisMedications,
       getReferencedColumn: (t) => t.crisisId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisMedicationsTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisMedicationsTableFilterComposer(
             $db: $db,
             $table: $db.crisisMedications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
   }
 }
 
-class $$CrisesTableOrderingComposer
-    extends Composer<_$AuraDatabase, $CrisesTable> {
+class $$CrisesTableOrderingComposer extends Composer<_$AuraDatabase, $CrisesTable> {
   $$CrisesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -5977,59 +5343,38 @@ class $$CrisesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get intensity => $composableBuilder(
-    column: $table.intensity,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get intensity =>
+      $composableBuilder(column: $table.intensity, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get location => $composableBuilder(
-    column: $table.location,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get notes => $composableBuilder(
-    column: $table.notes,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get resolvedAt => $composableBuilder(
-    column: $table.resolvedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get resolvedAt =>
+      $composableBuilder(column: $table.resolvedAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get menstruation => $composableBuilder(
-    column: $table.menstruation,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<bool> get menstruation =>
+      $composableBuilder(column: $table.menstruation, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$CrisesTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $CrisesTable> {
+class $$CrisesTableAnnotationComposer extends Composer<_$AuraDatabase, $CrisesTable> {
   $$CrisesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -6043,10 +5388,8 @@ class $$CrisesTableAnnotationComposer
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => column,
-  );
+  GeneratedColumn<DateTime> get occurredAt =>
+      $composableBuilder(column: $table.occurredAt, builder: (column) => column);
 
   GeneratedColumn<int> get intensity =>
       $composableBuilder(column: $table.intensity, builder: (column) => column);
@@ -6057,15 +5400,11 @@ class $$CrisesTableAnnotationComposer
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get resolvedAt => $composableBuilder(
-    column: $table.resolvedAt,
-    builder: (column) => column,
-  );
+  GeneratedColumn<DateTime> get resolvedAt =>
+      $composableBuilder(column: $table.resolvedAt, builder: (column) => column);
 
-  GeneratedColumn<bool> get menstruation => $composableBuilder(
-    column: $table.menstruation,
-    builder: (column) => column,
-  );
+  GeneratedColumn<bool> get menstruation =>
+      $composableBuilder(column: $table.menstruation, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -6081,18 +5420,13 @@ class $$CrisesTableAnnotationComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisSymptoms,
       getReferencedColumn: (t) => t.crisisId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisSymptomsTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisSymptomsTableAnnotationComposer(
             $db: $db,
             $table: $db.crisisSymptoms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -6106,18 +5440,13 @@ class $$CrisesTableAnnotationComposer
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.crisisTriggers,
       getReferencedColumn: (t) => t.crisisId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisisTriggersTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisTriggersTableAnnotationComposer(
             $db: $db,
             $table: $db.crisisTriggers,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -6126,26 +5455,20 @@ class $$CrisesTableAnnotationComposer
   Expression<T> crisisMedicationsRefs<T extends Object>(
     Expression<T> Function($$CrisisMedicationsTableAnnotationComposer a) f,
   ) {
-    final $$CrisisMedicationsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.crisisMedications,
-          getReferencedColumn: (t) => t.crisisId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CrisisMedicationsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.crisisMedications,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
+    final $$CrisisMedicationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.crisisMedications,
+      getReferencedColumn: (t) => t.crisisId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisisMedicationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.crisisMedications,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -6174,10 +5497,8 @@ class $$CrisesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$CrisesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CrisesTableOrderingComposer($db: db, $table: table),
+          createFilteringComposer: () => $$CrisesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$CrisesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$CrisesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
@@ -6232,12 +5553,8 @@ class $$CrisesTableTableManager
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$CrisesTableReferences(db, table, e)),
-              )
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$CrisesTableReferences(db, table, e))).toList(),
           prefetchHooksCallback:
               ({
                 crisisSymptomsRefs = false,
@@ -6255,66 +5572,33 @@ class $$CrisesTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (crisisSymptomsRefs)
-                        await $_getPrefetchedData<
-                          Crisis,
-                          $CrisesTable,
-                          CrisisSymptom
-                        >(
+                        await $_getPrefetchedData<Crisis, $CrisesTable, CrisisSymptom>(
                           currentTable: table,
-                          referencedTable: $$CrisesTableReferences
-                              ._crisisSymptomsRefsTable(db),
+                          referencedTable: $$CrisesTableReferences._crisisSymptomsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$CrisesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).crisisSymptomsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.crisisId == item.id,
-                              ),
+                              $$CrisesTableReferences(db, table, p0).crisisSymptomsRefs,
+                          referencedItemsForCurrentItem: (item, referencedItems) =>
+                              referencedItems.where((e) => e.crisisId == item.id),
                           typedResults: items,
                         ),
                       if (crisisTriggersRefs)
-                        await $_getPrefetchedData<
-                          Crisis,
-                          $CrisesTable,
-                          CrisisTriggerRow
-                        >(
+                        await $_getPrefetchedData<Crisis, $CrisesTable, CrisisTriggerRow>(
                           currentTable: table,
-                          referencedTable: $$CrisesTableReferences
-                              ._crisisTriggersRefsTable(db),
+                          referencedTable: $$CrisesTableReferences._crisisTriggersRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$CrisesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).crisisTriggersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.crisisId == item.id,
-                              ),
+                              $$CrisesTableReferences(db, table, p0).crisisTriggersRefs,
+                          referencedItemsForCurrentItem: (item, referencedItems) =>
+                              referencedItems.where((e) => e.crisisId == item.id),
                           typedResults: items,
                         ),
                       if (crisisMedicationsRefs)
-                        await $_getPrefetchedData<
-                          Crisis,
-                          $CrisesTable,
-                          CrisisMedication
-                        >(
+                        await $_getPrefetchedData<Crisis, $CrisesTable, CrisisMedication>(
                           currentTable: table,
-                          referencedTable: $$CrisesTableReferences
-                              ._crisisMedicationsRefsTable(db),
+                          referencedTable: $$CrisesTableReferences._crisisMedicationsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$CrisesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).crisisMedicationsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.crisisId == item.id,
-                              ),
+                              $$CrisesTableReferences(db, table, p0).crisisMedicationsRefs,
+                          referencedItemsForCurrentItem: (item, referencedItems) =>
+                              referencedItems.where((e) => e.crisisId == item.id),
                           typedResults: items,
                         ),
                     ];
@@ -6357,18 +5641,11 @@ typedef $$CrisisSymptomsTableUpdateCompanionBuilder =
     });
 
 final class $$CrisisSymptomsTableReferences
-    extends
-        BaseReferences<_$AuraDatabase, $CrisisSymptomsTable, CrisisSymptom> {
-  $$CrisisSymptomsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+    extends BaseReferences<_$AuraDatabase, $CrisisSymptomsTable, CrisisSymptom> {
+  $$CrisisSymptomsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $CrisesTable _crisisIdTable(_$AuraDatabase db) =>
-      db.crises.createAlias(
-        $_aliasNameGenerator(db.crisisSymptoms.crisisId, db.crises.id),
-      );
+      db.crises.createAlias($_aliasNameGenerator(db.crisisSymptoms.crisisId, db.crises.id));
 
   $$CrisesTableProcessedTableManager get crisisId {
     final $_column = $_itemColumn<String>('crisis_id')!;
@@ -6379,14 +5656,11 @@ final class $$CrisisSymptomsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_crisisIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
 }
 
-class $$CrisisSymptomsTableFilterComposer
-    extends Composer<_$AuraDatabase, $CrisisSymptomsTable> {
+class $$CrisisSymptomsTableFilterComposer extends Composer<_$AuraDatabase, $CrisisSymptomsTable> {
   $$CrisisSymptomsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -6394,10 +5668,8 @@ class $$CrisisSymptomsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get symptom => $composableBuilder(
-    column: $table.symptom,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get symptom =>
+      $composableBuilder(column: $table.symptom, builder: (column) => ColumnFilters(column));
 
   $$CrisesTableFilterComposer get crisisId {
     final $$CrisesTableFilterComposer composer = $composerBuilder(
@@ -6405,26 +5677,20 @@ class $$CrisisSymptomsTableFilterComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableFilterComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
   }
 }
 
-class $$CrisisSymptomsTableOrderingComposer
-    extends Composer<_$AuraDatabase, $CrisisSymptomsTable> {
+class $$CrisisSymptomsTableOrderingComposer extends Composer<_$AuraDatabase, $CrisisSymptomsTable> {
   $$CrisisSymptomsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -6432,10 +5698,8 @@ class $$CrisisSymptomsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get symptom => $composableBuilder(
-    column: $table.symptom,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get symptom =>
+      $composableBuilder(column: $table.symptom, builder: (column) => ColumnOrderings(column));
 
   $$CrisesTableOrderingComposer get crisisId {
     final $$CrisesTableOrderingComposer composer = $composerBuilder(
@@ -6443,18 +5707,13 @@ class $$CrisisSymptomsTableOrderingComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableOrderingComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableOrderingComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -6479,18 +5738,13 @@ class $$CrisisSymptomsTableAnnotationComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableAnnotationComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -6512,10 +5766,8 @@ class $$CrisisSymptomsTableTableManager
           CrisisSymptom,
           PrefetchHooks Function({bool crisisId})
         > {
-  $$CrisisSymptomsTableTableManager(
-    _$AuraDatabase db,
-    $CrisisSymptomsTable table,
-  ) : super(
+  $$CrisisSymptomsTableTableManager(_$AuraDatabase db, $CrisisSymptomsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
@@ -6530,11 +5782,7 @@ class $$CrisisSymptomsTableTableManager
                 Value<String> crisisId = const Value.absent(),
                 Value<String> symptom = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => CrisisSymptomsCompanion(
-                crisisId: crisisId,
-                symptom: symptom,
-                rowid: rowid,
-              ),
+              }) => CrisisSymptomsCompanion(crisisId: crisisId, symptom: symptom, rowid: rowid),
           createCompanionCallback:
               ({
                 required String crisisId,
@@ -6546,12 +5794,7 @@ class $$CrisisSymptomsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CrisisSymptomsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), $$CrisisSymptomsTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({crisisId = false}) {
             return PrefetchHooks(
@@ -6578,12 +5821,10 @@ class $$CrisisSymptomsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.crisisId,
-                                referencedTable: $$CrisisSymptomsTableReferences
-                                    ._crisisIdTable(db),
-                                referencedColumn:
-                                    $$CrisisSymptomsTableReferences
-                                        ._crisisIdTable(db)
-                                        .id,
+                                referencedTable: $$CrisisSymptomsTableReferences._crisisIdTable(db),
+                                referencedColumn: $$CrisisSymptomsTableReferences
+                                    ._crisisIdTable(db)
+                                    .id,
                               )
                               as T;
                     }
@@ -6627,18 +5868,11 @@ typedef $$CrisisTriggersTableUpdateCompanionBuilder =
     });
 
 final class $$CrisisTriggersTableReferences
-    extends
-        BaseReferences<_$AuraDatabase, $CrisisTriggersTable, CrisisTriggerRow> {
-  $$CrisisTriggersTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+    extends BaseReferences<_$AuraDatabase, $CrisisTriggersTable, CrisisTriggerRow> {
+  $$CrisisTriggersTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $CrisesTable _crisisIdTable(_$AuraDatabase db) =>
-      db.crises.createAlias(
-        $_aliasNameGenerator(db.crisisTriggers.crisisId, db.crises.id),
-      );
+      db.crises.createAlias($_aliasNameGenerator(db.crisisTriggers.crisisId, db.crises.id));
 
   $$CrisesTableProcessedTableManager get crisisId {
     final $_column = $_itemColumn<String>('crisis_id')!;
@@ -6649,14 +5883,11 @@ final class $$CrisisTriggersTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_crisisIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
 }
 
-class $$CrisisTriggersTableFilterComposer
-    extends Composer<_$AuraDatabase, $CrisisTriggersTable> {
+class $$CrisisTriggersTableFilterComposer extends Composer<_$AuraDatabase, $CrisisTriggersTable> {
   $$CrisisTriggersTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -6664,10 +5895,8 @@ class $$CrisisTriggersTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get trigger => $composableBuilder(
-    column: $table.trigger,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get trigger =>
+      $composableBuilder(column: $table.trigger, builder: (column) => ColumnFilters(column));
 
   $$CrisesTableFilterComposer get crisisId {
     final $$CrisesTableFilterComposer composer = $composerBuilder(
@@ -6675,26 +5904,20 @@ class $$CrisisTriggersTableFilterComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableFilterComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
   }
 }
 
-class $$CrisisTriggersTableOrderingComposer
-    extends Composer<_$AuraDatabase, $CrisisTriggersTable> {
+class $$CrisisTriggersTableOrderingComposer extends Composer<_$AuraDatabase, $CrisisTriggersTable> {
   $$CrisisTriggersTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -6702,10 +5925,8 @@ class $$CrisisTriggersTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get trigger => $composableBuilder(
-    column: $table.trigger,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get trigger =>
+      $composableBuilder(column: $table.trigger, builder: (column) => ColumnOrderings(column));
 
   $$CrisesTableOrderingComposer get crisisId {
     final $$CrisesTableOrderingComposer composer = $composerBuilder(
@@ -6713,18 +5934,13 @@ class $$CrisisTriggersTableOrderingComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableOrderingComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableOrderingComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -6749,18 +5965,13 @@ class $$CrisisTriggersTableAnnotationComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableAnnotationComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -6782,10 +5993,8 @@ class $$CrisisTriggersTableTableManager
           CrisisTriggerRow,
           PrefetchHooks Function({bool crisisId})
         > {
-  $$CrisisTriggersTableTableManager(
-    _$AuraDatabase db,
-    $CrisisTriggersTable table,
-  ) : super(
+  $$CrisisTriggersTableTableManager(_$AuraDatabase db, $CrisisTriggersTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
@@ -6800,11 +6009,7 @@ class $$CrisisTriggersTableTableManager
                 Value<String> crisisId = const Value.absent(),
                 Value<String> trigger = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => CrisisTriggersCompanion(
-                crisisId: crisisId,
-                trigger: trigger,
-                rowid: rowid,
-              ),
+              }) => CrisisTriggersCompanion(crisisId: crisisId, trigger: trigger, rowid: rowid),
           createCompanionCallback:
               ({
                 required String crisisId,
@@ -6816,12 +6021,7 @@ class $$CrisisTriggersTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CrisisTriggersTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), $$CrisisTriggersTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({crisisId = false}) {
             return PrefetchHooks(
@@ -6848,12 +6048,10 @@ class $$CrisisTriggersTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.crisisId,
-                                referencedTable: $$CrisisTriggersTableReferences
-                                    ._crisisIdTable(db),
-                                referencedColumn:
-                                    $$CrisisTriggersTableReferences
-                                        ._crisisIdTable(db)
-                                        .id,
+                                referencedTable: $$CrisisTriggersTableReferences._crisisIdTable(db),
+                                referencedColumn: $$CrisisTriggersTableReferences
+                                    ._crisisIdTable(db)
+                                    .id,
                               )
                               as T;
                     }
@@ -6911,22 +6109,11 @@ typedef $$CrisisMedicationsTableUpdateCompanionBuilder =
     });
 
 final class $$CrisisMedicationsTableReferences
-    extends
-        BaseReferences<
-          _$AuraDatabase,
-          $CrisisMedicationsTable,
-          CrisisMedication
-        > {
-  $$CrisisMedicationsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+    extends BaseReferences<_$AuraDatabase, $CrisisMedicationsTable, CrisisMedication> {
+  $$CrisisMedicationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $CrisesTable _crisisIdTable(_$AuraDatabase db) =>
-      db.crises.createAlias(
-        $_aliasNameGenerator(db.crisisMedications.crisisId, db.crises.id),
-      );
+      db.crises.createAlias($_aliasNameGenerator(db.crisisMedications.crisisId, db.crises.id));
 
   $$CrisesTableProcessedTableManager get crisisId {
     final $_column = $_itemColumn<String>('crisis_id')!;
@@ -6937,18 +6124,12 @@ final class $$CrisisMedicationsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_crisisIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
 
-  static $MedicationsTable _medicationIdTable(_$AuraDatabase db) =>
-      db.medications.createAlias(
-        $_aliasNameGenerator(
-          db.crisisMedications.medicationId,
-          db.medications.id,
-        ),
-      );
+  static $MedicationsTable _medicationIdTable(_$AuraDatabase db) => db.medications.createAlias(
+    $_aliasNameGenerator(db.crisisMedications.medicationId, db.medications.id),
+  );
 
   $$MedicationsTableProcessedTableManager? get medicationId {
     final $_column = $_itemColumn<String>('medication_id');
@@ -6959,9 +6140,7 @@ final class $$CrisisMedicationsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_medicationIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
 }
 
@@ -6974,40 +6153,28 @@ class $$CrisisMedicationsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get medicationNameSnapshot => $composableBuilder(
     column: $table.medicationNameSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get doseMg => $composableBuilder(
-    column: $table.doseMg,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<double> get doseMg =>
+      $composableBuilder(column: $table.doseMg, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get takenAt => $composableBuilder(
-    column: $table.takenAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get takenAt =>
+      $composableBuilder(column: $table.takenAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get reliefAt => $composableBuilder(
-    column: $table.reliefAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get reliefAt =>
+      $composableBuilder(column: $table.reliefAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get effective => $composableBuilder(
-    column: $table.effective,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<bool> get effective =>
+      $composableBuilder(column: $table.effective, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get response => $composableBuilder(
-    column: $table.response,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get response =>
+      $composableBuilder(column: $table.response, builder: (column) => ColumnFilters(column));
 
   $$CrisesTableFilterComposer get crisisId {
     final $$CrisesTableFilterComposer composer = $composerBuilder(
@@ -7015,18 +6182,13 @@ class $$CrisisMedicationsTableFilterComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableFilterComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7038,18 +6200,13 @@ class $$CrisisMedicationsTableFilterComposer
       getCurrentColumn: (t) => t.medicationId,
       referencedTable: $db.medications,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MedicationsTableFilterComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$MedicationsTableFilterComposer(
             $db: $db,
             $table: $db.medications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7065,40 +6222,28 @@ class $$CrisisMedicationsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get medicationNameSnapshot => $composableBuilder(
     column: $table.medicationNameSnapshot,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get doseMg => $composableBuilder(
-    column: $table.doseMg,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<double> get doseMg =>
+      $composableBuilder(column: $table.doseMg, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get takenAt => $composableBuilder(
-    column: $table.takenAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get takenAt =>
+      $composableBuilder(column: $table.takenAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get reliefAt => $composableBuilder(
-    column: $table.reliefAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get reliefAt =>
+      $composableBuilder(column: $table.reliefAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get effective => $composableBuilder(
-    column: $table.effective,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<bool> get effective =>
+      $composableBuilder(column: $table.effective, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get response => $composableBuilder(
-    column: $table.response,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get response =>
+      $composableBuilder(column: $table.response, builder: (column) => ColumnOrderings(column));
 
   $$CrisesTableOrderingComposer get crisisId {
     final $$CrisesTableOrderingComposer composer = $composerBuilder(
@@ -7106,18 +6251,13 @@ class $$CrisisMedicationsTableOrderingComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableOrderingComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableOrderingComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7129,18 +6269,13 @@ class $$CrisisMedicationsTableOrderingComposer
       getCurrentColumn: (t) => t.medicationId,
       referencedTable: $db.medications,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MedicationsTableOrderingComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$MedicationsTableOrderingComposer(
             $db: $db,
             $table: $db.medications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7159,10 +6294,8 @@ class $$CrisisMedicationsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get medicationNameSnapshot => $composableBuilder(
-    column: $table.medicationNameSnapshot,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get medicationNameSnapshot =>
+      $composableBuilder(column: $table.medicationNameSnapshot, builder: (column) => column);
 
   GeneratedColumn<double> get doseMg =>
       $composableBuilder(column: $table.doseMg, builder: (column) => column);
@@ -7185,18 +6318,13 @@ class $$CrisisMedicationsTableAnnotationComposer
       getCurrentColumn: (t) => t.crisisId,
       referencedTable: $db.crises,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CrisesTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CrisesTableAnnotationComposer(
             $db: $db,
             $table: $db.crises,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7208,18 +6336,13 @@ class $$CrisisMedicationsTableAnnotationComposer
       getCurrentColumn: (t) => t.medicationId,
       referencedTable: $db.medications,
       getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MedicationsTableAnnotationComposer(
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$MedicationsTableAnnotationComposer(
             $db: $db,
             $table: $db.medications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -7241,10 +6364,8 @@ class $$CrisisMedicationsTableTableManager
           CrisisMedication,
           PrefetchHooks Function({bool crisisId, bool medicationId})
         > {
-  $$CrisisMedicationsTableTableManager(
-    _$AuraDatabase db,
-    $CrisisMedicationsTable table,
-  ) : super(
+  $$CrisisMedicationsTableTableManager(_$AuraDatabase db, $CrisisMedicationsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
@@ -7253,10 +6374,7 @@ class $$CrisisMedicationsTableTableManager
           createOrderingComposer: () =>
               $$CrisisMedicationsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$CrisisMedicationsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
+              $$CrisisMedicationsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -7306,12 +6424,7 @@ class $$CrisisMedicationsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CrisisMedicationsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), $$CrisisMedicationsTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({crisisId = false, medicationId = false}) {
             return PrefetchHooks(
@@ -7338,13 +6451,12 @@ class $$CrisisMedicationsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.crisisId,
-                                referencedTable:
-                                    $$CrisisMedicationsTableReferences
-                                        ._crisisIdTable(db),
-                                referencedColumn:
-                                    $$CrisisMedicationsTableReferences
-                                        ._crisisIdTable(db)
-                                        .id,
+                                referencedTable: $$CrisisMedicationsTableReferences._crisisIdTable(
+                                  db,
+                                ),
+                                referencedColumn: $$CrisisMedicationsTableReferences
+                                    ._crisisIdTable(db)
+                                    .id,
                               )
                               as T;
                     }
@@ -7353,13 +6465,11 @@ class $$CrisisMedicationsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.medicationId,
-                                referencedTable:
-                                    $$CrisisMedicationsTableReferences
-                                        ._medicationIdTable(db),
-                                referencedColumn:
-                                    $$CrisisMedicationsTableReferences
-                                        ._medicationIdTable(db)
-                                        .id,
+                                referencedTable: $$CrisisMedicationsTableReferences
+                                    ._medicationIdTable(db),
+                                referencedColumn: $$CrisisMedicationsTableReferences
+                                    ._medicationIdTable(db)
+                                    .id,
                               )
                               as T;
                     }
@@ -7412,8 +6522,7 @@ typedef $$OutboxEntriesTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
     });
 
-class $$OutboxEntriesTableFilterComposer
-    extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
+class $$OutboxEntriesTableFilterComposer extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
   $$OutboxEntriesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -7421,49 +6530,32 @@ class $$OutboxEntriesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get entityType =>
+      $composableBuilder(column: $table.entityType, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get operation => $composableBuilder(
-    column: $table.operation,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get operation =>
+      $composableBuilder(column: $table.operation, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get attempts => $composableBuilder(
-    column: $table.attempts,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get lastError => $composableBuilder(
-    column: $table.lastError,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get nextRetryAt =>
+      $composableBuilder(column: $table.nextRetryAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$OutboxEntriesTableOrderingComposer
-    extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
+class $$OutboxEntriesTableOrderingComposer extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
   $$OutboxEntriesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -7471,49 +6563,32 @@ class $$OutboxEntriesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get entityType =>
+      $composableBuilder(column: $table.entityType, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get operation => $composableBuilder(
-    column: $table.operation,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get operation =>
+      $composableBuilder(column: $table.operation, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get attempts => $composableBuilder(
-    column: $table.attempts,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get lastError => $composableBuilder(
-    column: $table.lastError,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get nextRetryAt =>
+      $composableBuilder(column: $table.nextRetryAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$OutboxEntriesTableAnnotationComposer
-    extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
+class $$OutboxEntriesTableAnnotationComposer extends Composer<_$AuraDatabase, $OutboxEntriesTable> {
   $$OutboxEntriesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -7521,13 +6596,10 @@ class $$OutboxEntriesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get entityType =>
+      $composableBuilder(column: $table.entityType, builder: (column) => column);
 
   GeneratedColumn<String> get entityId =>
       $composableBuilder(column: $table.entityId, builder: (column) => column);
@@ -7541,10 +6613,8 @@ class $$OutboxEntriesTableAnnotationComposer
   GeneratedColumn<String> get lastError =>
       $composableBuilder(column: $table.lastError, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
-    column: $table.nextRetryAt,
-    builder: (column) => column,
-  );
+  GeneratedColumn<DateTime> get nextRetryAt =>
+      $composableBuilder(column: $table.nextRetryAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -7561,10 +6631,7 @@ class $$OutboxEntriesTableTableManager
           $$OutboxEntriesTableAnnotationComposer,
           $$OutboxEntriesTableCreateCompanionBuilder,
           $$OutboxEntriesTableUpdateCompanionBuilder,
-          (
-            OutboxEntry,
-            BaseReferences<_$AuraDatabase, $OutboxEntriesTable, OutboxEntry>,
-          ),
+          (OutboxEntry, BaseReferences<_$AuraDatabase, $OutboxEntriesTable, OutboxEntry>),
           OutboxEntry,
           PrefetchHooks Function()
         > {
@@ -7573,8 +6640,7 @@ class $$OutboxEntriesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$OutboxEntriesTableFilterComposer($db: db, $table: table),
+          createFilteringComposer: () => $$OutboxEntriesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
               $$OutboxEntriesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
@@ -7619,9 +6685,8 @@ class $$OutboxEntriesTableTableManager
                 nextRetryAt: nextRetryAt,
                 createdAt: createdAt,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -7637,10 +6702,7 @@ typedef $$OutboxEntriesTableProcessedTableManager =
       $$OutboxEntriesTableAnnotationComposer,
       $$OutboxEntriesTableCreateCompanionBuilder,
       $$OutboxEntriesTableUpdateCompanionBuilder,
-      (
-        OutboxEntry,
-        BaseReferences<_$AuraDatabase, $OutboxEntriesTable, OutboxEntry>,
-      ),
+      (OutboxEntry, BaseReferences<_$AuraDatabase, $OutboxEntriesTable, OutboxEntry>),
       OutboxEntry,
       PrefetchHooks Function()
     >;
@@ -7648,16 +6710,14 @@ typedef $$OutboxEntriesTableProcessedTableManager =
 class $AuraDatabaseManager {
   final _$AuraDatabase _db;
   $AuraDatabaseManager(this._db);
-  $$ProfilesTableTableManager get profiles =>
-      $$ProfilesTableTableManager(_db, _db.profiles);
+  $$ProfilesTableTableManager get profiles => $$ProfilesTableTableManager(_db, _db.profiles);
   $$MedicationsTableTableManager get medications =>
       $$MedicationsTableTableManager(_db, _db.medications);
   $$AppointmentsTableTableManager get appointments =>
       $$AppointmentsTableTableManager(_db, _db.appointments);
   $$Hit6ResponsesTableTableManager get hit6Responses =>
       $$Hit6ResponsesTableTableManager(_db, _db.hit6Responses);
-  $$CrisesTableTableManager get crises =>
-      $$CrisesTableTableManager(_db, _db.crises);
+  $$CrisesTableTableManager get crises => $$CrisesTableTableManager(_db, _db.crises);
   $$CrisisSymptomsTableTableManager get crisisSymptoms =>
       $$CrisisSymptomsTableTableManager(_db, _db.crisisSymptoms);
   $$CrisisTriggersTableTableManager get crisisTriggers =>

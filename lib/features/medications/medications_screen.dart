@@ -155,6 +155,7 @@ class _MedicationTile extends StatelessWidget {
 
   final Medication med;
   final VoidCallback onTap;
+
   /// Faded styling for ended-treatment history rows.
   final bool dim;
 

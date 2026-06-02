@@ -150,10 +150,7 @@ class _Hit6Card extends StatelessWidget {
                   Text(l.hit6CardBody, style: AuraTextStyles.caption.copyWith(height: 1.4)),
                   const SizedBox(height: AuraSpacing.sm),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AuraSpacing.md,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: AuraSpacing.md, vertical: 6),
                     decoration: BoxDecoration(
                       color: AuraColors.accent,
                       borderRadius: BorderRadius.circular(AuraRadius.pill),

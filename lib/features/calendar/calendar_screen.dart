@@ -429,11 +429,7 @@ class _DayCell extends StatelessWidget {
               const Positioned(
                 bottom: 2,
                 left: 3,
-                child: Icon(
-                  Icons.medication_outlined,
-                  size: 11,
-                  color: AuraColors.intensityHigh,
-                ),
+                child: Icon(Icons.medication_outlined, size: 11, color: AuraColors.intensityHigh),
               ),
           ],
         ),
@@ -479,10 +475,7 @@ class _CamAlertCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  l.camAlertBody(sosDays),
-                  style: AuraTextStyles.caption.copyWith(height: 1.4),
-                ),
+                Text(l.camAlertBody(sosDays), style: AuraTextStyles.caption.copyWith(height: 1.4)),
               ],
             ),
           ),
