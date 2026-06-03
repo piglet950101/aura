@@ -49,6 +49,14 @@ jobs:
       - name: flutter pub get
         run: flutter pub get
 
+      # `flutter pub get` regenerates lib/l10n/app_l10n*.dart from the ARB
+      # files using gen-l10n's own wrap rules — which don't satisfy our
+      # --line-length=100 contract. Auto-format that one directory before
+      # the strict check so committed-vs-regenerated drift can't fail CI.
+      # The check below still catches hand-written drift everywhere else.
+      - name: dart format gen-l10n output
+        run: dart format --line-length=100 lib/l10n/
+
       - name: dart format (check)
         run: dart format --output=none --set-exit-if-changed --line-length=100 .
 
