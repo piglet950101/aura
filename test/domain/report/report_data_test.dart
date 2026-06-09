@@ -61,11 +61,13 @@ void main() {
     expect(build().sosDays, 2);
   });
 
-  test('symptom frequency, most frequent first', () {
+  test('symptom frequency excludes aura (aura is a phase, not a symptom)', () {
     final freq = build().symptomFrequency;
     expect(freq.first.key.code, 'nausea');
     expect(freq.first.value, 2);
-    expect(freq.map((e) => e.key.code), containsAll(<String>['nausea', 'aura']));
+    // Aura must NOT appear in the symptoms-frequency bars — it has its own
+    // section (auraDays + aura timeline).
+    expect(freq.map((e) => e.key.code), isNot(contains('aura')));
   });
 
   test('medication usage with response breakdown', () {

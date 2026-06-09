@@ -122,13 +122,16 @@ class ReportData {
     return days.length;
   }
 
-  /// Symptom → count across all crises, most frequent first.
+  /// Symptom → count across all crises, most frequent first. Excludes
+  /// [Symptom.aura] — aura is a migraine *phase*, not a symptom, and is
+  /// surfaced via [auraDays] + the aura-timeline section instead.
   List<MapEntry<Symptom, int>> get symptomFrequency {
     final counts = <Symptom, int>{};
     for (final c in crises) {
       for (final code in c.symptomCodes) {
         final s = Symptom.fromCode(code);
-        if (s != null) counts[s] = (counts[s] ?? 0) + 1;
+        if (s == null || s == Symptom.aura) continue;
+        counts[s] = (counts[s] ?? 0) + 1;
       }
     }
     final entries = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
