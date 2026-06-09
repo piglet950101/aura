@@ -1747,6 +1747,72 @@ abstract class AppL10n {
   /// In pt, this message translates to:
   /// **'Não foi possível carregar os dados: {error}'**
   String statsError(Object error);
+
+  /// No description provided for @close.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar'**
+  String get close;
+
+  /// No description provided for @paywallTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'AURA Premium'**
+  String get paywallTitle;
+
+  /// No description provided for @paywallHeadline.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ferramentas para acompanhares as tuas crises.'**
+  String get paywallHeadline;
+
+  /// No description provided for @paywallSubhead.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subscrição mensal — cancela quando quiseres, sem perderes o histórico.'**
+  String get paywallSubhead;
+
+  /// No description provided for @paywallBenefitReport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório PDF completo para levares à consulta.'**
+  String get paywallBenefitReport;
+
+  /// No description provided for @paywallBenefitStats.
+  ///
+  /// In pt, this message translates to:
+  /// **'Estatísticas estendidas (6 meses e 1 ano).'**
+  String get paywallBenefitStats;
+
+  /// No description provided for @paywallBenefitHistory.
+  ///
+  /// In pt, this message translates to:
+  /// **'Evolução detalhada do HIT-6 ao longo do tempo.'**
+  String get paywallBenefitHistory;
+
+  /// No description provided for @paywallCta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subscrever Premium'**
+  String get paywallCta;
+
+  /// No description provided for @paywallRestore.
+  ///
+  /// In pt, this message translates to:
+  /// **'Restaurar compra anterior'**
+  String get paywallRestore;
+
+  /// No description provided for @paywallNothingToRestore.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma subscrição ativa encontrada.'**
+  String get paywallNothingToRestore;
+
+  /// No description provided for @paywallFinePrint.
+  ///
+  /// In pt, this message translates to:
+  /// **'A subscrição renova-se automaticamente. Podes geri-la em qualquer momento nas definições da loja.'**
+  String get paywallFinePrint;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

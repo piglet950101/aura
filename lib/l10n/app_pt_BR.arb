@@ -290,5 +290,17 @@
   "respPartialShort": "Parcial",
   "respNoneShort": "Nenhuma",
   "weekShort": "S{n}",
-  "statsError": "Não foi possível carregar os dados: {error}"
+  "statsError": "Não foi possível carregar os dados: {error}",
+
+  "close": "Fechar",
+  "paywallTitle": "AURA Premium",
+  "paywallHeadline": "Mais ferramentas para acompanhar suas crises.",
+  "paywallSubhead": "Assinatura mensal — cancele quando quiser, sem perder o histórico.",
+  "paywallBenefitReport": "Relatório PDF completo para levar à consulta.",
+  "paywallBenefitStats": "Estatísticas estendidas (6 meses e 1 ano).",
+  "paywallBenefitHistory": "Evolução detalhada do HIT-6 ao longo do tempo.",
+  "paywallCta": "Assinar Premium",
+  "paywallRestore": "Restaurar compra anterior",
+  "paywallNothingToRestore": "Nenhuma assinatura ativa encontrada.",
+  "paywallFinePrint": "A assinatura renova automaticamente. Você pode gerenciar a qualquer momento nas configurações da loja."
 }

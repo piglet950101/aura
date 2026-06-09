@@ -2,12 +2,15 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/data/entitlement/entitlement_service_provider.dart';
 import 'package:aura/data/local/database.dart';
+import 'package:aura/domain/entitlement/entitlement.dart';
 import 'package:aura/domain/hit6/hit6.dart';
 import 'package:aura/features/appointments/appointment_edit_screen.dart';
 import 'package:aura/features/appointments/appointments_providers.dart';
 import 'package:aura/features/hit6/hit6_providers.dart';
 import 'package:aura/features/hit6/hit6_screen.dart';
+import 'package:aura/features/paywall/paywall_screen.dart';
 import 'package:aura/features/report/report_screen.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +24,16 @@ import 'package:intl/intl.dart';
 class AppointmentsScreen extends ConsumerWidget {
   const AppointmentsScreen({super.key});
 
-  void _openReport(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReportScreen()));
+  /// Gated entry: free users see the paywall first; if they convert (or
+  /// were already entitled), the report opens immediately afterward.
+  Future<void> _openReport(BuildContext context, WidgetRef ref) async {
+    final svc = ref.read(entitlementServiceProvider);
+    if (!svc.current.allows(PremiumFeature.reportExport)) {
+      final unlocked = await PaywallScreen.push(context);
+      if (!unlocked || !context.mounted) return;
+    }
+    if (!context.mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ReportScreen()));
   }
 
   void _openEditor(BuildContext context, {Appointment? existing}) {
@@ -86,7 +97,7 @@ class AppointmentsScreen extends ConsumerWidget {
                 appointments: list,
                 onEdit: (a) => _openEditor(context, existing: a),
                 onSchedule: () => _openEditor(context),
-                onReport: () => _openReport(context),
+                onReport: () => _openReport(context, ref),
                 onWebAccess: () => _showWebAccessComingSoon(context),
               ),
               loading: () => const Padding(

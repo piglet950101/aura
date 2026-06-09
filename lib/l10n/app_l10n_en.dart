@@ -915,4 +915,40 @@ class AppL10nEn extends AppL10n {
   String statsError(Object error) {
     return 'Couldn\'t load the data: $error';
   }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get paywallTitle => 'AURA Premium';
+
+  @override
+  String get paywallHeadline => 'More tools to track your migraines.';
+
+  @override
+  String get paywallSubhead =>
+      'Monthly subscription — cancel any time without losing your history.';
+
+  @override
+  String get paywallBenefitReport => 'Full PDF report to bring to your doctor.';
+
+  @override
+  String get paywallBenefitStats =>
+      'Extended statistics (6 months and 1 year).';
+
+  @override
+  String get paywallBenefitHistory => 'Detailed HIT-6 evolution over time.';
+
+  @override
+  String get paywallCta => 'Subscribe to Premium';
+
+  @override
+  String get paywallRestore => 'Restore previous purchase';
+
+  @override
+  String get paywallNothingToRestore => 'No active subscription found.';
+
+  @override
+  String get paywallFinePrint =>
+      'Subscription renews automatically. You can manage it any time in the store settings.';
 }

@@ -918,6 +918,45 @@ class AppL10nPt extends AppL10n {
   String statsError(Object error) {
     return 'Não foi possível carregar os dados: $error';
   }
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get paywallTitle => 'AURA Premium';
+
+  @override
+  String get paywallHeadline =>
+      'Mais ferramentas para acompanhares as tuas crises.';
+
+  @override
+  String get paywallSubhead =>
+      'Subscrição mensal — cancela quando quiseres, sem perderes o histórico.';
+
+  @override
+  String get paywallBenefitReport =>
+      'Relatório PDF completo para levares à consulta.';
+
+  @override
+  String get paywallBenefitStats =>
+      'Estatísticas estendidas (6 meses e 1 ano).';
+
+  @override
+  String get paywallBenefitHistory =>
+      'Evolução detalhada do HIT-6 ao longo do tempo.';
+
+  @override
+  String get paywallCta => 'Subscrever Premium';
+
+  @override
+  String get paywallRestore => 'Restaurar compra anterior';
+
+  @override
+  String get paywallNothingToRestore => 'Nenhuma subscrição ativa encontrada.';
+
+  @override
+  String get paywallFinePrint =>
+      'A subscrição renova-se automaticamente. Podes geri-la em qualquer momento nas definições da loja.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1834,4 +1873,42 @@ class AppL10nPtBr extends AppL10nPt {
   String statsError(Object error) {
     return 'Não foi possível carregar os dados: $error';
   }
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get paywallTitle => 'AURA Premium';
+
+  @override
+  String get paywallHeadline => 'Mais ferramentas para acompanhar suas crises.';
+
+  @override
+  String get paywallSubhead =>
+      'Assinatura mensal — cancele quando quiser, sem perder o histórico.';
+
+  @override
+  String get paywallBenefitReport =>
+      'Relatório PDF completo para levar à consulta.';
+
+  @override
+  String get paywallBenefitStats =>
+      'Estatísticas estendidas (6 meses e 1 ano).';
+
+  @override
+  String get paywallBenefitHistory =>
+      'Evolução detalhada do HIT-6 ao longo do tempo.';
+
+  @override
+  String get paywallCta => 'Assinar Premium';
+
+  @override
+  String get paywallRestore => 'Restaurar compra anterior';
+
+  @override
+  String get paywallNothingToRestore => 'Nenhuma assinatura ativa encontrada.';
+
+  @override
+  String get paywallFinePrint =>
+      'A assinatura renova automaticamente. Você pode gerenciar a qualquer momento nas configurações da loja.';
 }

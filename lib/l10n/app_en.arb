@@ -290,5 +290,17 @@
   "respPartialShort": "Partial",
   "respNoneShort": "None",
   "weekShort": "W{n}",
-  "statsError": "Couldn't load the data: {error}"
+  "statsError": "Couldn't load the data: {error}",
+
+  "close": "Close",
+  "paywallTitle": "AURA Premium",
+  "paywallHeadline": "More tools to track your migraines.",
+  "paywallSubhead": "Monthly subscription — cancel any time without losing your history.",
+  "paywallBenefitReport": "Full PDF report to bring to your doctor.",
+  "paywallBenefitStats": "Extended statistics (6 months and 1 year).",
+  "paywallBenefitHistory": "Detailed HIT-6 evolution over time.",
+  "paywallCta": "Subscribe to Premium",
+  "paywallRestore": "Restore previous purchase",
+  "paywallNothingToRestore": "No active subscription found.",
+  "paywallFinePrint": "Subscription renews automatically. You can manage it any time in the store settings."
 }

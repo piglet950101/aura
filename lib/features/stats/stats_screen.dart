@@ -2,9 +2,12 @@ import 'package:aura/core/theme/aura_colors.dart';
 import 'package:aura/core/theme/aura_radius.dart';
 import 'package:aura/core/theme/aura_spacing.dart';
 import 'package:aura/core/theme/aura_text_styles.dart';
+import 'package:aura/data/entitlement/entitlement_service_provider.dart';
+import 'package:aura/domain/entitlement/entitlement.dart';
 import 'package:aura/domain/hit6/hit6.dart';
 import 'package:aura/domain/report/report_data.dart';
 import 'package:aura/features/hit6/hit6_providers.dart';
+import 'package:aura/features/paywall/paywall_screen.dart';
 import 'package:aura/features/stats/stats_providers.dart';
 import 'package:aura/l10n/app_l10n.dart';
 import 'package:aura/l10n/l10n_labels.dart';
@@ -134,22 +137,39 @@ class StatsScreen extends ConsumerWidget {
   }
 }
 
-class _PeriodSelector extends StatelessWidget {
+/// Period selector. The 180d/365d chips are premium — tapping them on a
+/// free account opens the paywall; if the user converts, the tapped period
+/// is applied immediately. The 30d/60d/90d chips are free.
+class _PeriodSelector extends ConsumerWidget {
   const _PeriodSelector({required this.current, required this.onChange});
 
   final int current;
   final ValueChanged<int> onChange;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
-    final options = <(int, String)>[
-      (30, l.period30),
-      (60, l.period60),
-      (90, l.period90),
-      (180, l.period6m),
-      (365, l.period1y),
+    final entitled = ref
+        .watch(entitlementStatusProvider)
+        .valueOrNull
+        ?.allows(PremiumFeature.extendedStats);
+    final isPremium = entitled ?? false;
+    final options = <(int, String, bool)>[
+      (30, l.period30, false),
+      (60, l.period60, false),
+      (90, l.period90, false),
+      (180, l.period6m, true),
+      (365, l.period1y, true),
     ];
+
+    Future<void> handleTap(int days, {required bool gated}) async {
+      if (gated && !isPremium) {
+        final unlocked = await PaywallScreen.push(context);
+        if (!unlocked) return;
+      }
+      onChange(days);
+    }
+
     return Row(
       children: [
         for (var i = 0; i < options.length; i++) ...[
@@ -157,7 +177,8 @@ class _PeriodSelector extends StatelessWidget {
             child: _PeriodChip(
               label: options[i].$2,
               selected: current == options[i].$1,
-              onTap: () => onChange(options[i].$1),
+              locked: options[i].$3 && !isPremium,
+              onTap: () => handleTap(options[i].$1, gated: options[i].$3),
             ),
           ),
           if (i < options.length - 1) const SizedBox(width: AuraSpacing.xs),
@@ -168,10 +189,16 @@ class _PeriodSelector extends StatelessWidget {
 }
 
 class _PeriodChip extends StatelessWidget {
-  const _PeriodChip({required this.label, required this.selected, required this.onTap});
+  const _PeriodChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.locked = false,
+  });
 
   final String label;
   final bool selected;
+  final bool locked;
   final VoidCallback onTap;
 
   @override
@@ -187,13 +214,25 @@ class _PeriodChip extends StatelessWidget {
           border: Border.all(color: selected ? AuraColors.accent : AuraColors.border),
           borderRadius: BorderRadius.circular(AuraRadius.md),
         ),
-        child: Text(
-          label,
-          style: AuraTextStyles.bodySmall.copyWith(
-            color: selected ? AuraColors.accent : AuraColors.textSecondary,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            fontSize: 13,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (locked) ...[
+              const Icon(Icons.lock_outline, size: 12, color: AuraColors.textMuted),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: AuraTextStyles.bodySmall.copyWith(
+                color: locked
+                    ? AuraColors.textMuted
+                    : (selected ? AuraColors.accent : AuraColors.textSecondary),
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -313,5 +313,17 @@
   "weekShort": "S{n}",
   "@weekShort": { "placeholders": { "n": { "type": "int" } } },
   "statsError": "Não foi possível carregar os dados: {error}",
-  "@statsError": { "placeholders": { "error": { "type": "Object" } } }
+  "@statsError": { "placeholders": { "error": { "type": "Object" } } },
+
+  "close": "Fechar",
+  "paywallTitle": "AURA Premium",
+  "paywallHeadline": "Mais ferramentas para acompanhares as tuas crises.",
+  "paywallSubhead": "Subscrição mensal — cancela quando quiseres, sem perderes o histórico.",
+  "paywallBenefitReport": "Relatório PDF completo para levares à consulta.",
+  "paywallBenefitStats": "Estatísticas estendidas (6 meses e 1 ano).",
+  "paywallBenefitHistory": "Evolução detalhada do HIT-6 ao longo do tempo.",
+  "paywallCta": "Subscrever Premium",
+  "paywallRestore": "Restaurar compra anterior",
+  "paywallNothingToRestore": "Nenhuma subscrição ativa encontrada.",
+  "paywallFinePrint": "A subscrição renova-se automaticamente. Podes geri-la em qualquer momento nas definições da loja."
 }
