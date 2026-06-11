@@ -115,3 +115,17 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true   # enables synthetic AppLocalizations from .arb files
+
+# ----- Launcher-icon slicing ------------------------------------------------
+# Master art lives in assets/icon/ (committed). To regenerate the
+# per-platform sizes after editing the master, run:
+#   flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  # Adaptive icon for Android 8+ — the launcher applies its own circular /
+  # squircle mask on top of these layers.
+  adaptive_icon_background: "assets/icon/app_icon_background.png"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  remove_alpha_ios: true
